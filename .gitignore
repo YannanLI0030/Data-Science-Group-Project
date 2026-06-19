@@ -227,3 +227,4 @@ data/**
 *.tsv
 *.gct
 data-2/
+.DS_Store

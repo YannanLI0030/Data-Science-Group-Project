@@ -30,7 +30,7 @@ Usage
 -----
     from data_loader import CellLineDataLoader
 
-    loader = CellLineDataLoader("data-2")
+    loader = CellLineDataLoader("data")
     rna    = loader.get_rna_expression("EGFR")
     prot   = loader.get_protein_expression("EGFR")
     muts   = loader.get_mutations("EGFR")
@@ -64,7 +64,7 @@ class CellLineDataLoader:
     Parameters
     ----------
     data_dir : str | Path
-        Path to the root data folder (e.g. "data-2"), containing the
+        Path to the root data folder (e.g. "data"), containing the
         subfolders: "gene expression", "gene properties", "nomenclature",
         "non gene expression".
     """
@@ -597,7 +597,7 @@ class CellLineDataLoader:
 # ---------------------------------------------------------------------- #
 if __name__ == "__main__":
     import sys
-    data_dir = sys.argv[1] if len(sys.argv) > 1 else "data-2"
+    data_dir = sys.argv[1] if len(sys.argv) > 1 else "data"
     loader = CellLineDataLoader(data_dir)
 
     print("Loading sample_info...")
