@@ -216,3 +216,14 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ===== CellLineFinder 项目数据 =====
+# 排除 data 文件夹下所有内容，只保留目录结构
+data/**
+!data/.gitkeep
+
+# 以防有人把原始数据放在了data文件夹之外
+*.csv
+*.tsv
+*.gct
+data-2/
