@@ -15,6 +15,7 @@ v3 修复了 v2 在真实数据上暴露的问题
 5. [新增] 自动探测 DepMap sample_info 里的 RRID/Cellosaurus 列 —— 如果存在,
    它是比 Cellosaurus Cross-references 更直接的 CVCL<->ACH 桥。
 6. [新增] 直接运行本文件会执行自检 (python data_merger.py <data_dir>)。
+7. [新增] V3.2增加MutationSource 和 FusionSource适配器
 
 四条硬性要求的对应关系
 ------------------------------
@@ -26,7 +27,7 @@ v3 修复了 v2 在真实数据上暴露的问题
 
 from __future__ import annotations
 
-__version__ = "3.1"
+__version__ = "3.2"
 
 import re
 from abc import ABC, abstractmethod
@@ -678,6 +679,218 @@ class GEOWideSource(OmicsSource):
 
 
 # ---------------------------------------------------------------------------
+# 5b. 事件型适配器: 突变 / 融合
+# ---------------------------------------------------------------------------
+#
+# 与 RNA/蛋白的根本区别: 突变、融合是"事件", 一个 (基因, 细胞系) 可能有
+# 0 / 1 / 多条记录。所以这里要先按 (DepMap_ID, gene) 聚合成一行, value_raw
+# 存"事件计数", 并额外用 UNIFIED_COLUMNS 之外的列带出功能影响标志
+# (高影响突变 / 融合置信度), 这些标志才是评分模型真正关心的。
+#
+# 聚合产生的额外列会被 _pack 丢弃(它只保留 UNIFIED_COLUMNS), 所以这两个
+# Source 覆写了 load_long 的返回: 除了标准长表, 还在 value_raw 里放计数,
+# 并把"是否高影响 / 最高置信度"编码进 value_raw 的伴生信息——为保持长表
+# schema 干净, 这里采取的策略是: value_raw = 计数, 并额外产出一个 flag 列,
+# 通过 merge 引擎的 gene_table 透传。为简单起见, 我们把 flag 直接乘进 value:
+#   mutation: value_raw = 突变数;  另存 high_impact(0/1) 到伴生 source
+# 实操中更清晰的做法是让这两个 Source 各自登记两个"虚拟来源"。见下。
+
+
+class MutationSource(OmicsSource):
+    """DepMap 体细胞突变 (File 6)。
+
+    File 6 的细胞系标识是 **ProfileID (PR-xxxxxx)**, 不是 ACH,
+    需要经 File 8 (OmicsProfiles) 的 ProfileID->ACH 桥。这里直接复用
+    data_loader 已有的 `profiles` / `_profile_to_ach()`, 不重造。
+
+    产出两个 source (同一 layer='mutation'):
+      * mutation_count      : 每个 (细胞系, 基因) 的突变条数
+      * mutation_highimpact : 是否含高影响突变 (oncogene / TSG / LoF 任一为真)
+                              -> 1.0 / 0.0
+
+    这样评分模型既能用"有没有突变", 也能用"有没有致病性突变", 后者信息量更大。
+    """
+    layer = "mutation"
+    source = "depmap_mutation"  # 供 has_mutation 掩码识别
+
+    def __init__(self, loader, path=None, version: str = "DepMap-24Q2",
+                 chunksize: int = 500_000):
+        self.loader = loader
+        self.version = version
+        self.chunksize = chunksize
+        # File 6 路径: 优先用显式传入, 否则问 loader 要
+        self.path = Path(path) if path else Path(loader._path(6))
+
+    def load_long(self, resolver, gene_resolver, genes=None):
+        prof2ach = self.loader._profile_to_ach()  # 复用桥
+
+        head = pd.read_csv(self.path, sep=",", nrows=5)
+        sym_col = _find_col(head, ["hugosymbol", "genesymbol", "gene"], "File 6 基因符号列")
+        ensg_col = _find_col_optional(head, ["ensemblgeneid", "ensembl"])
+        prof_col = _find_col(head, ["profileid"], "File 6 的 ProfileID 列")
+        # 高影响判定列 (存在才用)
+        onco_col = _find_col_optional(head, ["oncogenehighimpact"])
+        tsg_col = _find_col_optional(head, ["tumorsuppressorhighimpact"])
+        lof_col = _find_col_optional(head, ["likelylof"])
+        impact_col = _find_col_optional(head, ["vepimpact"])
+
+        usecols = [c for c in [prof_col, sym_col, ensg_col, onco_col, tsg_col,
+                               lof_col, impact_col] if c]
+
+        pieces = []
+        for chunk in pd.read_csv(self.path, sep=",", usecols=usecols,
+                                 chunksize=self.chunksize, low_memory=False):
+            if genes is not None:
+                chunk = chunk[chunk[sym_col].isin(genes)]
+            if len(chunk):
+                pieces.append(chunk)
+        df = pd.concat(pieces, ignore_index=True) if pieces else pd.DataFrame(columns=usecols)
+        if not len(df):
+            return self._pack(pd.DataFrame(columns=UNIFIED_COLUMNS))
+
+        df["DepMap_ID"] = df[prof_col].map(prof2ach)
+
+        # 高影响布尔: 任一为真
+        def _truthy(col):
+            if col is None or col not in df.columns:
+                return pd.Series(False, index=df.index)
+            s = df[col].astype("string").str.strip().str.lower()
+            return s.isin(["true", "1", "yes", "high"])
+
+        high = _truthy(onco_col) | _truthy(tsg_col) | _truthy(lof_col)
+        if impact_col in df.columns:
+            high = high | df[impact_col].astype("string").str.upper().eq("HIGH")
+        df["_high"] = high.astype(int)
+
+        # 聚合: 每个 (细胞系, 基因) 的突变数 + 是否高影响
+        agg = (df.dropna(subset=["DepMap_ID"])
+               .groupby(["DepMap_ID", sym_col])
+               .agg(count=("_high", "size"), high=("_high", "max"))
+               .reset_index()
+               .rename(columns={sym_col: "gene_symbol"}))
+        if ensg_col and ensg_col in df.columns:
+            ensg_map = (df[[sym_col, ensg_col]].dropna().drop_duplicates()
+            .set_index(sym_col)[ensg_col].astype(str).str.split(".").str[0])
+            agg["ensembl_id"] = agg["gene_symbol"].map(ensg_map)
+        else:
+            agg["ensembl_id"] = agg["gene_symbol"].map(gene_resolver.to_ensembl)
+
+        # 主 source: 计数
+        base = agg.rename(columns={"count": "value_raw"}).copy()
+        base["value_unit"] = "mutation_count"
+        out_count = self._pack(base[["DepMap_ID", "gene_symbol", "ensembl_id",
+                                     "value_raw", "value_unit"]])
+
+        # 副 source: 高影响标志 (作为独立来源, 便于评分模型单独取用)
+        hi = agg.copy()
+        hi["value_raw"] = hi["high"].astype(float)
+        hi["value_unit"] = "high_impact_flag"
+        hi = hi[["DepMap_ID", "gene_symbol", "ensembl_id", "value_raw", "value_unit"]]
+        hi_packed = hi.reindex(columns=UNIFIED_COLUMNS)
+        hi_packed["source"] = "depmap_mutation_highimpact"
+        hi_packed["source_version"] = self.version
+        hi_packed["omics_layer"] = "mutation"
+        hi_packed = hi_packed[hi_packed["DepMap_ID"].notna()
+                              & hi_packed["gene_symbol"].notna()].reset_index(drop=True)
+
+        return pd.concat([out_count, hi_packed], ignore_index=True)
+
+
+class FusionSource(OmicsSource):
+    """DepMap 基因融合 (File 5)。
+
+    File 5 用 **ModelID = ACH-xxxxxx** 标识细胞系, 直接就是 DepMap_ID, 不用转。
+
+    一条融合牵扯两个基因 (gene1--gene2), 所以每条记录拆成两行, 分别归到
+    gene1 和 gene2 下 —— 查 EGFR 时, EGFR 无论在 gene1 还是 gene2 都算命中。
+
+    产出两个 source (layer='fusion'):
+      * fusion_count       : 每个 (细胞系, 基因) 参与的融合条数
+      * fusion_confidence  : 最高置信度 (high=3 / medium=2 / low=1 -> 归一到 0-1)
+    """
+    layer = "fusion"
+    source = "depmap_fusion"
+
+    _CONF = {"high": 3, "medium": 2, "low": 1}
+
+    def __init__(self, loader, path=None, version: str = "DepMap-24Q2",
+                 chunksize: int = 500_000):
+        self.loader = loader
+        self.version = version
+        self.chunksize = chunksize
+        self.path = Path(path) if path else Path(loader._path(5))
+
+    @staticmethod
+    def _parse_gene(cell):
+        """'DLG1 (ENSG00000075711.21)' -> ('DLG1', 'ENSG00000075711'); '(.)' -> (sym, None)"""
+        if not isinstance(cell, str):
+            return None, None
+        m = re.match(r"\s*([^(]+?)\s*\(([^)]*)\)", cell)
+        if not m:
+            return cell.strip() or None, None
+        sym = m.group(1).strip() or None
+        ensg = m.group(2).split(".")[0]
+        ensg = ensg if ensg.startswith("ENSG") else None
+        return sym, ensg
+
+    def load_long(self, resolver, gene_resolver, genes=None):
+        head = pd.read_csv(self.path, sep=",", nrows=5)
+        model_col = _find_col(head, ["modelid"], "File 5 的 ModelID 列")
+        g1_col = _find_col(head, ["gene1"], "File 5 的 gene1 列")
+        g2_col = _find_col(head, ["gene2"], "File 5 的 gene2 列")
+        conf_col = _find_col_optional(head, ["confidence"])
+
+        usecols = [c for c in [model_col, g1_col, g2_col, conf_col] if c]
+        df = pd.read_csv(self.path, sep=",", usecols=usecols, low_memory=False)
+
+        # 拆 gene1 / gene2 各成一行
+        g1 = df[g1_col].map(self._parse_gene)
+        g2 = df[g2_col].map(self._parse_gene)
+        rows = pd.DataFrame({
+            "DepMap_ID": pd.concat([df[model_col], df[model_col]], ignore_index=True),
+            "gene_symbol": pd.concat([g1.str[0], g2.str[0]], ignore_index=True),
+            "ensembl_id": pd.concat([g1.str[1], g2.str[1]], ignore_index=True),
+            "conf": pd.concat([df[conf_col], df[conf_col]] if conf_col
+                              else [pd.Series("", index=df.index)] * 2,
+                              ignore_index=True),
+        })
+        if genes is not None:
+            rows = rows[rows["gene_symbol"].isin(genes)]
+        rows = rows.dropna(subset=["DepMap_ID", "gene_symbol"])
+        if not len(rows):
+            return self._pack(pd.DataFrame(columns=UNIFIED_COLUMNS))
+
+        rows["conf_score"] = (rows["conf"].astype("string").str.lower()
+                              .map(self._CONF).fillna(0))
+
+        agg = (rows.groupby(["DepMap_ID", "gene_symbol"])
+               .agg(count=("conf_score", "size"),
+                    max_conf=("conf_score", "max"),
+                    ensembl_id=("ensembl_id", "first"))
+               .reset_index())
+
+        # 主 source: 计数
+        c = agg.rename(columns={"count": "value_raw"}).copy()
+        c["value_unit"] = "fusion_count"
+        out_count = self._pack(c[["DepMap_ID", "gene_symbol", "ensembl_id",
+                                  "value_raw", "value_unit"]])
+
+        # 副 source: 置信度 (归一到 0-1)
+        cf = agg.copy()
+        cf["value_raw"] = cf["max_conf"] / 3.0
+        cf["value_unit"] = "fusion_confidence"
+        cf = cf[["DepMap_ID", "gene_symbol", "ensembl_id", "value_raw", "value_unit"]]
+        cf_packed = cf.reindex(columns=UNIFIED_COLUMNS)
+        cf_packed["source"] = "depmap_fusion_confidence"
+        cf_packed["source_version"] = self.version
+        cf_packed["omics_layer"] = "fusion"
+        cf_packed = cf_packed[cf_packed["DepMap_ID"].notna()
+                              & cf_packed["gene_symbol"].notna()].reset_index(drop=True)
+
+        return pd.concat([out_count, cf_packed], ignore_index=True)
+
+
+# ---------------------------------------------------------------------------
 # 6. 合并引擎
 # ---------------------------------------------------------------------------
 
@@ -760,6 +973,33 @@ class MultiOmicsMerger:
                    if any(s.layer == l for s in self._sources)]
         base["data_completeness"] = base[present].mean(axis=1) if present else 0.0
         return base
+
+#合成总表
+    def build_master_table(self, genes: Iterable[str]) -> pd.DataFrame:
+        """把多个基因的宽表纵向拼成一张\"总表\"。
+
+        每个基因先各自 build_gene_table (一行一细胞系), 再加一列 gene 标明是
+        哪个基因, 最后 concat。结果是长格式的总表:
+            (gene, DepMap_ID) 唯一确定一行, 列为各来源的值 + 掩码 + 完整度。
+
+        这是\"一个文件\"版本的交付物。注意它只含传入的 genes —— 全部 2 万个
+        基因的宽表会爆炸, 也没必要 (评分模型一次只查一个基因)。
+        """
+        frames = []
+        for g in genes:
+            t = self.build_gene_table(g)
+            t.insert(1, "gene", g)
+            frames.append(t)
+        if not frames:
+            return pd.DataFrame()
+        # 各基因命中的来源列可能不同, concat 会自动对齐并用 NaN 补齐
+        master = pd.concat(frames, ignore_index=True)
+        # 把 has_ 和 data_completeness 挪到末尾, 数据列在前, 便于阅读
+        tail = [c for c in master.columns
+                if c.startswith("has_") or c == "data_completeness"
+                or c == "rna_consistency"]
+        head = [c for c in master.columns if c not in tail]
+        return master[head + tail]
 
 
 # ---------------------------------------------------------------------------
