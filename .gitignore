@@ -228,3 +228,5 @@ data/**
 *.gct
 data-2/
 .DS_Store
+
+.idea/
