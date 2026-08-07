@@ -44,6 +44,7 @@ Usage
 
 from __future__ import annotations
 
+import os 
 import re
 from pathlib import Path
 from functools import lru_cache
@@ -81,10 +82,23 @@ class CellLineDataLoader:
         12: ("non gene expression", "12_CCLE_metabolomics_20190502.csv", ","),
         14: ("non gene expression", "14_OmicsGlobalSignatures.csv", ","),
     }
+     # Local folders use spaces; S3 keys use underscores.
+    _S3_FOLDER = {
+        "gene expression":     "gene_expression",
+        "gene properties":     "gene_properties",
+        "nomenclature":        "nomenclature",
+        "non gene expression": "non_gene_expression",
+    }
 
-    def __init__(self, data_dir: str | Path):
-        self.data_dir = Path(data_dir)
-        if not self.data_dir.exists():
+    
+    def __init__(self, data_dir: str | Path | None = None):
+        if data_dir is None:
+            data_dir = os.getenv("CLS_DATA_ROOT", "data")
+
+        self.data_dir = str(data_dir).rstrip("/")
+        self.is_remote = self.data_dir.startswith("s3://")
+
+        if not self.is_remote and not Path(self.data_dir).exists():
             raise FileNotFoundError(f"Data directory not found: {self.data_dir}")
 
         # Cached frames (populated lazily on first access)
@@ -103,16 +117,18 @@ class CellLineDataLoader:
     # Internal path / IO helpers
     # ------------------------------------------------------------------ #
 
-    def _path(self, file_id: int) -> Path:
+    def _path(self, file_id: int) -> str:
         subfolder, filename, _ = self._FILE_MAP[file_id]
-        p = self.data_dir / subfolder / filename
+
+        if self.is_remote:
+            # S3 上文件夹名用下划线，文件是 gzip 压缩的
+            s3_folder = self._S3_FOLDER.get(subfolder, subfolder)
+            return f"{self.data_dir}/{s3_folder}/{filename}.gz"
+
+        p = Path(self.data_dir) / subfolder / filename
         if not p.exists():
-            raise FileNotFoundError(
-                f"Expected file {file_id} at: {p}\n"
-                f"Check that '{subfolder}/' exists under {self.data_dir} "
-                f"and contains '{filename}'."
-            )
-        return p
+            raise FileNotFoundError(f"Expected file {file_id} at: {p}")
+        return str(p)
 
     # ------------------------------------------------------------------ #
     # File 9: master sample info  (the hub of the ID system)

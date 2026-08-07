@@ -230,3 +230,17 @@ data-2/
 .DS_Store
 
 .idea/
+# 压缩包
+*.7z
+*.zip
+staging_gz/
+
+# AWS 凭证
+.aws/
+credentials
+*.pem
+
+# 分析结果和基准集需要进仓库（覆盖上面的全局 *.csv 排除）
+!results/**/*.csv
+!benchmarks/**/*.csv
+!data_manifest/*.json
