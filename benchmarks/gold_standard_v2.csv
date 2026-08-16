@@ -1,0 +1,21 @@
+gene,expected_cell_line,expected_depmap_id,relation,evidence_type,source_hint,verified,notes
+EGFR,HCC827,ACH-000012,positive,mutation_dependency,"DepMap Portal cell line ACH-000012: EGFR deletion p.E746_A750del; https://depmap.org/portal/cell_line/ACH-000012; accessed 2026-08-15",yes,rank 3/1412 top 0.1%; DepMap突变表可查
+EGFR,PC-9,ACH-000779,positive,mutation_dependency,"DepMap Portal cell line ACH-000779: EGFR deletion p.E746_A750del; https://depmap.org/portal/cell_line/ACH-000779?tab=mutations; accessed 2026-08-15",yes,rank 61/1412 top 4.3%; ID已修正(原ACH-000030错误)
+EGFR,A431,ACH-001328,positive,gene_fusion,"Cellosaurus CVCL_0037: EGFR-PPARGC1A gene fusion, PubMed=23637631; DepMap RNA rank 29/1412 (top 2.0%); accessed 2026-08-16",yes,"Cellosaurus未记录EGFR扩增,记录的是EGFR融合;高表达由本地数据佐证"
+ERBB2,SK-BR-3,ACH-000017,positive,amplification,"Cellosaurus CVCL_0033 ERBB2 amplification + PMID：23033967;DepMap RNA rank 17/1412(top 1.1%); accessed 2026-08-16",yes,rank 17/1412 top 1.1%; 扩增型
+ERBB2,BT-474,ACH-000927,positive,amplification,"Cellosaurus CVCL_0179(BT-474) amplification; DepMap RNA rank 19/1412(top 1.3%);accessed 2026-08-16",yes,rank 19/1412 top 1.3%; 扩增型
+ERBB2,NCI-N87,ACH-000427,positive,amplification,"Cellosaurus CVCL_1603 ERBB2-amplified gastric + PMID:40642068;DepMap RNA rank 3/1412(top 0.1%);accessed 2026-08-16",yes,"rank 3/1412 top 0.1%; 扩增型,DepMap突变表No rows found属预期"
+ESR1,MCF7,ACH-000019,positive,receptor_status,"Cellosaurus CVCL_0031 ER-positive + PMID:3986805; DepMap RNA rank 7/1412(top 0.4%);accessed 2026-08-16",yes,rank 7/1412 top 0.4%
+ESR1,T47D,ACH-000147,positive,receptor_status,"Cellosaurus CVCL_0553 ER-positive + PMID:7388945;DepMap RNA rank 6/1412(top 0.4%); accessed 2026-08-16",yes,rank 6/1412 top 0.4%
+AR,LNCaP,ACH-000977,positive,mutation_dependency,"DepMap Portal ACH-000977 Mutations tab: AR p.T877A; https://depmap.org/portal/cell_line/ACH-000977; DepMap RNA rank 3/1412 (top 0.1%); accessed 2026-08-16",yes,"证据类型由receptor_status改为mutation_dependency: Cellosaurus/DepMap记录的是AR点突变而非单纯受体状态"
+AR,VCaP,ACH-000115,positive,amplification,"Cellosaurus CVCL_2235 AR-amplified prostate + PMID:34473519; DepMap RNA rank 1/1412(top 0.0%);accessed 2026-08-16",yes,rank 1/1412 top 0.0%; ID已修正(原ACH-000926错误)
+MET,EBC-1,ACH-000563,positive,amplification,"Cellosaurus CVCL_2891 MET-amplified lung + PMID:36948240; DepMap RNA rank 2/1412(top 0.1%); accessed 2026-08-16",yes,rank 2/1412 top 0.1%; ID已修正(原ACH-000439错误)
+MET,Hs 746T,ACH-000616,positive,amplification,"Cellosaurus CVCL_0333 MET-amplified gastric + PMID:25504634; DepMap RNA rank 1/1412(top 0.0%); accessed 2026-08-16",yes,rank 1/1412 top 0.0%; ID已修正(原ACH-000459错误)
+ALB,Hep G2,ACH-000739,positive,tissue_specific,"PMID 6300044: Hep G2 secretes predominantly fully processed serum albumin; DepMap RNA rank 1/1412 (top 0.0%); accessed 2026-08-16",yes,"文献证据为蛋白分泌层面,断言为RNA表达层面,同一生物学事实的不同测量层"
+EGFR,K562,ACH-000551,negative,no_expression,"Cellosaurus CVCL_0004: chronic myelogenous leukaemia, haematopoietic lineage; DepMap RNA 0.10 log2(TPM+1); accessed 2026-08-16",yes,"谱系依据:造血系细胞不表达上皮受体EGFR。阴性判据用绝对表达值而非排名"
+MET,K562,ACH-000551,negative,no_expression,"Cellosaurus CVCL_0004: haematopoietic lineage; DepMap RNA 1.90 log2(TPM+1), bottom 21.5%; accessed 2026-08-16",yes,"谱系依据:MET为上皮细胞受体。此条数值相对偏高,是五条阴性中最弱的一条"
+ALB,K562,ACH-000551,negative,no_expression,"Cellosaurus CVCL_0004: haematopoietic lineage; DepMap RNA 0.11 log2(TPM+1); accessed 2026-08-16",yes,"谱系依据:白蛋白由肝细胞分泌,造血系不表达"
+ESR1,MDA-MB-231,ACH-000768,negative,no_expression,"Cellosaurus CVCL_0062: triple-negative breast adenocarcinoma (三阴性定义即包含ER阴性); DepMap RNA 0.12 log2(TPM+1); accessed 2026-08-16",yes,"表型定义依据。排名747/1412因大量细胞系并列为0而失真,按绝对值判定"
+AR,MDA-MB-231,ACH-000768,negative,no_expression,"Cellosaurus CVCL_0062: triple-negative breast adenocarcinoma; DepMap RNA 0.01 log2(TPM+1); accessed 2026-08-16",yes,"AR阴性不属三阴性定义(三阴性指ER/PR/HER2),主要依据DepMap定量值近似0"
+
+  
