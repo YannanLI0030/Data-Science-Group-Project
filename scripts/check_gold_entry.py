@@ -110,6 +110,9 @@ def batch(master: pd.DataFrame, ann: pd.DataFrame, gold_path: Path,
     rows = []
     for _, e in gold.iterrows():
         gene, cl = str(e["gene"]).upper(), str(e["expected_cell_line"])
+        expected_id = str(e.get("expected_depmap_id", "")).upper().strip()
+        if expected_id in {"", "NAN", "NONE"}:
+            expected_id = ""
         rel = e.get("relation", "positive")
         df = gene_ranking(master, ann, gene, value_col)
         if df is None:
@@ -117,13 +120,31 @@ def batch(master: pd.DataFrame, ann: pd.DataFrame, gold_path: Path,
                          "status": "GENE NOT IN PANEL", "rank": None,
                          "n": None, "top_pct": None, "depmap_id": None})
             continue
-        hit = df[df["stripped_cell_line_name"].map(norm) == norm(cl)]
+        match_by = "depmap_id" if expected_id else "cell_line"
+        if expected_id:
+            hit = df[df["DepMap_ID"].astype(str).str.upper() == expected_id]
+        else:
+            hit = df[df["stripped_cell_line_name"].map(norm) == norm(cl)]
+            if hit.empty:
+                hit = df[
+                    df["stripped_cell_line_name"]
+                    .map(norm)
+                    .str.contains(norm(cl), na=False)
+                ]
         if hit.empty:
-            hit = df[df["stripped_cell_line_name"].map(norm).str.contains(norm(cl), na=False)]
-        if hit.empty:
+            master_gene = master[master["gene"].astype(str).str.upper() == gene]
+            if expected_id:
+                master_hit = master_gene[
+                    master_gene["DepMap_ID"].astype(str).str.upper() == expected_id
+                ]
+            else:
+                master_hit = master_gene.iloc[0:0]
+            status = "VALUE MISSING" if not master_hit.empty else "CELL LINE NOT FOUND"
             rows.append({"gene": gene, "cell_line": cl, "relation": rel,
-                         "status": "CELL LINE NOT FOUND", "rank": None,
-                         "n": len(df), "top_pct": None, "depmap_id": None})
+                         "status": status, "rank": None,
+                         "n": len(df), "top_pct": None,
+                         "depmap_id": expected_id or None,
+                         "match_by": match_by})
             continue
         r = hit.iloc[0]
         top_pct = 100 - r["pct"]
@@ -136,7 +157,7 @@ def batch(master: pd.DataFrame, ann: pd.DataFrame, gold_path: Path,
         rows.append({"gene": gene, "cell_line": cl, "relation": rel,
                      "status": status, "rank": int(r["rank"]), "n": len(df),
                      "top_pct": round(top_pct, 1),
-                     "depmap_id": r["DepMap_ID"]})
+                     "depmap_id": r["DepMap_ID"], "match_by": match_by})
 
     out = pd.DataFrame(rows)
     print(out.to_string(index=False))
@@ -144,7 +165,8 @@ def batch(master: pd.DataFrame, ann: pd.DataFrame, gold_path: Path,
     print(out["status"].value_counts().to_string())
     print("\nOK = evidence is where the literature says it should be.")
     print("WEAK / CONTRADICTED = check the source claim before setting verified=yes.")
-    print("NOT FOUND = drop the entry or fix the name.")
+    print("VALUE MISSING = the cell line exists, but this modality has no value.")
+    print("NOT FOUND = the DepMap ID is absent from this gene panel or is incorrect.")
     print("\nNOTE: 'OK' here means detectable in the data, NOT that the biology is")
     print("      verified. You still need an external citation for each entry.")
 
