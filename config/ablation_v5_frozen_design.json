@@ -1,0 +1,333 @@
+{
+  "schema_version": 1,
+  "status": "frozen_before_v5_candidate_labelling",
+  "experiment_role": "targeted independent-label component holdout",
+  "not_a_weight_search": true,
+  "query_mode": "GENE_MULTIOMICS",
+  "query_scope": "all_cell_lines_no_disease_filter",
+  "candidate_pool_rule": "Union of Top-10-with-exact-score-ties from every primary pool configuration for each selected gene",
+  "primary_pool_configs": [
+    "B0_rna_mean",
+    "A0_team_baseline",
+    "A1a_no_direct_protein",
+    "A1b_no_protein_evidence",
+    "A1c_no_protein_confidence",
+    "A2_no_confidence",
+    "A2a_no_conf_completeness",
+    "A2b_no_conf_source_support",
+    "A2c_no_conf_consistency",
+    "A4_adaptive_trust"
+  ],
+  "secondary_unlabelled_sensitivity_configs": [
+    "A3_equal_bio",
+    "A3b_reversed_bio",
+    "A5_v3_structure",
+    "A6_v3_full"
+  ],
+  "secondary_config_policy": "Frozen for structural sensitivity reporting only; excluded from the V5 candidate union and from V5 accuracy claims",
+  "config_definitions": [
+    {
+      "name": "B0_rna_mean",
+      "description": "RNA-only mean ranking; no protein or confidence in final score",
+      "rna_weight": 1.0,
+      "protein_weight": 0.0,
+      "confidence_weight": 0.0,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": false,
+      "protein_for_confidence": false,
+      "adaptive_trust": false,
+      "structure": "rna_only"
+    },
+    {
+      "name": "A0_team_baseline",
+      "description": "Team baseline: RNA .55, protein .30, confidence .15",
+      "rna_weight": 0.55,
+      "protein_weight": 0.3,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": true,
+      "protein_for_confidence": true,
+      "adaptive_trust": false,
+      "structure": "standard"
+    },
+    {
+      "name": "A1a_no_direct_protein",
+      "description": "Remove direct protein; retain protein-derived confidence",
+      "rna_weight": 0.85,
+      "protein_weight": 0.0,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": false,
+      "protein_for_confidence": true,
+      "adaptive_trust": false,
+      "structure": "standard"
+    },
+    {
+      "name": "A1b_no_protein_evidence",
+      "description": "Remove direct protein and all protein-derived confidence",
+      "rna_weight": 0.85,
+      "protein_weight": 0.0,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": false,
+      "protein_for_confidence": false,
+      "adaptive_trust": false,
+      "structure": "standard"
+    },
+    {
+      "name": "A1c_no_protein_confidence",
+      "description": "Retain direct protein; remove protein-derived confidence only",
+      "rna_weight": 0.55,
+      "protein_weight": 0.3,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": true,
+      "protein_for_confidence": false,
+      "adaptive_trust": false,
+      "structure": "standard"
+    },
+    {
+      "name": "A2_no_confidence",
+      "description": "Remove the full confidence block; renormalise RNA/protein",
+      "rna_weight": 0.6470588235294118,
+      "protein_weight": 0.3529411764705882,
+      "confidence_weight": 0.0,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": true,
+      "protein_for_confidence": true,
+      "adaptive_trust": false,
+      "structure": "standard"
+    },
+    {
+      "name": "A2a_no_conf_completeness",
+      "description": "Remove completeness from confidence; renormalise retained components",
+      "rna_weight": 0.55,
+      "protein_weight": 0.3,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.0,
+      "confidence_source_support": 0.5833333333333334,
+      "confidence_consistency": 0.4166666666666667,
+      "protein_for_biology": true,
+      "protein_for_confidence": true,
+      "adaptive_trust": false,
+      "structure": "standard"
+    },
+    {
+      "name": "A2b_no_conf_source_support",
+      "description": "Remove source support from confidence; renormalise retained components",
+      "rna_weight": 0.55,
+      "protein_weight": 0.3,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.6153846153846154,
+      "confidence_source_support": 0.0,
+      "confidence_consistency": 0.3846153846153846,
+      "protein_for_biology": true,
+      "protein_for_confidence": true,
+      "adaptive_trust": false,
+      "structure": "standard"
+    },
+    {
+      "name": "A2c_no_conf_consistency",
+      "description": "Remove RNA-protein consistency; renormalise retained components",
+      "rna_weight": 0.55,
+      "protein_weight": 0.3,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.5333333333333333,
+      "confidence_source_support": 0.4666666666666666,
+      "confidence_consistency": 0.0,
+      "protein_for_biology": true,
+      "protein_for_confidence": true,
+      "adaptive_trust": false,
+      "structure": "standard"
+    },
+    {
+      "name": "A4_adaptive_trust",
+      "description": "Team baseline plus gene-level adaptive RNA trust",
+      "rna_weight": 0.55,
+      "protein_weight": 0.3,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": true,
+      "protein_for_confidence": true,
+      "adaptive_trust": true,
+      "structure": "standard"
+    }
+  ],
+  "secondary_config_definitions": [
+    {
+      "name": "A3_equal_bio",
+      "description": "Equal RNA/protein biological weights",
+      "rna_weight": 0.425,
+      "protein_weight": 0.425,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": true,
+      "protein_for_confidence": true,
+      "adaptive_trust": false,
+      "structure": "standard"
+    },
+    {
+      "name": "A3b_reversed_bio",
+      "description": "Protein biological weight greater than RNA",
+      "rna_weight": 0.3,
+      "protein_weight": 0.55,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": true,
+      "protein_for_confidence": true,
+      "adaptive_trust": false,
+      "structure": "standard"
+    },
+    {
+      "name": "A5_v3_structure",
+      "description": "Flat v3 RNA/protein/consistency/completeness structure",
+      "rna_weight": 0.55,
+      "protein_weight": 0.3,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": true,
+      "protein_for_confidence": true,
+      "adaptive_trust": false,
+      "structure": "v3"
+    },
+    {
+      "name": "A6_v3_full",
+      "description": "Flat v3 structure plus adaptive trust",
+      "rna_weight": 0.55,
+      "protein_weight": 0.3,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": true,
+      "protein_for_confidence": true,
+      "adaptive_trust": true,
+      "structure": "v3"
+    }
+  ],
+  "gene_selection_policy": {
+    "n_genes": 12,
+    "basis": "Coverage-stratum balance, human interpretability, and unlabelled structural discriminability; no V5 candidate labels were used",
+    "excluded_from_labelled_holdout": "DepMap-RNA-only stratum retained for missing-data stress testing because literature verification is impractical and configurations mostly collapse",
+    "selected": [
+      {
+        "order": 1,
+        "gene": "MFN2",
+        "stratum": "protein_corr_low",
+        "reason": "Low RNA-protein correlation; broadly observed protein and interpretable mitochondrial function."
+      },
+      {
+        "order": 2,
+        "gene": "CALML3",
+        "stratum": "protein_corr_low",
+        "reason": "Low RNA-protein correlation; interpretable epithelial calcium-binding marker."
+      },
+      {
+        "order": 3,
+        "gene": "OGDH",
+        "stratum": "protein_corr_mid",
+        "reason": "Mid RNA-protein correlation; interpretable metabolic enzyme with broad measurements."
+      },
+      {
+        "order": 4,
+        "gene": "PSME4",
+        "stratum": "protein_corr_mid",
+        "reason": "Mid RNA-protein correlation; interpretable proteostasis-related protein with broad measurements."
+      },
+      {
+        "order": 5,
+        "gene": "ERBB3",
+        "stratum": "protein_corr_high",
+        "reason": "High RNA-protein correlation; interpretable receptor and cancer-model marker."
+      },
+      {
+        "order": 6,
+        "gene": "CHKA",
+        "stratum": "protein_corr_high",
+        "reason": "High RNA-protein correlation; interpretable phospholipid-metabolism enzyme."
+      },
+      {
+        "order": 7,
+        "gene": "ARID3A",
+        "stratum": "protein_corr_high",
+        "reason": "High RNA-protein correlation; interpretable lineage-associated transcription factor."
+      },
+      {
+        "order": 8,
+        "gene": "GALNT7",
+        "stratum": "protein_no_reliable_corr",
+        "reason": "Broad protein coverage but no reliable correlation; informative correlation-missing case."
+      },
+      {
+        "order": 9,
+        "gene": "SIGLEC9",
+        "stratum": "protein_no_reliable_corr",
+        "reason": "Protein present without reliable correlation; interpretable immune-surface marker."
+      },
+      {
+        "order": 10,
+        "gene": "CALCB",
+        "stratum": "protein_no_reliable_corr",
+        "reason": "Protein present without reliable correlation; interpretable neuroendocrine-associated marker."
+      },
+      {
+        "order": 11,
+        "gene": "POU2F3",
+        "stratum": "multisource_rna_no_protein",
+        "reason": "Three RNA sources and no proteomics; interpretable lineage transcription factor."
+      },
+      {
+        "order": 12,
+        "gene": "KRT76",
+        "stratum": "multisource_rna_no_protein",
+        "reason": "Three RNA sources and no proteomics; interpretable epithelial keratin."
+      }
+    ]
+  },
+  "source_snapshot": {
+    "dynamic_manifest": {
+      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/results/dynamic_ablation_unlabelled/dynamic_ablation_unlabelled_manifest.json",
+      "sha256": "4abf99bfaa8d56c6efed67bc7a7de3d4df61e3788af8aaba7e77949f75ca1589"
+    },
+    "dynamic_top10": {
+      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/results/dynamic_ablation_unlabelled/dynamic_ablation_unlabelled_top10.csv",
+      "sha256": "9431e5833545850f0a73bfed97c23e0c8d9b5c1a8ba149ae8f18e60ff09f60ff"
+    },
+    "coverage_stratified_panel": {
+      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/panels/ablation_100genes_coverage_stratified_list.csv",
+      "sha256": "a1bdc100661e0c3c506912b7338c1ac3b09d1d3e3aefc168e3870cf100266b25"
+    },
+    "sample_info": {
+      "path": "/Users/liyannan/Desktop/cellline_selector_v3/data_s3/nomenclature/9_DepMap_sample_info.csv",
+      "sha256": "382c0c26cf57a2fb82449f797c58cb0dfc2313949908d8f83560ebcf3e5bcbaa"
+    }
+  },
+  "interpretation_limits": [
+    "The V5 gene subset is targeted and coverage-stratified, not a random population sample.",
+    "The pool is not a gold standard until all rows are externally reviewed and labels are frozen.",
+    "Unknown candidates must not be treated as negatives.",
+    "No configuration may be modified after V5 review begins.",
+    "A post-label configuration change converts V5 from holdout to development evidence."
+  ],
+  "frozen_utc": "2026-09-06T07:33:58.947152+00:00"
+}

@@ -1,0 +1,327 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-09-06T07:16:27.379266+00:00",
+  "experiment_role": "unlabelled component identifiability and missing-data robustness",
+  "gold_standard_used": false,
+  "accuracy_metrics_computed": [],
+  "prohibited_interpretation": [
+    "Do not interpret rank changes as improved recommendation accuracy.",
+    "Do not report NDCG, Recall, MRR, or a final winning configuration from this run."
+  ],
+  "candidate_scope": "all cell lines in the matching sample-info snapshot with RNA or protein evidence",
+  "duplicate_aggregation": "arithmetic mean of value_raw and value_std by gene, source, DepMap_ID",
+  "adaptive_trust": {
+    "low_boundary": 0.25,
+    "high_boundary": 0.5,
+    "floor": 0.3,
+    "missing_default": 0.6
+  },
+  "top_k": 10,
+  "configs": [
+    {
+      "name": "B0_rna_mean",
+      "description": "RNA-only mean ranking; no protein or confidence in final score",
+      "rna_weight": 1.0,
+      "protein_weight": 0.0,
+      "confidence_weight": 0.0,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": false,
+      "protein_for_confidence": false,
+      "adaptive_trust": false,
+      "structure": "rna_only"
+    },
+    {
+      "name": "A0_team_baseline",
+      "description": "Team baseline: RNA .55, protein .30, confidence .15",
+      "rna_weight": 0.55,
+      "protein_weight": 0.3,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": true,
+      "protein_for_confidence": true,
+      "adaptive_trust": false,
+      "structure": "standard"
+    },
+    {
+      "name": "A1a_no_direct_protein",
+      "description": "Remove direct protein; retain protein-derived confidence",
+      "rna_weight": 0.85,
+      "protein_weight": 0.0,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": false,
+      "protein_for_confidence": true,
+      "adaptive_trust": false,
+      "structure": "standard"
+    },
+    {
+      "name": "A1b_no_protein_evidence",
+      "description": "Remove direct protein and all protein-derived confidence",
+      "rna_weight": 0.85,
+      "protein_weight": 0.0,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": false,
+      "protein_for_confidence": false,
+      "adaptive_trust": false,
+      "structure": "standard"
+    },
+    {
+      "name": "A1c_no_protein_confidence",
+      "description": "Retain direct protein; remove protein-derived confidence only",
+      "rna_weight": 0.55,
+      "protein_weight": 0.3,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": true,
+      "protein_for_confidence": false,
+      "adaptive_trust": false,
+      "structure": "standard"
+    },
+    {
+      "name": "A2_no_confidence",
+      "description": "Remove the full confidence block; renormalise RNA/protein",
+      "rna_weight": 0.6470588235294118,
+      "protein_weight": 0.3529411764705882,
+      "confidence_weight": 0.0,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": true,
+      "protein_for_confidence": true,
+      "adaptive_trust": false,
+      "structure": "standard"
+    },
+    {
+      "name": "A2a_no_conf_completeness",
+      "description": "Remove completeness from confidence; renormalise retained components",
+      "rna_weight": 0.55,
+      "protein_weight": 0.3,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.0,
+      "confidence_source_support": 0.5833333333333334,
+      "confidence_consistency": 0.4166666666666667,
+      "protein_for_biology": true,
+      "protein_for_confidence": true,
+      "adaptive_trust": false,
+      "structure": "standard"
+    },
+    {
+      "name": "A2b_no_conf_source_support",
+      "description": "Remove source support from confidence; renormalise retained components",
+      "rna_weight": 0.55,
+      "protein_weight": 0.3,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.6153846153846154,
+      "confidence_source_support": 0.0,
+      "confidence_consistency": 0.3846153846153846,
+      "protein_for_biology": true,
+      "protein_for_confidence": true,
+      "adaptive_trust": false,
+      "structure": "standard"
+    },
+    {
+      "name": "A2c_no_conf_consistency",
+      "description": "Remove RNA-protein consistency; renormalise retained components",
+      "rna_weight": 0.55,
+      "protein_weight": 0.3,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.5333333333333333,
+      "confidence_source_support": 0.4666666666666666,
+      "confidence_consistency": 0.0,
+      "protein_for_biology": true,
+      "protein_for_confidence": true,
+      "adaptive_trust": false,
+      "structure": "standard"
+    },
+    {
+      "name": "A3_equal_bio",
+      "description": "Equal RNA/protein biological weights",
+      "rna_weight": 0.425,
+      "protein_weight": 0.425,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": true,
+      "protein_for_confidence": true,
+      "adaptive_trust": false,
+      "structure": "standard"
+    },
+    {
+      "name": "A3b_reversed_bio",
+      "description": "Protein biological weight greater than RNA",
+      "rna_weight": 0.3,
+      "protein_weight": 0.55,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": true,
+      "protein_for_confidence": true,
+      "adaptive_trust": false,
+      "structure": "standard"
+    },
+    {
+      "name": "A4_adaptive_trust",
+      "description": "Team baseline plus gene-level adaptive RNA trust",
+      "rna_weight": 0.55,
+      "protein_weight": 0.3,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": true,
+      "protein_for_confidence": true,
+      "adaptive_trust": true,
+      "structure": "standard"
+    },
+    {
+      "name": "A5_v3_structure",
+      "description": "Flat v3 RNA/protein/consistency/completeness structure",
+      "rna_weight": 0.55,
+      "protein_weight": 0.3,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": true,
+      "protein_for_confidence": true,
+      "adaptive_trust": false,
+      "structure": "v3"
+    },
+    {
+      "name": "A6_v3_full",
+      "description": "Flat v3 structure plus adaptive trust",
+      "rna_weight": 0.55,
+      "protein_weight": 0.3,
+      "confidence_weight": 0.15,
+      "confidence_completeness": 0.4,
+      "confidence_source_support": 0.35,
+      "confidence_consistency": 0.25,
+      "protein_for_biology": true,
+      "protein_for_confidence": true,
+      "adaptive_trust": true,
+      "structure": "v3"
+    }
+  ],
+  "generator": {
+    "script": "/Users/liyannan/Desktop/Data-Science-Group-Project/scripts/dynamic_ablation_runner.py",
+    "script_sha256": "e8062423f3525dd556875c1ca5c8158806ab1f164a0278e7ebe4855091cf2c7e",
+    "git": {
+      "commit": "f817ea13e5ecd26010e7910738c819b47c7c4c28",
+      "dirty": true
+    },
+    "python": "3.11.15 (main, Jun 11 2026, 15:14:57) [Clang 20.1.8 ]",
+    "pandas": "2.3.3",
+    "numpy": "2.4.6"
+  },
+  "inputs": {
+    "sample_info": {
+      "path": "/Users/liyannan/Desktop/cellline_selector_v3/data_s3/nomenclature/9_DepMap_sample_info.csv",
+      "sha256": "382c0c26cf57a2fb82449f797c58cb0dfc2313949908d8f83560ebcf3e5bcbaa"
+    },
+    "correlation": {
+      "path": "/Users/liyannan/Desktop/Data Science MSc Graduation Project/gene_rna_protein_correlations.csv",
+      "sha256": "36ff1b594f66a6a1a4e3b06aa1d9f173cf6fc5de38f7ff2d070669c89ff5de74"
+    },
+    "production_script": {
+      "path": "/Users/liyannan/Desktop/cellline_selector_v3/dynamic_cellline_selector_gene_protein.py",
+      "sha256": "bde400bf53943f00458065cdd162f8afed5563886f11626b82b59995bfa4960d"
+    },
+    "panels": [
+      {
+        "panel": "unfiltered_random",
+        "list": {
+          "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/panels/ablation_100genes_unfiltered_random_list.csv",
+          "sha256": "df29c3c2d204cadcfdf338a0bbf18dd72226e62b72c6df67e9b3372f3f791eda"
+        },
+        "long_table": {
+          "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/panels/ablation_100genes_unfiltered_random.parquet",
+          "sha256": "e3e1b7d12c24de8df974ff28151ea1e2ad75645c64c6db3762f1fff6b42e8b08"
+        }
+      },
+      {
+        "panel": "coverage_stratified",
+        "list": {
+          "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/panels/ablation_100genes_coverage_stratified_list.csv",
+          "sha256": "a1bdc100661e0c3c506912b7338c1ac3b09d1d3e3aefc168e3870cf100266b25"
+        },
+        "long_table": {
+          "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/panels/ablation_100genes_coverage_stratified.parquet",
+          "sha256": "067eff041f68e30ff96af143963a110e72c5fa74e456a6259981625fabea391f"
+        }
+      }
+    ]
+  },
+  "panel_audits": {
+    "unfiltered_random": {
+      "load": {
+        "rows_before_sample_filter": 249414,
+        "rows_after_sample_filter": 242305,
+        "depmap_ids_before_sample_filter": 1722,
+        "unmatched_depmap_ids": 132,
+        "rows_removed_by_sample_filter": 7109
+      },
+      "aggregation": {
+        "input_rows": 242305,
+        "duplicate_groups": 10347,
+        "conflicting_value_groups": 9509,
+        "aggregated_rows": 200149,
+        "rows_collapsed": 42156
+      },
+      "production_a0_parity_checked": true,
+      "production_a0_parity_genes": 100
+    },
+    "coverage_stratified": {
+      "load": {
+        "rows_before_sample_filter": 389923,
+        "rows_after_sample_filter": 389923,
+        "depmap_ids_before_sample_filter": 1652,
+        "unmatched_depmap_ids": 0,
+        "rows_removed_by_sample_filter": 0
+      },
+      "aggregation": {
+        "input_rows": 389923,
+        "duplicate_groups": 24201,
+        "conflicting_value_groups": 23015,
+        "aggregated_rows": 284125,
+        "rows_collapsed": 105798
+      },
+      "production_a0_parity_checked": true,
+      "production_a0_parity_genes": 100
+    }
+  },
+  "outputs": {
+    "summary": {
+      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/results/dynamic_ablation_unlabelled/dynamic_ablation_unlabelled_summary.csv",
+      "rows": 126,
+      "sha256": "af9e7facb7de6a11311f01c96375178a01957f7980c45d18db7a878c5b06b362"
+    },
+    "by_gene_config": {
+      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/results/dynamic_ablation_unlabelled/dynamic_ablation_unlabelled_by_gene_config.csv",
+      "rows": 2800,
+      "sha256": "e231054d5892fbb0842864a2c02c2d9b529af08965867b6e1f0851b3bab45b49"
+    },
+    "gene_diagnostics": {
+      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/results/dynamic_ablation_unlabelled/dynamic_ablation_unlabelled_gene_diagnostics.csv",
+      "rows": 200,
+      "sha256": "1a522f5660c851f6250609d32db2a53928a5c67b7ded38b02a5cc98e67c2952f"
+    },
+    "topk": {
+      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/results/dynamic_ablation_unlabelled/dynamic_ablation_unlabelled_top10.csv",
+      "rows": 116545,
+      "sha256": "9431e5833545850f0a73bfed97c23e0c8d9b5c1a8ba149ae8f18e60ff09f60ff"
+    }
+  }
+}

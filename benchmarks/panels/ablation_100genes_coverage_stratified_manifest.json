@@ -1,0 +1,298 @@
+{
+  "schema_version": 1,
+  "panel_name": "ablation_100genes_coverage_stratified",
+  "created_utc": "2026-09-06T07:12:03.690435+00:00",
+  "intended_role": [
+    "controlled_component_ablation",
+    "coverage-stratified_missing-data_robustness"
+  ],
+  "not_yet_valid_for": [
+    "NDCG/Recall/MRR without independently verified gold labels",
+    "final holdout evaluation before configurations are frozen"
+  ],
+  "selection": {
+    "method": "coverage-only stratified random sampling without replacement",
+    "seed": 42,
+    "quotas": {
+      "protein_corr_low": 10,
+      "protein_corr_mid": 10,
+      "protein_corr_high": 10,
+      "protein_no_reliable_corr": 20,
+      "multisource_rna_no_protein": 25,
+      "depmap_rna_only": 25
+    },
+    "thresholds": {
+      "low_correlation_max": 0.25,
+      "high_correlation_min": 0.5,
+      "min_correlation_pairs": 10,
+      "min_protein_cell_lines": 10,
+      "min_rich_rna_sources": 2
+    },
+    "excluded_genes": [
+      "AC004408.1",
+      "AC006040.1",
+      "AC007546.3",
+      "AC008063.1",
+      "AC008121.1",
+      "AC008440.1",
+      "AC018448.2",
+      "AC027250.1",
+      "AC063947.1",
+      "AC067817.2",
+      "AC074276.2",
+      "AC087749.1",
+      "AC092353.2",
+      "AC092636.1",
+      "AC108053.1",
+      "AC124066.1",
+      "AC138749.3",
+      "AC243654.2",
+      "ADORA2A",
+      "AF111169.1",
+      "AFP",
+      "AL117339.4",
+      "AL137076.1",
+      "AL139383.1",
+      "AL357833.1",
+      "AL596223.2",
+      "AL772161.1",
+      "ALB",
+      "AP001994.3",
+      "AR",
+      "ARMC4P1",
+      "ASGR1",
+      "ATF4P3",
+      "C1QTNF6",
+      "C9ORF116",
+      "CD3E",
+      "CD86",
+      "CDK20",
+      "CHCHD7",
+      "CPXM1",
+      "DES",
+      "DNAAF4-CCPG1",
+      "EEF1B2P5",
+      "EGFR",
+      "EIF1P1",
+      "EIF4BP8",
+      "EIF5AP3",
+      "ELOCP2",
+      "ENSG00000248599",
+      "ERBB2",
+      "ESR1",
+      "FAM170A",
+      "FAM201A",
+      "FGFR2",
+      "FIBP",
+      "GALM",
+      "GAPDH",
+      "GFAP",
+      "GLE1",
+      "GPR137B",
+      "GPR89B",
+      "HCRT",
+      "IGFL4",
+      "ISCA1P1",
+      "KDM2B",
+      "KIAA1958",
+      "KIF25-AS1",
+      "KLK4",
+      "KRAS",
+      "KRTAP2-5P",
+      "LGR5",
+      "LIN28AP2",
+      "LINC00500",
+      "LINC00658",
+      "LINC01166",
+      "LINC01255",
+      "LINC02059",
+      "LINC02763",
+      "MARK3P1",
+      "MET",
+      "MITF",
+      "MSLN",
+      "MT1L",
+      "MTND2P16",
+      "MTND5P18",
+      "MUC1",
+      "MYC",
+      "NANOS3",
+      "NSF",
+      "OR1F12",
+      "OR2AH1P",
+      "OR2C3",
+      "OR5H15",
+      "PDYN",
+      "PGM5P4-AS1",
+      "PLGRKT",
+      "PPP1R2P1",
+      "PRDX2P3",
+      "PTPRC",
+      "RN7SKP18",
+      "RN7SL376P",
+      "RPL21P23",
+      "RPL31P59",
+      "RPL6P9",
+      "RPS26P21",
+      "RTBDN",
+      "SCD",
+      "SHC4",
+      "SMARCC2",
+      "SPOCK3",
+      "STX5",
+      "TBC1D3P7",
+      "TMED7",
+      "TMEM134",
+      "TMEM266",
+      "TP53",
+      "TUBB8P3",
+      "TXN2P1",
+      "VN1R53P",
+      "WASH5P",
+      "WDR45P1",
+      "ZFYVE26"
+    ],
+    "excluded_gene_files": [
+      {
+        "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/panels/ablation_100genes_unfiltered_random_list.csv",
+        "sha256": "df29c3c2d204cadcfdf338a0bbf18dd72226e62b72c6df67e9b3372f3f791eda"
+      }
+    ],
+    "candidate_gene_count_after_exclusion": 53829,
+    "eligible_counts": {
+      "depmap_rna_only": 34449,
+      "multisource_rna_no_protein": 7560,
+      "protein_corr_high": 5782,
+      "protein_corr_mid": 3827,
+      "protein_corr_low": 1993,
+      "protein_no_reliable_corr": 204,
+      "not_selected_pool": 14
+    },
+    "selected_gene_count": 100
+  },
+  "generator": {
+    "script": "/Users/liyannan/Desktop/Data-Science-Group-Project/scripts/export_coverage_stratified_ablation_panel.py",
+    "script_sha256": "69b97748b240645bb033f3ac6a9ca96486355d3ab3ab6bfcb29f073269b06efd",
+    "project_git": {
+      "commit": "f817ea13e5ecd26010e7910738c819b47c7c4c28",
+      "dirty": true
+    },
+    "src_dir": "/Users/liyannan/Desktop/Data-Science-Group-Project/src",
+    "source_code": {
+      "data_loader.py": "ca4af08b04854f87cac9aa32ba07549594573b29382c3ba1664f4bb8d6b77ba5",
+      "data_merger.py": "253404ef6e12bd4012dfe0e9f0ae3f2e7b362471a99606f5bac100d9901abbef"
+    },
+    "python": "3.11.15 (main, Jun 11 2026, 15:14:57) [Clang 20.1.8 ]",
+    "pandas": "2.3.3",
+    "numpy": "2.4.6"
+  },
+  "inputs": {
+    "data_dir": "/Users/liyannan/Desktop/cellline_selector_v3/data_s3",
+    "raw_files": [
+      {
+        "relative_path": "gene expression/1_4_hpa_rna_celline.tsv",
+        "bytes": 1069805463,
+        "sha256": "155fcbcc96161c6d9c7934939ffc86823364bc6050f16d67c29fc1fe406bc1ac",
+        "hash_source": "data_manifest"
+      },
+      {
+        "relative_path": "gene expression/2_DepMap_OmicsExpressionAllGenesTPMLogp1Profile.csv",
+        "bytes": 907943867,
+        "sha256": "f2f40423797c32ceef5c05465c1b6eb3f0c2b7da240037d36623bdcce9ca8c58",
+        "hash_source": "data_manifest"
+      },
+      {
+        "relative_path": "gene expression/3_GEOexpression.txt",
+        "bytes": 1097264063,
+        "sha256": "f0216d3f424a5b6821fc3c8010817885354e2b5a81091b1a62e6d0ea67050d0b",
+        "hash_source": "data_manifest"
+      },
+      {
+        "relative_path": "gene expression/4_Harmonized_MS_CCLE_Gygi_subsetted.csv",
+        "bytes": 47125981,
+        "sha256": "ab73f949cbd849e072f0523ea1fa761a401df8028b12420d0ef812527187c49f",
+        "hash_source": "data_manifest"
+      },
+      {
+        "relative_path": "gene properties/5_OmicsFusionFilteredSupplementary.csv",
+        "bytes": 51469225,
+        "sha256": "15f91f8ee029be4afc292b6cde756f4ba85a8ae491a6de5097e982452e24841b",
+        "hash_source": "data_manifest"
+      },
+      {
+        "relative_path": "gene properties/6_OmicsSomaticMutationsProfile.csv",
+        "bytes": 502708165,
+        "sha256": "6669eb8a13bdbd51d5dc00cbdd2d5b1285479cf08a7c4852d95dffe3ffe6ab25",
+        "hash_source": "data_manifest"
+      },
+      {
+        "relative_path": "nomenclature/7_cellosaurus.csv",
+        "bytes": 93561730,
+        "sha256": "877d8c22afe520d3d04c946a28c4bf85e3a1ef00cef9084f3257f2a99ea289a3",
+        "hash_source": "data_manifest"
+      },
+      {
+        "relative_path": "nomenclature/8_DepMap_OmicsProfiles.csv",
+        "bytes": 168099,
+        "sha256": "87fecd06833a0c4eb442f1c79274a730b14351080986a22d9e15cac1b26e0ebc",
+        "hash_source": "data_manifest"
+      },
+      {
+        "relative_path": "nomenclature/9_DepMap_sample_info.csv",
+        "bytes": 461812,
+        "sha256": "382c0c26cf57a2fb82449f797c58cb0dfc2313949908d8f83560ebcf3e5bcbaa",
+        "hash_source": "data_manifest"
+      },
+      {
+        "relative_path": "nomenclature/10_GEOInfo.txt",
+        "bytes": 759117,
+        "sha256": "dad18ea2eb8941d3efd9413e8967d02602abc3d6d300460560594985557d621a",
+        "hash_source": "data_manifest"
+      },
+      {
+        "relative_path": "nomenclature/11_hpa_rna_celline_description.tsv",
+        "bytes": 100665,
+        "sha256": "81a261fa53544179b56f975c617c46e3b765b63dd786d0cf2556f2deb55263ee",
+        "hash_source": "data_manifest"
+      }
+    ],
+    "correlation_file": {
+      "path": "/Users/liyannan/Desktop/Data Science MSc Graduation Project/gene_rna_protein_correlations.csv",
+      "bytes": 366004,
+      "sha256": "36ff1b594f66a6a1a4e3b06aa1d9f173cf6fc5de38f7ff2d070669c89ff5de74"
+    }
+  },
+  "long_table_audit": {
+    "generated": true,
+    "rows": 389923,
+    "genes": 100,
+    "depmap_ids": 1652,
+    "sample_info_alignment": {
+      "sample_info_depmap_ids": 1840,
+      "long_table_depmap_ids_before_filter": 1785,
+      "unmatched_depmap_ids_before_filter": 133,
+      "rows_dropped_for_unmatched_depmap_id": 7506,
+      "long_table_depmap_ids_after_filter": 1652
+    },
+    "duplicate_rows": 129999,
+    "duplicate_groups": 24201,
+    "conflicting_value_groups": 23015
+  },
+  "outputs": {
+    "panel_list": {
+      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/panels/ablation_100genes_coverage_stratified_list.csv",
+      "bytes": 13274,
+      "sha256": "a1bdc100661e0c3c506912b7338c1ac3b09d1d3e3aefc168e3870cf100266b25"
+    },
+    "coverage_catalog": {
+      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/panels/ablation_100genes_coverage_stratified_coverage_catalog.csv",
+      "bytes": 4457516,
+      "sha256": "d3b6cb46c415617bbcba10083e077c34c0de3db0f1cc530e39b7c2cb90d49821"
+    },
+    "long_table": {
+      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/panels/ablation_100genes_coverage_stratified.parquet",
+      "bytes": 4281591,
+      "sha256": "067eff041f68e30ff96af143963a110e72c5fa74e456a6259981625fabea391f"
+    }
+  }
+}

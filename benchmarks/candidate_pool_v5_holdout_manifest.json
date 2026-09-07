@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-09-06T07:37:20.814878+00:00",
+  "design_status": "frozen_before_v5_candidate_labelling",
+  "design_path": "/Users/liyannan/Desktop/Data-Science-Group-Project/config/ablation_v5_frozen_design.json",
+  "design_sha256": "6d3d407982e249fd972fccf6c5c890680bb2e11469abee4d70ddaacab63cedee",
+  "review_blinding": "Configuration names, retrieval counts, ranks, scores, and coverage strata are excluded from the reviewer-facing CSV",
+  "review_instructions": {
+    "allowed_judgements": [
+      "positive",
+      "negative",
+      "unknown"
+    ],
+    "unknown_is_not_negative": true,
+    "required_manual_fields": [
+      "judgement",
+      "benchmark_task",
+      "evidence_type",
+      "source_url",
+      "evidence_summary",
+      "verified",
+      "review_notes"
+    ],
+    "do_not_open_before_label_freeze": "/Users/liyannan/Desktop/Data-Science-Group-Project/results/v5_holdout_internal/candidate_pool_v5_holdout_audit.csv"
+  },
+  "counts": {
+    "genes": 12,
+    "candidate_rows": 189,
+    "unique_depmap_ids": 174,
+    "primary_configs": 10,
+    "rows_retrieved_by_all_primary_configs": 73,
+    "rows_from_top10_disagreement": 116,
+    "cell_line_name_sources": {
+      "sample_info": 182,
+      "dynamic_scorer_fallback": 7
+    },
+    "per_gene": [
+      {
+        "gene": "MFN2",
+        "candidate_rows": 22
+      },
+      {
+        "gene": "CALML3",
+        "candidate_rows": 15
+      },
+      {
+        "gene": "OGDH",
+        "candidate_rows": 23
+      },
+      {
+        "gene": "PSME4",
+        "candidate_rows": 14
+      },
+      {
+        "gene": "ERBB3",
+        "candidate_rows": 16
+      },
+      {
+        "gene": "CHKA",
+        "candidate_rows": 13
+      },
+      {
+        "gene": "ARID3A",
+        "candidate_rows": 15
+      },
+      {
+        "gene": "GALNT7",
+        "candidate_rows": 24
+      },
+      {
+        "gene": "SIGLEC9",
+        "candidate_rows": 12
+      },
+      {
+        "gene": "CALCB",
+        "candidate_rows": 12
+      },
+      {
+        "gene": "POU2F3",
+        "candidate_rows": 12
+      },
+      {
+        "gene": "KRT76",
+        "candidate_rows": 11
+      }
+    ]
+  },
+  "generator": {
+    "script": "/Users/liyannan/Desktop/Data-Science-Group-Project/scripts/build_candidate_pool_v5_holdout.py",
+    "script_sha256": "893106b75d1d4343b8521964eab8ee81168a5affb34c6aaa810f63456fd1cdd9",
+    "python": "3.11.15",
+    "pandas": "2.3.3",
+    "seed": 20260906
+  },
+  "outputs": {
+    "gene_manifest": {
+      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/panels/ablation_v5_holdout_gene_manifest.csv",
+      "rows": 12,
+      "sha256": "092f4554c6491c20003ef46e338dbf381bbb6eb52f89a23d73308f3bb451b4cb"
+    },
+    "review_pool": {
+      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/candidate_pool_v5_holdout_review.csv",
+      "rows": 189,
+      "sha256": "2f7bfaf602d548ce746863b9ad27fba6c1677a199d64dd8433ad21cd37abe8a9"
+    },
+    "internal_audit": {
+      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/results/v5_holdout_internal/candidate_pool_v5_holdout_audit.csv",
+      "rows": 189,
+      "sha256": "4ddc004888fef6f9cdfd4f86f3122357ad425cc33d5a45d20238c651b22c4692"
+    }
+  }
+}
