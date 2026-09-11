@@ -1,0 +1,5 @@
+profile,max_exclusion_penalty,n_queries,total_candidate_profile_rows,mean_exclusion_observed_fraction,mean_top10_jaccard_vs_P00,queries_with_top10_change_vs_P00,queries_with_top1_change_vs_P00,mean_rank_spearman_vs_P00,mean_of_query_mean_abs_rank_change_vs_P00,max_abs_rank_change_vs_P00,mean_zero_score_fraction,total_zero_score_count,mean_top10_scaled_exclusion,mean_top10_high_exclusion_fraction_ge_0_8,mean_top10_with_ties_n,largest_final_score_tie_across_queries,largest_full_comparator_tie_across_queries,all_applicable_invariant_checks_pass
+P00_no_penalty,0.0,5,616,1.0,1.0,0,0,1.0,0.0,0.0,0.0,0,0.4020579542015682,0.13999999999999999,10.0,5,5,True
+P15_weak,0.15,5,616,1.0,0.7463203463203463,4,0,0.947517037988327,9.456428496516022,113.0,0.013518338630115298,7,0.316018034056892,0.08,10.0,3,3,True
+P30_team_baseline,0.3,5,616,1.0,0.716017316017316,4,3,0.8778262123343454,15.200721887713133,128.0,0.10392123550305707,76,0.30605544728379747,0.06000000000000001,10.0,39,17,True
+P45_stress,0.45,5,616,1.0,0.587995337995338,5,3,0.8019520082885118,19.167923692993604,153.0,0.1749252113032727,140,0.24569061270530174,0.02,10.0,71,33,True

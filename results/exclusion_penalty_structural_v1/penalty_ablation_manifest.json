@@ -1,0 +1,293 @@
+{
+  "schema_version": 1,
+  "experiment_id": "exclusion_penalty_structural_v1",
+  "status": "complete_all_invariants_passed",
+  "generated_at_utc": "2026-09-09T14:14:02.390040+00:00",
+  "claim_boundary": "The experiment can establish implementation correctness, direction, clipping, ties, and ranking sensitivity in five purposively selected convenience scenarios; missing-data code-path behaviour is tested synthetically. It cannot establish that 0.30 is biologically optimal, cannot be generalised as a representative gene sample, and does not compute NDCG, Recall, MRR, or other accuracy metrics.",
+  "command": [
+    "/Users/liyannan/miniconda3/envs/cellline-v3/bin/python",
+    "scripts/exclusion_penalty_ablation_runner.py",
+    "--force"
+  ],
+  "python_version": "3.11.15 (main, Jun 11 2026, 15:14:57) [Clang 20.1.8 ]",
+  "pandas_version": "2.3.3",
+  "numpy_version": "2.4.6",
+  "top_k_with_ties": 10,
+  "n_queries": 5,
+  "n_profiles": 4,
+  "n_query_profile_rows": 20,
+  "n_candidate_profile_rows": 2464,
+  "n_topk_with_ties_rows": 200,
+  "n_invariant_checks": 155,
+  "all_invariant_checks_passed": true,
+  "profiles": [
+    {
+      "name": "P00_no_penalty",
+      "max_exclusion_penalty": 0.0,
+      "role": "negative control"
+    },
+    {
+      "name": "P15_weak",
+      "max_exclusion_penalty": 0.15,
+      "role": "weaker sensitivity"
+    },
+    {
+      "name": "P30_team_baseline",
+      "max_exclusion_penalty": 0.3,
+      "role": "current production setting"
+    },
+    {
+      "name": "P45_stress",
+      "max_exclusion_penalty": 0.45,
+      "role": "stress sensitivity only; not a production proposal"
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "Q01_FGFR2_MET_GASTRIC",
+      "target_gene": "FGFR2",
+      "exclusion_gene": "MET",
+      "disease": "gastric",
+      "query_mode": "GENE_MULTIOMICS",
+      "scenario_rationale": "Mechanics-only FGFR2 target and MET exclusion pair in the gastric candidate set; this does not claim that MET is undesirable in every FGFR2 experiment.",
+      "selection_basis": "Purposively chosen convenience scenario from existing local caches and frozen before the full four-profile output; candidate count and complete exclusion-RNA coverage were checked without using Gold labels or profile-comparison outcomes.",
+      "expected_candidates": 43,
+      "expected_exclusion_observed": 43
+    },
+    {
+      "query_id": "Q02_ERBB2_ESR1_BREAST",
+      "target_gene": "ERBB2",
+      "exclusion_gene": "ESR1",
+      "disease": "breast",
+      "query_mode": "GENE_MULTIOMICS",
+      "scenario_rationale": "Mechanics-only ERBB2 target and ESR1 exclusion pair in the breast candidate set; this does not claim that ESR1 is undesirable in every ERBB2 experiment.",
+      "selection_basis": "Purposively chosen convenience scenario from existing local caches and frozen before the full four-profile output; candidate count and complete exclusion-RNA coverage were checked without using Gold labels or profile-comparison outcomes.",
+      "expected_candidates": 73,
+      "expected_exclusion_observed": 73
+    },
+    {
+      "query_id": "Q03_CD3E_CD86_BLOOD",
+      "target_gene": "CD3E",
+      "exclusion_gene": "CD86",
+      "disease": "blood",
+      "query_mode": "GENE_MULTIOMICS",
+      "scenario_rationale": "Mechanics-only CD3E target and CD86 exclusion pair in the blood candidate set; this does not claim that CD86 is undesirable in every CD3E experiment.",
+      "selection_basis": "Purposively chosen convenience scenario from existing local caches and frozen before the full four-profile output; candidate count and complete exclusion-RNA coverage were checked without using Gold labels or profile-comparison outcomes.",
+      "expected_candidates": 239,
+      "expected_exclusion_observed": 239
+    },
+    {
+      "query_id": "Q04_ASGR1_AFP_LIVER",
+      "target_gene": "ASGR1",
+      "exclusion_gene": "AFP",
+      "disease": "liver",
+      "query_mode": "GENE_MULTIOMICS",
+      "scenario_rationale": "Mechanics-only ASGR1 target and AFP exclusion pair in the liver candidate set; this does not claim that AFP is undesirable in every ASGR1 experiment.",
+      "selection_basis": "Purposively chosen convenience scenario from existing local caches and frozen before the full four-profile output; candidate count and complete exclusion-RNA coverage were checked without using Gold labels or profile-comparison outcomes.",
+      "expected_candidates": 25,
+      "expected_exclusion_observed": 25
+    },
+    {
+      "query_id": "Q05_MSLN_MUC1_LUNG",
+      "target_gene": "MSLN",
+      "exclusion_gene": "MUC1",
+      "disease": "lung",
+      "query_mode": "GENE_MULTIOMICS",
+      "scenario_rationale": "Mechanics-only MSLN target and MUC1 exclusion pair in the lung candidate set; this does not claim that MUC1 is undesirable in every MSLN experiment.",
+      "selection_basis": "Purposively chosen convenience scenario from existing local caches and frozen before the full four-profile output; candidate count and complete exclusion-RNA coverage were checked without using Gold labels or profile-comparison outcomes.",
+      "expected_candidates": 236,
+      "expected_exclusion_observed": 236
+    }
+  ],
+  "paths": {
+    "project_root": "/Users/liyannan/Desktop/Data-Science-Group-Project",
+    "production_script": "/Users/liyannan/Desktop/cellline_selector_v3/dynamic_cellline_selector_gene_protein.py",
+    "raw_data_dir": "/Users/liyannan/Desktop/cellline_selector_v3/data_s3",
+    "cache_dir": "/Users/liyannan/Desktop/cellline_selector_v3/gene_cache",
+    "frozen_design": "/Users/liyannan/Desktop/Data-Science-Group-Project/config/exclusion_penalty_structural_v1_frozen_design.json",
+    "frozen_queries": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/penalty/penalty_structural_v1_queries.csv",
+    "v5_frozen_design_hash_only_not_input": "/Users/liyannan/Desktop/Data-Science-Group-Project/config/ablation_v5_frozen_design.json",
+    "output_dir": "/Users/liyannan/Desktop/Data-Science-Group-Project/results/exclusion_penalty_structural_v1"
+  },
+  "input_hashes_before": {
+    "/Users/liyannan/Desktop/Data-Science-Group-Project/scripts/exclusion_penalty_ablation_runner.py": {
+      "sha256": "364ea250a52be8b6e7421fa7fb122b079d445b9039707ffa90af29e58785b022",
+      "size_bytes": 57500
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/dynamic_cellline_selector_gene_protein.py": {
+      "sha256": "bde400bf53943f00458065cdd162f8afed5563886f11626b82b59995bfa4960d",
+      "size_bytes": 55669
+    },
+    "/Users/liyannan/Desktop/Data-Science-Group-Project/config/exclusion_penalty_structural_v1_frozen_design.json": {
+      "sha256": "5ef4d4f444585dbb6af3310e9c1a64fff8cb56e2ac13fd482000323f1ac0da78",
+      "size_bytes": 3955
+    },
+    "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/penalty/penalty_structural_v1_queries.csv": {
+      "sha256": "1ef63881caca375d5b1d13bb4f1469ac9e2662590652c420b4593f52c6143adb",
+      "size_bytes": 2402
+    },
+    "/Users/liyannan/Desktop/Data-Science-Group-Project/config/ablation_v5_frozen_design.json": {
+      "sha256": "6d3d407982e249fd972fccf6c5c890680bb2e11469abee4d70ddaacab63cedee",
+      "size_bytes": 12155
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/gene_cache/AFP.parquet": {
+      "sha256": "5e1c911d6e3bada5de6c4797f769a1fed9168f12437c35c48fbe2f5237c47997",
+      "size_bytes": 65626
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/gene_cache/ASGR1.parquet": {
+      "sha256": "d9148573a2ec6050cbec9d442e4024e516702074f29a6c623f234147fa66bd34",
+      "size_bytes": 64946
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/gene_cache/CD3E.parquet": {
+      "sha256": "328b2e57327ea1977c19fbbabacd7b52874c0c3c962a62109fa4999240d8f30e",
+      "size_bytes": 56291
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/gene_cache/CD86.parquet": {
+      "sha256": "0ed5642b3ba43f4fd3939a4b657500559593f90b70189a91c2974da4002ff15a",
+      "size_bytes": 60759
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/gene_cache/ERBB2.parquet": {
+      "sha256": "65c23ec8724e99914b3c14e546bdaaced0ae1fae4381147a5296a022994b4340",
+      "size_bytes": 97148
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/gene_cache/ESR1.parquet": {
+      "sha256": "19cd8e0dc5b1f61b01538184a3ee14dc9d758682ff7de897b06da8417e3a3fc9",
+      "size_bytes": 58930
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/gene_cache/FGFR2.parquet": {
+      "sha256": "0ea4245be0cbaf795e9bc0e77b68d4fe6604d00dba601cbfee207953ea6ef6a3",
+      "size_bytes": 73943
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/gene_cache/MET.parquet": {
+      "sha256": "e36792d0dfc5bc51caf068f352215edbce6b5e55ac672ff0a1864f939e8da3d8",
+      "size_bytes": 97145
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/gene_cache/MSLN.parquet": {
+      "sha256": "57a46ebdf030e4e26607add3e503e2e8536cba676658b71ca1cf40792ee0f590",
+      "size_bytes": 77015
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/gene_cache/MUC1.parquet": {
+      "sha256": "3d0c5a574068b3554b86672a3ff5492c087b3e7c874085aae56a239a2fdd5081",
+      "size_bytes": 89647
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/src/data_loader.py": {
+      "sha256": "9e628b25b3fecd323f22ec564d728395b96cccec4f19552df50de52bef2c3e7a",
+      "size_bytes": 26702
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/src/data_merger.py": {
+      "sha256": "253404ef6e12bd4012dfe0e9f0ae3f2e7b362471a99606f5bac100d9901abbef",
+      "size_bytes": 48668
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/data_s3/nomenclature/9_DepMap_sample_info.csv": {
+      "sha256": "382c0c26cf57a2fb82449f797c58cb0dfc2313949908d8f83560ebcf3e5bcbaa",
+      "size_bytes": 461812
+    }
+  },
+  "input_hashes_after": {
+    "/Users/liyannan/Desktop/Data-Science-Group-Project/scripts/exclusion_penalty_ablation_runner.py": {
+      "sha256": "364ea250a52be8b6e7421fa7fb122b079d445b9039707ffa90af29e58785b022",
+      "size_bytes": 57500
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/dynamic_cellline_selector_gene_protein.py": {
+      "sha256": "bde400bf53943f00458065cdd162f8afed5563886f11626b82b59995bfa4960d",
+      "size_bytes": 55669
+    },
+    "/Users/liyannan/Desktop/Data-Science-Group-Project/config/exclusion_penalty_structural_v1_frozen_design.json": {
+      "sha256": "5ef4d4f444585dbb6af3310e9c1a64fff8cb56e2ac13fd482000323f1ac0da78",
+      "size_bytes": 3955
+    },
+    "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/penalty/penalty_structural_v1_queries.csv": {
+      "sha256": "1ef63881caca375d5b1d13bb4f1469ac9e2662590652c420b4593f52c6143adb",
+      "size_bytes": 2402
+    },
+    "/Users/liyannan/Desktop/Data-Science-Group-Project/config/ablation_v5_frozen_design.json": {
+      "sha256": "6d3d407982e249fd972fccf6c5c890680bb2e11469abee4d70ddaacab63cedee",
+      "size_bytes": 12155
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/gene_cache/AFP.parquet": {
+      "sha256": "5e1c911d6e3bada5de6c4797f769a1fed9168f12437c35c48fbe2f5237c47997",
+      "size_bytes": 65626
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/gene_cache/ASGR1.parquet": {
+      "sha256": "d9148573a2ec6050cbec9d442e4024e516702074f29a6c623f234147fa66bd34",
+      "size_bytes": 64946
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/gene_cache/CD3E.parquet": {
+      "sha256": "328b2e57327ea1977c19fbbabacd7b52874c0c3c962a62109fa4999240d8f30e",
+      "size_bytes": 56291
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/gene_cache/CD86.parquet": {
+      "sha256": "0ed5642b3ba43f4fd3939a4b657500559593f90b70189a91c2974da4002ff15a",
+      "size_bytes": 60759
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/gene_cache/ERBB2.parquet": {
+      "sha256": "65c23ec8724e99914b3c14e546bdaaced0ae1fae4381147a5296a022994b4340",
+      "size_bytes": 97148
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/gene_cache/ESR1.parquet": {
+      "sha256": "19cd8e0dc5b1f61b01538184a3ee14dc9d758682ff7de897b06da8417e3a3fc9",
+      "size_bytes": 58930
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/gene_cache/FGFR2.parquet": {
+      "sha256": "0ea4245be0cbaf795e9bc0e77b68d4fe6604d00dba601cbfee207953ea6ef6a3",
+      "size_bytes": 73943
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/gene_cache/MET.parquet": {
+      "sha256": "e36792d0dfc5bc51caf068f352215edbce6b5e55ac672ff0a1864f939e8da3d8",
+      "size_bytes": 97145
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/gene_cache/MSLN.parquet": {
+      "sha256": "57a46ebdf030e4e26607add3e503e2e8536cba676658b71ca1cf40792ee0f590",
+      "size_bytes": 77015
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/gene_cache/MUC1.parquet": {
+      "sha256": "3d0c5a574068b3554b86672a3ff5492c087b3e7c874085aae56a239a2fdd5081",
+      "size_bytes": 89647
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/src/data_loader.py": {
+      "sha256": "9e628b25b3fecd323f22ec564d728395b96cccec4f19552df50de52bef2c3e7a",
+      "size_bytes": 26702
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/src/data_merger.py": {
+      "sha256": "253404ef6e12bd4012dfe0e9f0ae3f2e7b362471a99606f5bac100d9901abbef",
+      "size_bytes": 48668
+    },
+    "/Users/liyannan/Desktop/cellline_selector_v3/data_s3/nomenclature/9_DepMap_sample_info.csv": {
+      "sha256": "382c0c26cf57a2fb82449f797c58cb0dfc2313949908d8f83560ebcf3e5bcbaa",
+      "size_bytes": 461812
+    }
+  },
+  "input_hashes_unchanged": true,
+  "output_hashes": {
+    "summary": {
+      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/results/exclusion_penalty_structural_v1/penalty_ablation_summary.csv",
+      "sha256": "5bf804a4c8d549c60d2352ab706795e63217966fb441407eee2ac2084562efd5",
+      "size_bytes": 1138
+    },
+    "by_query_profile": {
+      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/results/exclusion_penalty_structural_v1/penalty_ablation_by_query_profile.csv",
+      "sha256": "0ae04464b36f47b8cb9682d88b6a58be67f569d09f9ddaa9d114cf2940a5b6ee",
+      "size_bytes": 8956
+    },
+    "candidate_movements": {
+      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/results/exclusion_penalty_structural_v1/penalty_ablation_candidate_movements.csv",
+      "sha256": "7c21f8e824a8b746becdee9e914305536cbf33990bc0c91ecdc1ff25b91a9f99",
+      "size_bytes": 563892
+    },
+    "top10": {
+      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/results/exclusion_penalty_structural_v1/penalty_ablation_top10.csv",
+      "sha256": "4c23f83cf223158e1c1d138d8bbd7b588f19d8abc1e7271c5e4d5825af109531",
+      "size_bytes": 45068
+    },
+    "invariant_checks": {
+      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/results/exclusion_penalty_structural_v1/penalty_ablation_invariant_checks.csv",
+      "sha256": "9518e8240f2fce8820d026a658a9c9b7d255b805ff917252fdd3d00d4d163958",
+      "size_bytes": 20650
+    }
+  },
+  "git": {
+    "commit": "6ebd9348c1ee19672618fcc9033923a1f062fd26",
+    "branch": "yannan",
+    "status_short": "M benchmarks/candidate_pool_v5_holdout_review.csv\n?? benchmarks/candidate_pool_v3_before_review.csv\n?? benchmarks/candidate_pool_v3_regenerated.csv\n?? benchmarks/candidate_pool_v4_review.xlsx\n?? benchmarks/penalty/\n?? config/exclusion_penalty_structural_v1_frozen_design.json\n?? config/scoring_selected_v3.json\n?? config/scoring_selected_v4_development_candidate.json\n?? docs/exclusion_penalty_structural_v1.md\n?? results/ablation_results.csv\n?? results/ablation_results_v4_development_rerun.csv\n?? results/ablation_results_v4_development_rerun_by_gene.csv\n?? results/dynamic_ablation_unlabelled/dynamic_ablation_unlabelled_top10.csv\n?? results/exclusion_penalty_structural_v1/\n?? results/v5_holdout_internal/\n?? results/weight_search_v3_by_gene.csv\n?? results/weight_search_v3_logo.csv\n?? results/weight_search_v3_summary.csv\n?? results/weight_search_v4_development_by_gene.csv\n?? results/weight_search_v4_development_logo.csv\n?? results/weight_search_v4_development_summary.csv\n?? scripts/exclusion_penalty_ablation_runner.py\n?? scripts/weight_search_logo.py\n?? scripts/weight_search_v4_logo.py"
+  }
+}
