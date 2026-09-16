@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CellLineSelector</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F3F6F5;
+  --card:#FFFFFF;
+  --ink:#182A2E;
+  --ink-2:#4A5C60;
+  --ink-3:#7C8C8F;
+  --line:#D9E1DF;
+  --teal:#0E6E68;
+  --teal-deep:#0A4A46;
+  --teal-tint:#E3F0EE;
+  --amber:#A96F0B;
+  --amber-tint:#F7EFDD;
+  --red:#A5382B;
+  --red-tint:#F6E6E3;
+  --green:#2C7A3F;
+  --green-tint:#E4F1E6;
+  /* score component colours */
+  --c-expr:#0E6E68;
+  --c-prot:#3E8E7E;
+  --c-cons:#7DAF9C;
+  --c-line:#B4CDBE;
+  --c-comp:#D5E3D8;
+  --c-pen:#C9705F;
+  --mono:'IBM Plex Mono', ui-monospace, monospace;
+  --sans:'IBM Plex Sans','Noto Sans SC',system-ui,sans-serif;
+  --r-sm:4px; --r-md:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{font-size:15px}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ===== app shell ===== */
+.topbar{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:40}
+.topbar-in{max-width:1180px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:24px;height:58px}
+.brand{display:flex;align-items:baseline;gap:9px;flex-shrink:0}
+.brand-mark{font-family:var(--mono);font-weight:600;font-size:.95rem;color:#fff;background:var(--teal-deep);padding:3px 7px;border-radius:var(--r-sm);letter-spacing:.02em}
+.brand-name{font-weight:600;font-size:1rem}
+.brand-name span{color:var(--ink-3);font-weight:400;font-size:.8rem;margin-left:6px}
+.steps{display:flex;gap:2px;margin-left:8px}
+.step-tab{border:none;background:none;padding:8px 14px;border-radius:var(--r-md);font-size:.87rem;color:var(--ink-2);display:flex;align-items:center;gap:7px}
+.step-tab .n{font-family:var(--mono);font-size:.72rem;border:1px solid var(--line);border-radius:50%;width:19px;height:19px;display:inline-flex;align-items:center;justify-content:center;color:var(--ink-3)}
+.step-tab.on{background:var(--teal-tint);color:var(--teal-deep);font-weight:600}
+.step-tab.on .n{background:var(--teal);border-color:var(--teal);color:#fff}
+.step-tab:disabled{opacity:.45;cursor:not-allowed}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.data-version{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);border:1px solid var(--line);border-radius:var(--r-sm);padding:3px 8px;background:var(--paper)}
+
+.wrap{max-width:1180px;margin:0 auto;padding:26px 20px 80px}
+.screen{display:none}
+.screen.on{display:block}
+
+/* ===== shared ===== */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-md)}
+.h-page{font-size:1.35rem;font-weight:700;letter-spacing:-.01em}
+.sub{color:var(--ink-2);font-size:.9rem;margin-top:4px}
+.label{display:block;font-size:.83rem;font-weight:600;margin-bottom:6px}
+.label .opt{font-weight:400;color:var(--ink-3);font-size:.78rem}
+.hint{font-size:.78rem;color:var(--ink-3);margin-top:5px}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:var(--r-md);padding:9px 16px;font-size:.88rem;font-weight:500;color:var(--ink);transition:background .12s}
+.btn:hover{background:var(--paper)}
+.btn-primary{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:600}
+.btn-primary:hover{background:var(--teal-deep)}
+.btn-sm{padding:5px 11px;font-size:.8rem;border-radius:var(--r-sm)}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:.76rem;font-weight:600;padding:3px 9px;border-radius:99px}
+.badge-high{background:var(--green-tint);color:var(--green)}
+.badge-med{background:var(--amber-tint);color:var(--amber)}
+.badge-low{background:var(--red-tint);color:var(--red)}
+.mono{font-family:var(--mono)}
+
+/* gene chips */
+.chipbox{display:flex;flex-wrap:wrap;gap:6px;border:1px solid var(--line);border-radius:var(--r-md);padding:8px;background:var(--card);min-height:44px;cursor:text}
+.chipbox:focus-within{border-color:var(--teal)}
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.82rem;font-weight:500;padding:4px 6px 4px 10px;border-radius:var(--r-sm)}
+.chip-target{background:var(--teal-tint);color:var(--teal-deep)}
+.chip-excl{background:var(--red-tint);color:var(--red)}
+.chip button{border:none;background:none;color:inherit;opacity:.55;font-size:.9rem;line-height:1;padding:2px}
+.chip button:hover{opacity:1}
+.chipbox input{border:none;outline:none;flex:1;min-width:120px;font-size:.86rem;background:transparent;padding:4px}
+.gene-meta{font-size:.72rem;font-family:var(--sans);font-weight:400;opacity:.75;margin-left:2px}
+
+.select,.text-input{width:100%;border:1px solid var(--line);border-radius:var(--r-md);padding:9px 12px;font-size:.88rem;background:var(--card)}
+.select:focus,.text-input:focus{border-color:var(--teal);outline:none}
+
+/* ===== screen 1 query ===== */
+.query-grid{display:grid;grid-template-columns:1fr 320px;gap:20px;margin-top:22px;align-items:start}
+.q-main{padding:22px}
+.mode-switch{display:inline-flex;border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;margin-bottom:20px}
+.mode-switch button{border:none;background:var(--card);padding:7px 16px;font-size:.84rem;color:var(--ink-2)}
+.mode-switch button.on{background:var(--ink);color:#fff;font-weight:600}
+.field{margin-bottom:18px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.nl-box{display:none}
+.nl-box.on{display:block}
+.st-box.off{display:none}
+.nl-box textarea{width:100%;min-height:96px;border:1px solid var(--line);border-radius:var(--r-md);padding:12px;font-size:.9rem;resize:vertical}
+.nl-parse{margin-top:12px;border:1px dashed var(--line);border-radius:var(--r-md);padding:12px 14px;background:var(--paper);display:none}
+.nl-parse.on{display:block}
+.nl-parse h4{font-size:.78rem;color:var(--ink-2);font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.parse-chips{display:flex;flex-wrap:wrap;gap:6px}
+.pchip{font-size:.78rem;padding:3px 9px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--card)}
+.pchip b{font-family:var(--mono);font-weight:600;margin-left:4px}
+.q-side{padding:18px}
+.q-side h3{font-size:.9rem;font-weight:600;margin-bottom:4px}
+.q-side .sub{font-size:.8rem;margin-bottom:14px}
+.w-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:.8rem}
+.w-key{flex:1;color:var(--ink-2)}
+.w-val{font-family:var(--mono);font-size:.78rem;font-weight:600;width:38px;text-align:right}
+.w-bar{height:8px;border-radius:99px;flex:1.4;background:var(--paper);overflow:hidden}
+.w-bar i{display:block;height:100%;border-radius:99px}
+.formula{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);line-height:1.7;border-top:1px solid var(--line);margin-top:12px;padding-top:12px}
+.q-actions{display:flex;align-items:center;gap:12px;margin-top:6px}
+.q-actions .hint{margin:0}
+
+/* ===== screen 2 results ===== */
+.qsum{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:13px 16px;margin-top:18px}
+.qsum .k{font-size:.8rem;color:var(--ink-3)}
+.qsum .edit{margin-left:auto}
+.res-toolbar{display:flex;align-items:center;gap:10px;margin:16px 0 10px;flex-wrap:wrap}
+.res-count{font-size:.85rem;color:var(--ink-2)}
+.res-count b{color:var(--ink)}
+.res-toolbar .right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:.72rem;color:var(--ink-2);margin:6px 0 10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+
+table.res{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden}
+.res th{font-size:.74rem;font-weight:600;color:var(--ink-3);text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);background:#FBFCFC;white-space:nowrap}
+.res td{padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:middle;font-size:.87rem}
+.res tbody tr.main-row{cursor:pointer;transition:background .1s}
+.res tbody tr.main-row:hover{background:#F8FAF9}
+.rank-n{font-family:var(--mono);font-weight:600;color:var(--ink-2)}
+.cl-name{font-family:var(--mono);font-weight:600;font-size:.92rem}
+.cl-meta{font-size:.76rem;color:var(--ink-3);margin-top:2px}
+.score-cell{min-width:220px}
+.score-num{font-family:var(--mono);font-weight:600;font-size:.9rem}
+.sbar{display:flex;height:12px;border-radius:3px;overflow:hidden;margin-top:5px;background:var(--paper);max-width:230px}
+.sbar i{display:block;height:100%}
+.pen-tag{font-family:var(--mono);font-size:.72rem;color:var(--red);margin-left:6px}
+.excl-ok{font-size:.78rem;color:var(--green)}
+.excl-warn{font-size:.78rem;color:var(--red)}
+.comp-dots{display:flex;gap:3px}
+.comp-dots i{width:8px;height:8px;border-radius:2px;background:var(--line)}
+.comp-dots i.f{background:var(--teal)}
+.row-detail{display:none;background:#FAFCFB}
+.row-detail.on{display:table-row}
+.row-detail td{padding:14px 18px 18px}
+.mini-ev{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:12px}
+.mini-ev .cell{border:1px solid var(--line);border-radius:var(--r-sm);background:var(--card);padding:9px 11px}
+.mini-ev .k{font-size:.7rem;color:var(--ink-3)}
+.mini-ev .v{font-family:var(--mono);font-size:.85rem;font-weight:600;margin-top:2px}
+.mini-ev .s{font-size:.7rem;color:var(--ink-3);margin-top:2px}
+
+/* ===== screen 3 evidence ===== */
+.det-head{display:flex;align-items:flex-start;gap:18px;padding:22px;margin-top:18px;flex-wrap:wrap}
+.det-title{font-family:var(--mono);font-size:1.7rem;font-weight:600;letter-spacing:-.01em}
+.det-sub{font-size:.84rem;color:var(--ink-2);margin-top:4px;display:flex;flex-wrap:wrap;gap:6px 14px}
+.det-sub .mono{font-size:.78rem}
+.det-score{margin-left:auto;text-align:right}
+.det-score .big{font-family:var(--mono);font-size:2rem;font-weight:600;line-height:1}
+.det-score .of{font-size:.85rem;color:var(--ink-3);font-weight:400}
+.det-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:20px;margin-top:20px;align-items:start}
+.panel{padding:20px}
+.panel h3{font-size:.95rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.panel h3 .tag{font-size:.68rem;font-weight:500;color:var(--ink-3);border:1px solid var(--line);border-radius:var(--r-sm);padding:2px 7px}
+.dec-row{display:grid;grid-template-columns:170px 1fr 92px;gap:12px;align-items:center;margin-bottom:11px;font-size:.83rem}
+.dec-row .k{color:var(--ink-2)}
+.dec-row .k .w{font-family:var(--mono);font-size:.72rem;color:var(--ink-3)}
+.dec-bar{height:14px;background:var(--paper);border-radius:3px;overflow:hidden}
+.dec-bar i{display:block;height:100%;border-radius:3px}
+.dec-val{font-family:var(--mono);font-size:.8rem;font-weight:600;text-align:right}
+.dec-val .max{color:var(--ink-3);font-weight:400}
+.dec-total{border-top:1px solid var(--line);margin-top:13px;padding-top:12px;display:flex;justify-content:space-between;font-size:.88rem;font-weight:700}
+.dec-total .mono{font-size:.95rem}
+
+.ev-table{width:100%;border-collapse:collapse;font-size:.83rem}
+.ev-table th{font-size:.72rem;color:var(--ink-3);font-weight:600;text-align:left;padding:7px 10px;border-bottom:1px solid var(--line)}
+.ev-table td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.ev-table tr:last-child td{border-bottom:none}
+.src-pill{font-family:var(--mono);font-size:.72rem;font-weight:600;padding:2px 7px;border-radius:var(--r-sm);background:var(--paper);border:1px solid var(--line);white-space:nowrap}
+.ver{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);display:block;margin-top:3px}
+.gap-list{list-style:none}
+.gap-list li{display:flex;gap:9px;font-size:.83rem;padding:8px 0;border-bottom:1px solid var(--line);color:var(--ink-2)}
+.gap-list li:last-child{border-bottom:none}
+.gap-ico{color:var(--amber);flex-shrink:0;font-weight:700}
+
+.ai-panel{background:linear-gradient(180deg,#F7FAF9,#fff);border:1px solid var(--line)}
+.ai-note{font-size:.72rem;color:var(--ink-3);border:1px solid var(--line);background:var(--card);border-radius:var(--r-sm);padding:6px 10px;margin-bottom:14px;display:flex;gap:7px;align-items:flex-start}
+.ai-body p{font-size:.86rem;margin-bottom:10px;color:var(--ink)}
+.ai-body p b{font-weight:600}
+.ai-q{margin-top:14px;display:flex;gap:8px}
+.ai-q input{flex:1}
+.caut{background:var(--amber-tint);border:1px solid #E8D9B4;border-radius:var(--r-md);padding:12px 14px;margin-top:14px}
+.caut h4{font-size:.78rem;color:var(--amber);font-weight:700;margin-bottom:6px}
+.caut ul{margin-left:18px;font-size:.8rem;color:#6E5410}
+.action-box{background:var(--teal-tint);border:1px solid #C3DDD9;border-radius:var(--r-md);padding:12px 14px;margin-top:12px;font-size:.84rem;color:var(--teal-deep)}
+.action-box b{font-weight:700}
+
+.alt-list{display:grid;gap:10px}
+.alt{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:var(--r-md);padding:11px 13px;background:var(--card)}
+.alt .nm{font-family:var(--mono);font-weight:600;font-size:.88rem}
+.alt .ms{font-size:.72rem;color:var(--ink-3);margin-top:1px}
+.alt .sim{margin-left:auto;text-align:right}
+.alt .sim .v{font-family:var(--mono);font-weight:600;font-size:.85rem}
+.alt .sim .k{font-size:.68rem;color:var(--ink-3)}
+.sim-bar{width:70px;height:5px;background:var(--paper);border-radius:99px;overflow:hidden;margin-top:4px}
+.sim-bar i{display:block;height:100%;background:var(--teal);border-radius:99px}
+
+/* ===== export modal ===== */
+.modal-bg{position:fixed;inset:0;background:rgba(20,35,38,.45);display:none;align-items:center;justify-content:center;z-index:60;padding:20px}
+.modal-bg.on{display:flex}
+.modal{background:var(--card);border-radius:var(--r-md);max-width:560px;width:100%;padding:24px;max-height:88vh;overflow:auto}
+.modal h3{font-size:1.05rem;font-weight:700;margin-bottom:4px}
+.fmt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.fmt{border:1px solid var(--line);border-radius:var(--r-md);padding:13px;cursor:pointer;display:flex;gap:11px;align-items:flex-start}
+.fmt.on{border-color:var(--teal);background:var(--teal-tint)}
+.fmt .ext{font-family:var(--mono);font-weight:600;font-size:.8rem;background:var(--ink);color:#fff;border-radius:var(--r-sm);padding:2px 7px}
+.fmt.on .ext{background:var(--teal-deep)}
+.fmt .d{font-size:.74rem;color:var(--ink-2);margin-top:3px}
+.fmt .t{font-size:.85rem;font-weight:600}
+.rep-preview{border:1px solid var(--line);border-radius:var(--r-md);background:var(--paper);padding:14px;font-size:.78rem;color:var(--ink-2)}
+.rep-preview .ln{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed var(--line)}
+.rep-preview .ln:last-child{border-bottom:none}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+
+/* ===== responsive ===== */
+@media (max-width:900px){
+  .query-grid,.det-grid{grid-template-columns:1fr}
+  .steps .step-tab span.t{display:none}
+  .field-row{grid-template-columns:1fr}
+  .res thead{display:none}
+  .res, .res tbody, .res tr, .res td{display:block;width:100%}
+  .res tbody tr.main-row{border-bottom:1px solid var(--line);padding:6px 0}
+  .res td{border-bottom:none;padding:6px 14px}
+  .score-cell{min-width:0}
+  .det-score{margin-left:0;text-align:left}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <span class="brand-mark">CLS</span>
+      <span class="brand-name">CellLineSelector<span>Cell Line Selection</span></span>
+    </div>
+    <nav class="steps" aria-label="Workflow steps">
+      <button class="step-tab on" id="tab1" onclick="go(1)"><span class="n">1</span><span class="t">Query</span></button>
+      <button class="step-tab" id="tab2" onclick="go(2)"><span class="n">2</span><span class="t">Results</span></button>
+      <button class="step-tab" id="tab3" onclick="go(3)"><span class="n">3</span><span class="t">Evidence</span></button>
+    </nav>
+    <div class="topbar-right">
+      <button id="liveBtn" class="btn btn-sm" onclick="toggleLive()" style="background:var(--paper);color:var(--ink-3)" title="Demo mode sends no requests; Live API connects to local api_server.py">Demo data</button>
+      <span class="data-version" title="Data snapshot version, pinned for reproducibility">DepMap 25Q2 · CCLE-Gygi · Cellosaurus</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ============ screen 1 · Query ============ -->
+<section class="screen on" id="screen1">
+  <h1 class="h-page">Define selection criteria</h1>
+  <p class="sub">Enter target and exclusion genes. Ranking is produced by the statistical model over a pinned data snapshot, and is reproducible.</p>
+
+  <div class="query-grid">
+    <div class="card q-main">
+      <div class="mode-switch" role="tablist">
+        <button class="on" id="mode-st" onclick="setMode('st')">Structured input</button>
+        <button id="mode-nl" onclick="setMode('nl')">Natural language</button>
+      </div>
+
+      <!-- structured mode -->
+      <div class="st-box" id="stBox">
+        <div class="field">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <span class="label" style="margin:0">Target</span>
+            <div class="mode-switch" style="margin:0">
+              <button type="button" class="on" id="tmGene" onclick="setTargetMode('gene')">Target gene</button>
+              <button type="button" id="tmProt" onclick="setTargetMode('protein')">Target protein</button>
+            </div>
+            <span class="hint" style="margin:0" id="tmHint">RNA-led, protein counted when available</span>
+          </div>
+          <label class="label" for="tgIn" id="tgLabel">Target gene(s)</label>
+          <div class="chipbox" id="tgChips" onclick="document.getElementById('tgIn').focus()">
+            <input id="tgIn" placeholder="Type a gene and press Enter, e.g. ERBB2" onkeydown="addChip(event,'chip-target')">
+          </div>
+          <p class="hint" id="tgHint">Gene symbols and common aliases are accepted and normalised.</p>
+          <div id="protWarn" style="display:none;margin-top:8px;padding:10px 13px;border-radius:var(--r-md);background:var(--teal-tint);border:1px solid #C3DDD9;font-size:.79rem;color:var(--teal-deep)">
+            <b>Protein-level query: </b>returns only cell lines where this protein was <b>measured by mass spectrometry</b>, with no RNA proxy inference. Use it for assays that depend on the protein being physically present: antibody staining, drug binding, co-immunoprecipitation.
+            <br><span style="color:var(--ink-2)">Protein evidence currently comes from public CCLE-Gygi mass spectrometry, covering 375 of 1479 cell lines. Connecting an institutional proteomics dataset extends coverage directly, with no change to the query logic.</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="exIn">Exclusion gene(s) <span class="opt">optional</span></label>
+          <div class="chipbox" id="exChips" onclick="document.getElementById('exIn').focus()">
+            <input id="exIn" placeholder="High expression incurs a penalty or removes the line" onkeydown="addChip(event,'chip-excl')">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label class="label" for="selLineage">Lineage <span class="opt">optional, exact match</span></label>
+            <select class="select" id="selLineage">
+              <option value="">Any</option>
+              <option>lung</option>
+              <option>breast</option>
+              <option>colorectal</option>
+              <option>blood</option>
+              <option>skin</option>
+              <option>pancreas</option>
+              <option>ovary</option>
+              <option>prostate</option>
+              <option>kidney</option>
+              <option>liver</option>
+              <option>gastric</option>
+              <option>esophagus</option>
+              <option>bone</option>
+              <option>central_nervous_system</option>
+              <option>cervix</option>
+              <option>uterus</option>
+              <option>urinary_tract</option>
+              <option>soft_tissue</option>
+              <option>thyroid</option>
+              <option>upper_aerodigestive</option>
+              <option>lymphocyte</option>
+              <option>plasma_cell</option>
+              <option>peripheral_nervous_system</option>
+              <option>bile_duct</option>
+              <option>eye</option>
+              <option>fibroblast</option>
+              <option>adrenal_cortex</option>
+              <option>embryo</option>
+              <option>epidermoid_carcinoma</option>
+            </select>
+            <p class="hint">Values come from the snapshot lineage labels and must match exactly.</p>
+          </div>
+          <div class="field">
+            <label class="label" for="inDisease">Disease keyword <span class="opt">optional, word-level match</span></label>
+            <input class="text-input" id="inDisease" list="diseaseList" placeholder="e.g. adenocarcinoma">
+            <datalist id="diseaseList">
+              <option value="adenocarcinoma">
+              <option value="carcinoma">
+              <option value="squamous">
+              <option value="melanoma">
+              <option value="glioma">
+              <option value="leukemia">
+              <option value="lymphoma">
+              <option value="sarcoma">
+              <option value="ductal">
+              <option value="colorectal">
+              <option value="cervical">
+              <option value="esophageal">
+              <option value="endometrial">
+              <option value="cholangiocarcinoma">
+              <option value="neuroblastoma">
+              <option value="mesothelioma">
+            </datalist>
+            <p class="hint">Matched word-by-word against disease labels; a single word is enough. Full vocabulary: <span class="mono">llm.disease_vocabulary()</span></p>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label class="label" for="selLogic">Multi-target logic</label>
+            <select class="select" id="selLogic">
+              <option value="ALL">ALL — geometric mean, a strong target cannot mask a weak one</option>
+              <option value="ANY">ANY — noisy-OR, any single target suffices</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label" for="selTopN">Results returned (top_n)</label>
+            <select class="select" id="selTopN">
+              <option>10</option><option>20</option><option>5</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- natural language mode -->
+      <div class="nl-box" id="nlBox">
+        <div class="field">
+          <label class="label" for="nlIn">Describe your experiment in one sentence</label>
+          <textarea id="nlIn">Find lung adenocarcinoma cell lines with high EGFR expression but low ABCB1, preferably epithelial.</textarea>
+          <p class="hint">The language model only parses intent into a structured query; ranking remains with the statistical model.</p>
+        </div>
+        <button class="btn btn-sm" id="parseBtn" onclick="doParse(false)">Parse to structured query</button>
+        <button class="btn btn-sm btn-primary" onclick="doParse(true)">Parse and run</button>
+        <div class="nl-parse" id="nlParse">
+          <h4>Parsed query — please confirm before running</h4>
+          <div class="parse-chips">
+            <span class="pchip">Target gene<b>EGFR</b></span>
+            <span class="pchip">Exclusion<b>ABCB1</b></span>
+            <span class="pchip">Tissue<b>Lung</b></span>
+            <span class="pchip">Disease<b>Lung adenocarcinoma</b></span>
+            <span class="pchip">Lineage<b>Epithelial</b></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-actions">
+        <button class="btn btn-primary" id="runBtn" onclick="runQuery()">Run query</button>
+        <p class="hint">Same input plus same snapshot gives the same result</p>
+      </div>
+    </div>
+
+    <!-- sidebar: scoring model -->
+    <aside class="card q-side" aria-label="Scoring model">
+      <h3>Scoring model (verified against 60 records)</h3>
+      <p class="sub">Ranking is computed by the statistical model; the language model cannot alter any number.</p>
+      <div class="w-row"><span class="w-key">Biological evidence</span><span class="w-bar"><i style="width:100%;background:var(--c-expr)"></i></span><span class="w-val">0.85</span></div>
+      <div class="w-row"><span class="w-key" style="padding-left:12px;font-size:.76rem">RNA percentile</span><span class="w-bar"><i style="width:65%;background:var(--c-expr)"></i></span><span class="w-val">0.55</span></div>
+      <div class="w-row"><span class="w-key" style="padding-left:12px;font-size:.76rem">Protein percentile</span><span class="w-bar"><i style="width:35%;background:var(--c-prot)"></i></span><span class="w-val">0.30</span></div>
+      <div class="w-row"><span class="w-key">Evidence confidence</span><span class="w-bar"><i style="width:18%;background:var(--c-cons)"></i></span><span class="w-val">0.15</span></div>
+      <div class="w-row"><span class="w-key" style="color:var(--red)">Exclusion penalty</span><span class="w-bar"><i style="width:35%;background:var(--c-pen)"></i></span><span class="w-val" style="color:var(--red)">≤0.30</span></div>
+      <p class="formula">final = 0.85·bio + 0.15·conf − pen<br>
+        bio = (0.55·rna + 0.30·prot)/0.85<br>
+        <span style="color:var(--ink-2)">When protein is unmeasured, bio = rna, i.e. reweighted<br>rather than zero-filled: unmeasured is not absent</span></p>
+      <p class="hint" style="margin-top:10px;border-top:1px solid var(--line);padding-top:10px">
+        Percentiles are library-wide and comparable across queries. ALL uses a geometric mean, ANY a noisy-OR.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ screen 2 · Results ============ -->
+<section class="screen" id="screen2">
+  <h1 class="h-page">Results</h1>
+  <p class="sub" id="resSub">Click any row to expand its key evidence; open the detail view for the full evidence chain.</p>
+
+  <div class="card qsum" id="qsumBox">
+    <span class="k">This query: </span>
+    <span class="pchip">Demo data (API not connected)</span>
+    <button class="btn btn-sm edit" onclick="go(1)">Edit criteria</button>
+  </div>
+  <div id="staleWarn" style="display:none;margin-top:10px;padding:10px 14px;border-radius:var(--r-md);background:var(--amber-tint);border:1px solid #E8D9B4;font-size:.83rem;color:#6E5410">
+    The form has changed. The results below belong to the previous query. Return to step 1 and run again.
+  </div>
+
+  <div class="res-toolbar">
+    <span class="res-count" id="resCount">Showing <b>Top 6</b> / 18 candidates (demo data)</span>
+    <div class="right">
+      <select class="select btn-sm" style="width:auto" aria-label="Sort order">
+        <option>Sort by final score</option><option>Sort by expression</option><option>Sort by data completeness</option>
+      </select>
+      <select class="select btn-sm" style="width:auto" aria-label="Confidence filter">
+        <option>All confidence levels</option><option>High only</option><option>High + Medium</option>
+      </select>
+      <button class="btn btn-sm btn-primary" onclick="openExport()">Export</button>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><i style="background:var(--c-expr)"></i>Biological x0.85</span>
+    <span><i style="background:var(--c-cons)"></i>Confidence x0.15</span>
+    <span><i style="background:var(--c-pen)"></i>Exclusion penalty</span>
+    <span style="color:var(--ink-3)">the three segments sum to the final score</span>
+    <span style="margin-left:auto;color:var(--ink-3)">Protein evidence covers 375 of 1479 cell lines; missing values are shown as unmeasured, never as low expression</span>
+  </div>
+
+  <table class="res">
+    <thead><tr>
+      <th>Rank</th><th>Cell line</th><th>Score and breakdown</th><th>Confidence</th><th>Exclusion penalty</th><th>Protein evidence</th><th></th>
+    </tr></thead>
+    <tbody id="resBody"></tbody>
+  </table>
+</section>
+
+<!-- ============ screen 3 · Evidence ============ -->
+<section class="screen" id="screen3">
+  <button class="btn btn-sm" onclick="go(2)" style="margin-bottom:4px">Back to results</button>
+
+  <div class="card det-head">
+    <div>
+      <div class="det-title">A549</div>
+      <div class="det-sub">
+        <span>lung · lung adenocarcinoma · epithelial</span>
+        <span class="mono">Cellosaurus CVCL_0023</span>
+        <span class="mono">DepMap ACH-000681</span>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+        <span class="badge badge-high">Confidence High</span>
+        <span class="hint" style="margin:0">Rank 1 of 18 candidates</span>
+      </div>
+    </div>
+    <div class="det-score">
+      <div class="big">0.87<span class="of"> / 1.00</span></div>
+      <div class="hint" style="margin-top:2px">Final score (includes -0.02 exclusion penalty)</div>
+      <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="openExport()">Export report</button>
+    </div>
+  </div>
+
+  <div class="det-grid">
+    <div style="display:grid;gap:20px">
+
+      <!-- score breakdown -->
+      <div class="card panel">
+        <h3>Score breakdown <span class="tag">every component traces back to source data</span></h3>
+        <div class="dec-row"><span class="k">Target expression <span class="w">×0.40</span></span><div class="dec-bar"><i style="width:90%;background:var(--c-expr)"></i></div><span class="dec-val">0.36 <span class="max">/0.40</span></span></div>
+        <div class="dec-row"><span class="k">Protein evidence <span class="w">×0.25</span></span><div class="dec-bar"><i style="width:80%;background:var(--c-prot)"></i></div><span class="dec-val">0.20 <span class="max">/0.25</span></span></div>
+        <div class="dec-row"><span class="k">Source agreement <span class="w">×0.15</span></span><div class="dec-bar"><i style="width:87%;background:var(--c-cons)"></i></div><span class="dec-val">0.13 <span class="max">/0.15</span></span></div>
+        <div class="dec-row"><span class="k">Lineage match <span class="w">×0.10</span></span><div class="dec-bar"><i style="width:100%;background:var(--c-line)"></i></div><span class="dec-val">0.10 <span class="max">/0.10</span></span></div>
+        <div class="dec-row"><span class="k">Data completeness <span class="w">×0.10</span></span><div class="dec-bar"><i style="width:100%;background:var(--c-comp)"></i></div><span class="dec-val">0.10 <span class="max">/0.10</span></span></div>
+        <div class="dec-row"><span class="k" style="color:var(--red)">Exclusion penalty</span><div class="dec-bar"><i style="width:8%;background:var(--c-pen)"></i></div><span class="dec-val" style="color:var(--red)">−0.02</span></div>
+        <div class="dec-total"><span>Final score</span><span class="mono">0.87</span></div>
+      </div>
+
+      <!-- evidence table -->
+      <div class="card panel">
+        <h3>Evidence detail <span class="tag">source, version and retrieval date are recorded</span></h3>
+        <table class="ev-table">
+          <thead><tr><th>Source</th><th>Evidence type</th><th>Value</th><th>Reading</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="src-pill">DepMap</span><span class="ver">25Q2 · 2026-06-14</span></td>
+              <td>RNA-seq expression (EGFR)</td>
+              <td class="mono">TPM 128.4<br>z = +1.92</td>
+              <td>Top 4% library-wide, high expression</td>
+            </tr>
+            <tr>
+              <td><span class="src-pill">HPA</span><span class="ver">v24 · 2026-05-30</span></td>
+              <td>Protein expression (EGFR)</td>
+              <td class="mono">High</td>
+              <td>Supported by immunohistochemistry, consistent with RNA</td>
+            </tr>
+            <tr>
+              <td><span class="src-pill">DepMap</span><span class="ver">25Q2</span></td>
+              <td>RNA-seq expression (ABCB1)</td>
+              <td class="mono">TPM 3.1<br>z = −0.64</td>
+              <td>Exclusion gene is low, only a slight penalty</td>
+            </tr>
+            <tr>
+              <td><span class="src-pill">Cellosaurus</span><span class="ver">rel. 49</span></td>
+              <td>Cell line metadata</td>
+              <td class="mono">CVCL_0023</td>
+              <td>Identity confirmed, no contamination flags</td>
+            </tr>
+            <tr>
+              <td><span class="src-pill">DepMap</span><span class="ver">25Q2</span></td>
+              <td>Mutation background</td>
+              <td class="mono">KRAS G12S</td>
+              <td>EGFR wild type, interpret pathway claims with care</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Data gaps -->
+      <div class="card panel">
+        <h3>Data gaps <span class="tag">missing data lowers confidence rather than being ignored</span></h3>
+        <ul class="gap-list">
+          <li><span class="gap-ico">!</span>CRISPR dependency evidence is not part of this score (outside MVP scope).</li>
+          <li><span class="gap-ico">!</span>Protein evidence is HPA immunohistochemistry; without quantitative mass spectrometry the protein component is not full.</li>
+          <li><span class="gap-ico">!</span>RNA and protein evidence come from different platforms, limiting cross-platform comparability.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="display:grid;gap:20px">
+      <!-- AI reading -->
+      <div class="card panel ai-panel">
+        <h3>AI evidence reading <span class="tag">RAG generated</span></h3>
+        <div class="ai-note">This reading is generated from the retrieved structured evidence only. Nothing outside that evidence is introduced, and gaps are stated explicitly.</div>
+        <div class="ai-body">
+          <p><b>Why A549: </b>EGFR sits in the top 4% of the library in DepMap RNA-seq and HPA protein evidence agrees. The exclusion gene ABCB1 is low, producing only a 0.02 penalty. Lung adenocarcinoma and epithelial origin match the stated context.</p>
+          <p><b>Note: </b>A549 carries KRAS G12S with wild-type EGFR. If the experiment depends on EGFR pathway activation rather than expression level, pathway evidence must be assessed separately.</p>
+        </div>
+        <div class="ai-q">
+          <input class="text-input" placeholder="Ask a follow-up, e.g. how does this compare with HCC827 for a drug sensitivity assay?">
+          <button class="btn btn-sm">Ask</button>
+        </div>
+        <div class="caut">
+          <h4>Caution</h4>
+          <ul>
+            <li>Some omics evidence is incomplete, see Data gaps</li>
+            <li>RNA and protein data come from different platforms</li>
+          </ul>
+        </div>
+        <div class="action-box"><b>Suggested action: </b>For EGFR expression validation or general target work, A549 is suitable. For an EGFR-mutant dependent model, prefer HCC827 or PC-9 from the alternatives.</div>
+      </div>
+
+      <!-- alternatives -->
+      <div class="card panel">
+        <h3>Similar alternatives <span class="tag">expression profile cosine similarity</span></h3>
+        <div class="alt-list">
+          <div class="alt"><div><div class="nm">NCI-H1975</div><div class="ms">lung adenocarcinoma · EGFR L858R/T790M</div></div><div class="sim"><div class="v">0.89</div><div class="sim-bar"><i style="width:89%"></i></div></div></div>
+          <div class="alt"><div><div class="nm">HCC827</div><div class="ms">lung adenocarcinoma · EGFR exon19del</div></div><div class="sim"><div class="v">0.84</div><div class="sim-bar"><i style="width:84%"></i></div></div></div>
+          <div class="alt"><div><div class="nm">PC-9</div><div class="ms">lung adenocarcinoma · EGFR exon19del</div></div><div class="sim"><div class="v">0.82</div><div class="sim-bar"><i style="width:82%"></i></div></div></div>
+          <div class="alt"><div><div class="nm">NCI-H1650</div><div class="ms">lung adenocarcinoma · epithelial</div></div><div class="sim"><div class="v">0.76</div><div class="sim-bar"><i style="width:76%"></i></div></div></div>
+        </div>
+        <p class="hint" style="margin-top:10px">When the first choice is unavailable, use these in order of similarity.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============ export modal ============ -->
+<div class="modal-bg" id="exportModal" role="dialog" aria-modal="true" aria-labelledby="expTitle">
+  <div class="modal">
+    <h3 id="expTitle">Export report</h3>
+    <p class="sub">The report covers ranking, score breakdown, evidence sources with versions, data gaps and alternatives.</p>
+    <div class="fmt-grid">
+      <div class="fmt on" onclick="pickFmt(this)"><span class="ext">PDF</span><div><div class="t">Full report</div><div class="d">printed to PDF via the browser</div></div></div>
+      <div class="fmt" onclick="pickFmt(this)"><span class="ext">DOCX</span><div><div class="t">Word report</div><div class="d">as above; direct generation needs backend rendering</div></div></div>
+      <div class="fmt" onclick="pickFmt(this)"><span class="ext">CSV</span><div><div class="t">Result table</div><div class="d">ranking and score detail for further analysis</div></div></div>
+      <div class="fmt" onclick="pickFmt(this)"><span class="ext">JSON</span><div><div class="t">Structured data</div><div class="d">for programmatic use, identical to the API output</div></div></div>
+    </div>
+    <div class="rep-preview">
+      <div class="ln"><span>Query criteria and snapshot version</span><span class="mono">§1</span></div>
+      <div class="ln"><span>Top cell lines with score breakdown</span><span class="mono">§2</span></div>
+      <div class="ln"><span>Evidence sources with version and date</span><span class="mono">§3</span></div>
+      <div class="ln"><span>Data gaps and cautions</span><span class="mono">§4</span></div>
+      <div class="ln"><span>Similar alternatives</span><span class="mono">§5</span></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeExport()">Cancel</button>
+      <button class="btn btn-primary" onclick="doExport()">Generate and download</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- screen switching ---------- */
+function go(n){
+  for(let i=1;i<=3;i++){
+    document.getElementById('screen'+i).classList.toggle('on', i===n);
+    document.getElementById('tab'+i).classList.toggle('on', i===n);
+  }
+  window.scrollTo({top:0});
+}
+
+/* ---------- input mode ---------- */
+function setMode(m){
+  document.getElementById('mode-st').classList.toggle('on', m==='st');
+  document.getElementById('mode-nl').classList.toggle('on', m==='nl');
+  document.getElementById('stBox').classList.toggle('off', m==='nl');
+  document.getElementById('nlBox').classList.toggle('on', m==='nl');
+}
+
+/* ---------- gene chips ---------- */
+function addChip(e, cls){
+  if(e.key!=='Enter') return;
+  e.preventDefault();
+  const v=e.target.value.trim().toUpperCase();
+  if(!v) return;
+  const chip=document.createElement('span');
+  chip.className='chip '+cls;
+  chip.innerHTML=v+'<button aria-label="Remove '+v+'">×</button>';
+  chip.querySelector('button').onclick=ev=>{ev.stopPropagation();chip.remove()};
+  e.target.parentElement.insertBefore(chip,e.target);
+  e.target.value='';
+}
+
+/* ---------- demo table data, replaced by the API once connected ---------- */
+let CLS=[
+ {rank:1,name:'A549',meta:'lung · Lung Adenocarcinoma',score:0.87,conf:'high',
+  dec:[0.52,0.24,0.13],pen:0.02,protM:true,excl:'low (p22)',exclOk:true,
+  ev:{rna:'log2(TPM+1) 7.01 · p96',prot:'log2 MS 4.82 · p91',src:'DepMap 25Q2 · CCLE-Gygi'}},
+ {rank:2,name:'NCI-H1975',meta:'lung · Lung Adenocarcinoma',score:0.84,conf:'high',
+  dec:[0.50,0.23,0.13],pen:0.02,protM:true,excl:'low (p31)',exclOk:true,
+  ev:{rna:'log2(TPM+1) 6.84 · p94',prot:'log2 MS 4.61 · p88',src:'DepMap 25Q2 · CCLE-Gygi'}},
+ {rank:3,name:'HCC827',meta:'lung · Lung Adenocarcinoma',score:0.81,conf:'high',
+  dec:[0.54,0.21,0.10],pen:0.04,protM:true,excl:'medium (p58)',exclOk:false,
+  ev:{rna:'log2(TPM+1) 7.62 · p98',prot:'log2 MS 4.20 · p79',src:'DepMap 25Q2 · CCLE-Gygi'}},
+ {rank:4,name:'PC-9',meta:'lung · Lung Adenocarcinoma',score:0.71,conf:'med',
+  dec:[0.49,0.00,0.09],pen:0.02,protM:false,excl:'low (p18)',exclOk:true,
+  ev:{rna:'log2(TPM+1) 6.55 · p92',prot:'not measured',src:'DepMap 25Q2'}},
+ {rank:5,name:'NCI-H1650',meta:'lung · Lung Adenocarcinoma',score:0.66,conf:'med',
+  dec:[0.44,0.15,0.09],pen:0.02,protM:true,excl:'low (p26)',exclOk:true,
+  ev:{rna:'log2(TPM+1) 5.98 · p84',prot:'log2 MS 3.11 · p52',src:'DepMap 25Q2 · CCLE-Gygi'}},
+ {rank:6,name:'Calu-3',meta:'lung · Lung Adenocarcinoma',score:0.55,conf:'low',
+  dec:[0.38,0.00,0.07],pen:0.02,protM:false,excl:'low (p29)',exclOk:true,
+  ev:{rna:'log2(TPM+1) 5.21 · p71',prot:'not measured',src:'DepMap 25Q2'}}
+];
+const CONF={high:['badge-high','High'],med:['badge-med','Medium'],low:['badge-low','Low']};
+const DCOL=['var(--c-expr)','var(--c-prot)','var(--c-cons)'];
+
+function renderRows(){
+  const tb=document.getElementById('resBody');
+  if(!CLS.length){tb.innerHTML='<tr><td colspan="7" style="padding:28px;text-align:center;color:var(--ink-3)">No cell line matches these criteria.'+(TARGET_MODE==='protein'?'<br><b>Protein-level query:</b> no cell line in this range was measured for this protein in CCLE-Gygi.'
+    +'<br><span style="font-size:.8rem">This reflects the coverage of the public mass-spec dataset, not a query error. '
+    +'Switch to target gene mode to see RNA-level evidence.</span>':'<br>Relax the lineage or disease filter and try again.')+'</td></tr>';return}
+  tb.innerHTML=CLS.map((c,i)=>{
+    const bar=c.dec.map((v,j)=>v>0?'<i style="width:'+(v*100)+'%;background:'+DCOL[j]+'" title="'+v.toFixed(2)+'"></i>':'').join('')
+      +(c.pen?'<i style="width:'+(c.pen*100)+'%;background:var(--c-pen)" title="penalty -'+c.pen.toFixed(2)+'"></i>':'');
+    const prot=c.protM
+      ? '<span class="excl-ok">measured</span>'
+      : '<span style="font-size:.78rem;color:var(--ink-3)">not measured</span>';
+    return `
+    <tr class="main-row" onclick="toggleRow(${i})" aria-expanded="false">
+      <td><span class="rank-n">#${c.rank}</span></td>
+      <td><div class="cl-name">${c.name}</div><div class="cl-meta">${c.meta}</div></td>
+      <td class="score-cell"><span class="score-num">${c.score.toFixed(2)}</span>${c.pen?'<span class="pen-tag">−'+c.pen.toFixed(2)+'</span>':''}<div class="sbar">${bar}</div></td>
+      <td><span class="badge ${CONF[c.conf][0]}">${CONF[c.conf][1]}</span></td>
+      <td><span class="${c.exclOk?'excl-ok':'excl-warn'}">${c.exclOk?'✓ ':'△ '}${c.excl}</span></td>
+      <td>${prot}</td>
+      <td><button class="btn btn-sm" onclick="event.stopPropagation();go(3)">Evidence</button></td>
+    </tr>
+    <tr class="row-detail" id="rd${i}"><td colspan="7">
+      <div class="mini-ev">
+        <div class="cell"><div class="k">RNA percentile x0.55</div><div class="v">${c.ev.rna}</div><div class="s">DepMap + HPA combined</div></div>
+        <div class="cell"><div class="k">Protein percentile x0.30</div><div class="v">${c.ev.prot}</div><div class="s">${c.protM?'CCLE-Gygi mass spec':'not measured, RNA carries the full 0.85'}</div></div>
+        <div class="cell"><div class="k">ABCB1 (exclusion gene)</div><div class="v">${c.excl}</div><div class="s">penalty -${c.pen.toFixed(2)}</div></div>
+        <div class="cell"><div class="k">Source</div><div class="v" style="font-size:.75rem">${c.ev.src}</div><div class="s">snapshot hash recorded</div></div>
+      </div>
+      <button class="btn btn-sm btn-primary" onclick="go(3)">View full evidence chain</button>
+    </td></tr>`;
+  }).join('');
+}
+renderRows();
+
+function toggleRow(i){
+  const r=document.getElementById('rd'+i);
+  if(!r) return;
+  const on=r.classList.toggle('on');
+  const prev=r.previousElementSibling;
+  if(prev) prev.setAttribute('aria-expanded', on);
+}
+
+let TARGET_MODE='gene';
+function setTargetMode(m){
+  TARGET_MODE=m;
+  const isProt=m==='protein';
+  document.getElementById('tmGene').classList.toggle('on',!isProt);
+  document.getElementById('tmProt').classList.toggle('on',isProt);
+  document.getElementById('tgLabel').textContent=isProt?'Target protein(s)':'Target gene(s)';
+  document.getElementById('tgIn').placeholder=isProt
+    ? 'Type a protein and press Enter, e.g. HER2 or EGFR'
+    : 'Type a gene and press Enter, e.g. ERBB2';
+  document.getElementById('tgHint').textContent=isProt
+    ? 'Proteins are identified by their coding gene; common names are mapped automatically (HER2 to ERBB2, PD-L1 to CD274).'
+    : 'Gene symbols and common aliases are accepted and normalised.';
+  document.getElementById('tmHint').textContent=isProt
+    ? 'Mass-spec measured only, no RNA proxy'
+    : 'RNA-led, protein counted when available';
+  document.getElementById('protWarn').style.display=isProt?'block':'none';
+  markStale();
+}
+
+/* ============================================================
+   API layer, matching the real agentic signatures
+   /api/rank is pure statistics and free, powering screens 1 to 2
+   /api/ask runs the agent; billed only on a paid backend
+   ============================================================ */
+const API_BASE='http://127.0.0.1:8000';
+let LIVE=false, LAST=null;
+
+function toggleLive(){
+  LIVE=!LIVE;
+  const b=document.getElementById('liveBtn');
+  b.textContent=LIVE?'Live API':'Demo data';
+  b.style.background=LIVE?'var(--teal-tint)':'var(--paper)';
+  b.style.color=LIVE?'var(--teal-deep)':'var(--ink-3)';
+  if(LIVE) refreshMeta();
+}
+
+async function refreshMeta(){
+  const el=document.querySelector('.data-version');
+  try{
+    const m=await (await fetch(API_BASE+'/api/meta')).json();
+    if(!m.snapshot){el.textContent='No snapshot. Run run_all.py first';return}
+    el.textContent=`Snapshot ${(m.snapshot.built_at||'').slice(0,10)} · `
+      +`${m.snapshot.cell_lines} lines · backend ${m.backend}`
+      +(m.live_calls_limit?` · today ${m.live_calls_today}/${m.live_calls_limit}`:' · free');
+  }catch(e){ el.textContent='API not running (127.0.0.1:8000)'; }
+}
+
+function collectQuery(){
+  const g=sel=>[...document.querySelectorAll(sel+' .chip')]
+    .map(c=>c.childNodes[0].textContent.trim());
+  const val=id=>{const el=document.getElementById(id);return el&&el.value?el.value:null};
+  return {
+    target_genes:g('#tgChips'),
+    exclusion_genes:g('#exChips'),
+    logic:val('selLogic')||'ALL',
+    disease:val('inDisease'),
+    lineage:val('selLineage'),
+    top_n:parseInt(val('selTopN')||'10',10),
+    require_protein:TARGET_MODE==='protein'
+  };
+}
+
+/* ranking: pure statistics, free */
+async function runQuery(){
+  const q=collectQuery();
+  if(!q.target_genes.length){
+    alert('Enter at least one target gene.\n\nStructured mode: type in the target field and press Enter.\nNatural language mode: use Parse and run.');
+    return;
+  }
+  if(!LIVE){
+    alert('Demo data mode is on. The table below is a fixed example and will not reflect your input.\nSwitch to Live API in the top right.');
+    go(2); return;
+  }
+  const btn=document.getElementById('runBtn');
+  btn.disabled=true; btn.textContent='Running...';
+  try{
+    const r=await fetch(API_BASE+'/api/rank',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(q)});
+    if(!r.ok){alert('API error '+r.status+': '+(await r.text()).slice(0,400));return}
+    const d=await r.json(); LAST=d;
+
+    CLS=d.results.map((x,i)=>{
+      const s=x.score_decomposition||{};
+      const pg=(x.per_gene||[])[0]||{};
+      const pct=v=>v==null?'—':'p'+Math.round(v*(v<=1?100:1));
+      return {
+        rank:x.rank??i+1,
+        name:x.cell_line,
+        meta:[x.meta?.lineage,x.meta?.disease].filter(Boolean).join(' · ')||'no annotation',
+        score:x.final_score??0,
+        conf:({High:'high',Medium:'med',Low:'low'})[x.confidence_level]
+             ||(x.confidence_level||'').toLowerCase().slice(0,3).replace('med','med')||'med',
+        dec:[0.85*(s.biological||0), 0.15*(s.confidence||0), 0],
+        pen:s.penalty||0,
+        protM:x.protein_measured===true,
+        excl:(s.penalty||0)>0?`−${(s.penalty).toFixed(3)}`:'none',
+        exclOk:(s.penalty||0)<0.05,
+        ev:{
+          rna:`RNA ${pct(pg.rna_percentile)} · ${pg.rna_sources??0} sources`
+              +(pg.has_geo_support?' · GEO support':''),
+          prot:pg.has_protein?`protein ${pct(pg.protein_percentile)}`:'not measured',
+          src:`${x.depmap_id||''}`
+        }
+      };
+    });
+    renderRows();
+    document.getElementById('resCount').innerHTML=
+      `Showing <b>top ${CLS.length}</b>`
+      +(d.excluded&&d.excluded.length?` · ${d.excluded.length} excluded`:'')
+      +(d._cached?' · cached':` · ${d._elapsed_s}s`);
+    renderGaps(d.data_gaps,null,d._cached,d.discrimination,d.excluded);
+    updateQsum(d.query||q, d.protein_mode);
+    go(2);
+  }catch(e){
+    alert('Cannot reach the API: '+e.message+'\n\nCheck that api_server.py is running.');
+  }finally{ btn.disabled=false; btn.textContent='Run query'; }
+}
+
+function updateQsum(q,pm){
+  const box=document.getElementById('qsumBox');
+  if(!box||!q) return;
+  box.innerHTML='<span class="k">This query: </span>'
+    +(q.target_genes||[]).map(g=>`<span class="chip chip-target">${g}</span>`).join('')
+    +(q.exclusion_genes||[]).map(g=>`<span class="chip chip-excl">exclude ${g}</span>`).join('')
+    +(q.lineage?`<span class="pchip">lineage: ${q.lineage}</span>`:'')
+    +(q.disease?`<span class="pchip">disease: ${q.disease}</span>`:'')
+    +`<span class="pchip">${q.logic||'ALL'}</span>`
+    +(pm&&pm.requested?`<span class="pchip" style="background:var(--teal-tint);border-color:#C3DDD9;color:var(--teal-deep)">Protein-level · ${pm.candidates_with_protein} measured of ${pm.candidates_before_filter}</span>`:'')
+    +(q.candidate_pool?`<span class="pchip">pool ${q.candidate_pool}</span>`:'')
+    +'<button class="btn btn-sm edit" onclick="go(1)">Edit criteria</button>';
+  document.getElementById('staleWarn').style.display='none';
+}
+
+/* flag stale results when the form changes */
+function markStale(){
+  if(LAST&&document.getElementById('screen2').classList.contains('on'))
+    document.getElementById('staleWarn').style.display='block';
+  else if(LAST) document.getElementById('staleWarn').style.display='block';
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  ['selLineage','inDisease','selLogic','selTopN'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.addEventListener('change',markStale);
+  });
+});
+
+/* NL parsing: rule-based and free on the scripted backend */
+async function doParse(thenRun){
+  const box=document.getElementById('nlParse');
+  const q=document.getElementById('nlIn').value.trim();
+  box.classList.add('on');
+  if(!q){ box.innerHTML='<h4>Enter a sentence first</h4>'; return; }
+  if(!LIVE){
+    box.innerHTML='<h4>Switch to Live API first</h4>'
+      +'<p class="hint">Parsing uses the backend parse_query; free on the scripted backend.</p>';
+    return;
+  }
+  box.innerHTML='<h4>Parsing...</h4>';
+  try{
+    const r=await fetch(API_BASE+'/api/parse',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({question:q})});
+    if(!r.ok){
+      const t=(await r.text()).slice(0,300);
+      box.innerHTML='<h4>Parse failed (HTTP '+r.status+')</h4><p class="hint">'+t
+        +'</p><p class="hint">If /api/parse is missing, restart api_server.py.</p>';
+      return;
+    }
+    const d=await r.json();
+    const tg=d.target_genes||d.targets||[];
+    const ex=d.exclusion_genes||d.exclusions||[];
+    fillChips('#tgChips','chip-target',tg);
+    fillChips('#exChips','chip-excl',ex);
+    if(d.lineage){const s=document.getElementById('selLineage');
+      if([...s.options].some(o=>o.value===d.lineage)) s.value=d.lineage;}
+    if(d.disease) document.getElementById('inDisease').value=d.disease;
+    if(d.logic) document.getElementById('selLogic').value=d.logic;
+    box.innerHTML='<h4>Parsed and filled into the structured form. Confirm, then run.</h4>'
+      +'<div class="parse-chips">'
+      +tg.map(g=>'<span class="pchip">target <b>'+g+'</b></span>').join('')
+      +ex.map(g=>'<span class="pchip">exclude <b>'+g+'</b></span>').join('')
+      +(d.lineage?'<span class="pchip">lineage <b>'+d.lineage+'</b></span>':'')
+      +(d.disease?'<span class="pchip">disease <b>'+d.disease+'</b></span>':'')
+      +(d.logic?'<span class="pchip">logic <b>'+d.logic+'</b></span>':'')
+      +'</div>'
+      +'<p class="hint" style="margin-top:8px">Raw response: <span class="mono" style="font-size:.7rem">'
+      +JSON.stringify(d).slice(0,240)+'</span></p>';
+    if(!tg.length){
+      box.innerHTML+='<p class="hint" style="color:var(--red)">'
+        +'No target gene was parsed. Use structured input instead.</p>';
+      return;
+    }
+    if(thenRun) await runQuery();
+  }catch(e){
+    box.innerHTML='<h4>Request failed</h4><p class="hint">'+e.message
+      +'<br>Check that api_server.py is running and was restarted to load /api/parse.</p>';
+  }
+}
+
+function fillChips(sel,cls,genes){
+  const box=document.querySelector(sel);
+  if(!box) return;
+  [...box.querySelectorAll('.chip')].forEach(c=>c.remove());
+  const input=box.querySelector('input');
+  (genes||[]).forEach(g=>{
+    const chip=document.createElement('span');
+    chip.className='chip '+cls;
+    chip.textContent=g;
+    const b=document.createElement('button');
+    b.textContent='×'; b.setAttribute('aria-label','Remove '+g);
+    b.onclick=ev=>{ev.stopPropagation();chip.remove()};
+    chip.appendChild(b);
+    box.insertBefore(chip,input);
+  });
+}
+
+/* AI reading: runs the agent, uses quota only on a paid backend */
+async function runAsk(){
+  if(!LIVE){alert('Switch to Live API mode first');return}
+  const box=document.getElementById('askBox');
+  box.innerHTML='<p class="hint">Generating... (free on the scripted backend)</p>';
+  try{
+    const r=await fetch(API_BASE+'/api/ask',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(collectQuery())});
+    if(r.status===429){box.innerHTML='<p class="hint" style="color:var(--red)">'
+      +(await r.json()).detail+'</p>';return}
+    if(!r.ok){box.innerHTML='<p class="hint">API error '+r.status+'</p>';return}
+    const d=await r.json();
+    const g=d.grounding||{};
+    const rec=d.recommendations||[];
+    box.innerHTML=`
+      <div class="ai-note">ⓘ Claims generated by the ${d._backend||'scripted'} backend, 
+        checked by L1 citation, L2 numeric and L3 entailment. Failing claims are dropped, never reworded.
+        ${d._cached?' (served from cache, no quota used)':''}</div>
+      ${rec.slice(0,3).map(r=>`
+        <p><b>${r.cell_line}</b> — ${r.recommendation_level}, score ${
+          (r.final_score??0).toFixed(3)}</p>
+        <ul style="margin:0 0 12px 18px;font-size:.83rem">
+          ${(r.supporting_claims||[]).slice(0,4).map(c=>
+            `<li>${c.text} <span class="mono" style="font-size:.68rem;color:var(--ink-3)">[${
+              (c.evidence_ids||[]).join(', ')}]</span></li>`).join('')}
+          ${(r.tradeoffs||[]).map(c=>
+            `<li style="color:var(--amber)">! ${c.text}</li>`).join('')}
+          ${(r.abstained_claims||[]).map(t=>
+            `<li style="color:var(--ink-3)">dropped, failed checks: ${t.slice(0,80)}…</li>`).join('')}
+        </ul>`).join('')}
+      <p class="hint" style="border-top:1px solid var(--line);padding-top:10px">
+        Checks: ${g.claims??'—'} claims, ${g.dropped??'—'} dropped, 
+        hallucination rate ${g.hallucination_rate!=null?(g.hallucination_rate*100).toFixed(1)+'%':'—'}
+        ${g.by_layer?'· '+JSON.stringify(g.by_layer):''}</p>`;
+  }catch(e){ box.innerHTML='<p class="hint">Request failed: '+e.message+'</p>'; }
+}
+
+/* data_gaps, discrimination, excluded lines */
+function renderGaps(gaps,grounding,cached,disc,excluded){
+  let box=document.getElementById('gapBox');
+  if(!box){
+    box=document.createElement('div');
+    box.id='gapBox'; box.className='card panel'; box.style.marginTop='16px';
+    document.getElementById('screen2').appendChild(box);
+  }
+  const poor=Object.entries(disc||{}).filter(([,v])=>v&&(v.low_discrimination||v.ubiquitous));
+  box.innerHTML=`<h3>Data gaps and claim checks ${cached?'<span class="tag">cache hit, no quota used</span>':''}</h3>
+    ${(gaps&&gaps.length)?'<ul class="gap-list">'+gaps.map(t=>
+      `<li><span class="gap-ico">!</span>${t}</li>`).join('')+'</ul>'
+      :'<p class="hint">No data gaps reported for this query.</p>'}
+    ${poor.length?`<p class="hint" style="color:var(--amber);margin-top:8px">
+      <b>Discrimination warning:</b> ${poor.map(([g,v])=>
+        `${g} (spread ${v.spread}, ${v.ubiquitous?'ubiquitous':'low discrimination'}${
+        v.reason?': '+v.reason:''})`).join('; ')}
+      This gene separates cell lines poorly, so the ranking carries limited information.</p>`:''}
+    ${(excluded&&excluded.length)?`<p class="hint" style="margin-top:8px">
+      ${excluded.length} cell lines were removed by the exclusion gene, e.g. ${excluded[0].cell_line||''}.</p>`:''}
+    <div style="margin-top:12px;border-top:1px solid var(--line);padding-top:12px">
+      <button class="btn btn-sm" onclick="runAsk()">Generate AI evidence reading</button>
+      <span class="hint" style="margin-left:8px">Ranking never uses the language model; only this button calls the agent</span>
+      <div id="askBox" style="margin-top:12px"></div>
+    </div>`;
+}
+
+/* ---------- export modal ---------- */
+function openExport(){document.getElementById('exportModal').classList.add('on')}
+function closeExport(){document.getElementById('exportModal').classList.remove('on')}
+document.getElementById('exportModal').addEventListener('click',e=>{if(e.target.id==='exportModal')closeExport()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeExport()});
+function pickFmt(el){document.querySelectorAll('.fmt').forEach(f=>f.classList.remove('on'));el.classList.add('on')}
+
+function currentFmt(){
+  const on=document.querySelector('.fmt.on');
+  return on?on.querySelector('.ext').textContent.trim():'CSV';
+}
+
+function download(name,text,mime){
+  const b=new Blob([text],{type:mime+';charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(b); a.download=name;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},0);
+}
+
+function doExport(){
+  if(!LAST){
+    alert('No live result yet.\nExporting now would produce demo data, not your query.\nSwitch to Live API and run a query first.');
+    return;
+  }
+  const fmt=currentFmt();
+  const tag=(LAST.query?.target_genes||['q']).join('-')
+    +((LAST.query?.exclusion_genes||[]).length?'_not-'+LAST.query.exclusion_genes.join('-'):'')
+    +(LAST.query?.lineage?'_'+LAST.query.lineage:'');
+  const stamp=new Date().toISOString().slice(0,19).replace(/[:T]/g,'');
+  if(fmt==='JSON'){
+    download(`cellline_${tag}_${stamp}.json`,JSON.stringify(LAST,null,2),'application/json');
+  }else if(fmt==='CSV'){
+    const rows=[['rank','cell_line','depmap_id','final_score','confidence',
+                 'biological','confidence_score','penalty','protein_measured','meta']];
+    (LAST?LAST.results:[]).forEach(x=>{
+      const s=x.score_decomposition||{};
+      rows.push([x.rank,x.cell_line,x.depmap_id,x.final_score,x.confidence_level,
+                 s.biological,s.confidence,s.penalty,x.protein_measured,
+                 `${x.meta?.lineage||''} / ${x.meta?.disease||''}`]);
+    });
+    rows.unshift(['# query',JSON.stringify(LAST.query||{})]);
+    const csv='\ufeff'+rows.map(r=>r.map(v=>{
+      const s=String(v??'');
+      return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
+    }).join(',')).join('\r\n');
+    download(`cellline_${tag}_${stamp}.csv`,csv,'text/csv');
+  }else{
+    // PDF/DOCX need backend rendering; use browser print for now
+    closeExport();
+    setTimeout(()=>window.print(),150);
+    return;
+  }
+  closeExport();
+}
+</script>
+</body>
+</html>
