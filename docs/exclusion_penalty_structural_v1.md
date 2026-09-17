@@ -182,20 +182,13 @@ evidence for both target suitability and exclusion expression.
 Run the synthetic checks:
 
 ```bash
-cd "/Users/liyannan/Desktop/Data-Science-Group-Project"
-
-/Users/liyannan/miniconda3/envs/cellline-v3/bin/python \
-  scripts/exclusion_penalty_ablation_runner.py \
-  --self-test
+python scripts/exclusion_penalty_ablation_runner.py --self-test
 ```
 
 Run the frozen structural experiment:
 
 ```bash
-cd "/Users/liyannan/Desktop/Data-Science-Group-Project"
-
-/Users/liyannan/miniconda3/envs/cellline-v3/bin/python \
-  scripts/exclusion_penalty_ablation_runner.py
+python scripts/exclusion_penalty_ablation_runner.py
 ```
 
 Existing results are protected from replacement. Use `--force` only to

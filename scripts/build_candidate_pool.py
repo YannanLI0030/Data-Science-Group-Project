@@ -1,19 +1,8 @@
 #!/usr/bin/env python3
-"""Build the pooled-judgement table used for gold-standard expansion.
+"""Build a review pool from the union of selected configurations' Top-K rows.
 
-For each review gene, this script rescales the same candidate evidence under
-the selected ablation configurations, takes the union of their Top-K results
-(including exact-score ties at the boundary), and appends any existing gold
-entries. New review labels are deliberately initialised as unknown: model rank
-must never be used as biological ground truth.
-
-Example
--------
-python scripts/build_candidate_pool.py \
-  --data-dir "/absolute/path/to/merged" \
-  --corr "/absolute/path/to/gene_rna_protein_correlations.csv" \
-  --gold benchmarks/gold_standard_v2.csv \
-  --out benchmarks/candidate_pool_v3.csv
+Exact ties and existing Gold entries are retained. New labels start as unknown
+and must be assigned through external review.
 """
 
 from __future__ import annotations
@@ -38,7 +27,7 @@ DEFAULT_CONFIGS = [
     "A4_adaptive_trust",
 ]
 
-# Six current benchmark genes plus six expression-oriented expansion genes.
+# Six benchmark genes and six expression-focused additions.
 DEFAULT_REVIEW_GENES = [
     "EGFR",
     "ERBB2",
@@ -77,7 +66,7 @@ def _normalise_genes(values: Iterable[str]) -> list[str]:
 
 
 def _top_with_ties(ranked: list[dict[str, Any]], top_k: int) -> list[dict[str, Any]]:
-    """Return Top-K plus every row exactly tied with the Kth score."""
+    """Return the Top-K rows, including exact ties at the cutoff."""
     if top_k <= 0:
         raise ValueError("top_k must be positive")
     if len(ranked) <= top_k:
@@ -154,7 +143,7 @@ def build_candidate_pool(
     config_names: list[str],
     top_k: int,
 ) -> pd.DataFrame:
-    """Create one flat, auditable review table keyed by gene and DepMap ID."""
+    """Build the review table, keyed by gene and DepMap ID."""
     records: list[dict[str, Any]] = []
     config_order = {name: index for index, name in enumerate(config_names)}
 
@@ -281,7 +270,7 @@ def build_candidate_pool(
                 "current_gold_notes": (
                     _safe_text(reference.get("notes")) if reference is not None else ""
                 ),
-                # Manual-review fields. Never infer these from ranking.
+                # Reviewers complete these fields; rankings never supply labels.
                 "judgement": "unknown",
                 "benchmark_task": "unassigned",
                 "evidence_type": "",

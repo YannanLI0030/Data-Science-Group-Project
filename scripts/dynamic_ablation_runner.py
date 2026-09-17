@@ -1,16 +1,9 @@
 #!/usr/bin/env python3
-"""Unlabelled dynamic ablation and missing-data robustness runner.
+"""Run label-free ablations on the random and coverage-stratified panels.
 
-The runner consumes the versioned long-table panels under
-``benchmarks/panels`` and deliberately does not consume a gold standard.  It
-answers whether a controlled component removal changes scores/rankings, and
-whether configurations collapse when modalities are missing.  Accuracy metrics
-such as NDCG, Recall, and MRR belong to the later independently judged V5
-holdout and are intentionally absent here.
-
-Duplicate (gene, source, DepMap_ID) measurements are aggregated by arithmetic
-mean for both ``value_raw`` and ``value_std``.  This matches the current dynamic
-``_build_gene_table_from_long`` implementation.
+Outputs measure score and ranking sensitivity under missing-data regimes; they
+do not estimate recommendation accuracy. Duplicate source records are averaged
+in the same way as the production dynamic adapter.
 """
 
 from __future__ import annotations
@@ -68,7 +61,7 @@ class ControlledConfig:
     protein_for_biology: bool = True
     protein_for_confidence: bool = True
     adaptive_trust: bool = False
-    structure: str = "standard"  # standard, rna_only, v3
+    structure: str = "standard"
 
     def validate(self) -> None:
         if self.structure not in {"standard", "rna_only", "v3"}:
@@ -758,9 +751,8 @@ def compare_to_baseline(
     score_delta = np.array(
         [abs(current_scores[key] - baseline_scores[key]) for key in shared], dtype=float
     )
-    # rankMid already contains tie-aware ranks, so Spearman correlation is the
-    # ordinary Pearson correlation of these rank vectors.  Computing it here
-    # avoids Pandas' optional SciPy dependency.
+    # rankMid is tie-aware; correlating these vectors gives Spearman's rho
+    # without the optional SciPy dependency.
     if len(shared) >= 2:
         current_vector = np.asarray([current_ranks[key] for key in shared], dtype=float)
         baseline_vector = np.asarray([baseline_ranks[key] for key in shared], dtype=float)

@@ -1,16 +1,9 @@
 #!/usr/bin/env python3
-"""Constrained v4 outer-weight search with leave-one-gene-out validation.
+"""Search the V4 outer-weight grid with leave-one-gene-out evaluation.
 
-The search varies only RNA, direct-protein, and confidence outer weights on a
-predeclared 0.05 grid.  The three confidence subweights, exclusion penalty,
-and adaptive-trust setting stay fixed.  A protein weight of zero uses the A1a
-``direct_off`` semantics: protein does not enter the biological score but may
-still contribute to completeness, source support, and RNA-protein consistency.
-
-Model selection uses mean NDCG@5 and a one-standard-error rule.  Among models
-within one standard error of the best, the configuration closest to the
-predeclared A1a anchor is selected.  Per-gene leave-one-gene-out (LOGO) folds
-estimate how that selection rule generalises to an unseen target gene.
+Only RNA, direct-Protein, and Confidence weights vary. Confidence internals,
+the penalty cap, and adaptive trust remain fixed. Selection uses NDCG@5 and a
+one-standard-error rule anchored to A1a.
 """
 
 from __future__ import annotations
@@ -38,7 +31,7 @@ CHALLENGER_ID = "W_rna0.70_protein0.05_confidence0.25"
 
 
 def generate_grid() -> list[dict[str, Any]]:
-    """Generate the declared 0.05 grid exactly and deterministically."""
+    """Return the predeclared 0.05 weight grid."""
     configs: list[dict[str, Any]] = []
     for protein_pct in range(0, 31, 5):
         for confidence_pct in range(10, 31, 5):
@@ -176,7 +169,7 @@ def _summarise(
 
 
 def _one_se_choice(detail: pd.DataFrame) -> tuple[pd.Series, float, float, str]:
-    """Select the A1a-nearest model within one SE of the best NDCG@5."""
+    """Choose the A1a-nearest model within one standard error of the best."""
     grouped = (
         detail.groupby(
             ["config", "rna_w", "protein_w", "confidence_w", "protein_mode"],

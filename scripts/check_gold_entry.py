@@ -1,33 +1,8 @@
 #!/usr/bin/env python3
-"""
-check_gold_entry.py
-===================
-Sanity-check a gold-standard entry against the project's own merged data.
+"""Check whether a reviewed benchmark entry is visible in the merged data.
 
-WHAT THIS DOES AND DOES NOT DO
-------------------------------
-This does NOT establish ground truth. The biological claim ("HCC827 is
-EGFR-dependent") must come from an external source: DepMap mutation records,
-Cellosaurus, HPA, or a paper. Using your own ranking to define your own
-benchmark would be circular reasoning.
-
-What this DOES is check that the claim is *detectable in the data the system
-can see*. A gold-standard entry only works as a benchmark if the evidence is
-present. Three outcomes, all informative:
-
-  - Cell line ranks high  -> entry is usable, keep it.
-  - Cell line missing     -> not in the 1840-line panel, drop the entry.
-  - Cell line ranks low   -> INVESTIGATE. Either the literature claim is about
-                             something other than RNA abundance (e.g. protein
-                             activity, or a mutation that doesn't raise
-                             expression), or there is a data coverage gap.
-                             Both are worth knowing before you rely on it.
-
-Usage
------
-    python check_gold_entry.py --data-dir ./merged EGFR HCC827
-    python check_gold_entry.py --data-dir ./merged EGFR            # top 20 only
-    python check_gold_entry.py --data-dir ./merged --batch gold_standard.csv
+This is an internal detectability check, not a source of ground-truth labels.
+It reports the target line's RNA rank or flags a missing gene or cell line.
 """
 
 from __future__ import annotations
@@ -41,7 +16,7 @@ import pandas as pd
 
 
 def norm(s: str) -> str:
-    """Cell-line names vary wildly: 'Hs 746T' / 'HS746T' / 'NCI-H1975'."""
+    """Normalise cell-line names for tolerant matching."""
     return re.sub(r"[^a-z0-9]", "", str(s).lower())
 
 

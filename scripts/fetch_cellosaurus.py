@@ -1,45 +1,8 @@
 #!/usr/bin/env python3
-"""
-fetch_cellosaurus.py
-====================
-Pull authoritative Cellosaurus records for every cell line in a gold standard,
-so citations can be filled in from the source rather than from memory.
+"""Fetch Cellosaurus records for cell lines in a benchmark.
 
-WHY THIS EXISTS
----------------
-PMIDs and accession numbers written from memory are wrong often enough to
-discredit an evaluation benchmark. This script queries the Cellosaurus REST
-API (https://api.cellosaurus.org, CC BY 4.0) and prints what the database
-actually says. You still read the output and decide what supports your claim
--- the script does not decide for you.
-
-WHAT TO LOOK FOR IN THE OUTPUT
-------------------------------
-  AC  line  -> CVCL accession, e.g. CVCL_0033
-  CC  lines -> curated comments; amplification / receptor status often here
-  RX  lines -> references with PubMed IDs
-  Sequence variations -> mutations, fusions, amplifications with their PMIDs
-
-If the record says something different from what your entry claims (e.g. it
-lists a gene fusion where you wrote "amplification"), change the entry to
-match the evidence, and note the discrepancy. Do not force the evidence to
-match the entry.
-
-Usage
------
-    pip install requests
-
-    # every cell line in the gold standard
-    python fetch_cellosaurus.py --gold gold_standard_v2.csv
-
-    # one cell line, full record
-    python fetch_cellosaurus.py --cell-line SK-BR-3
-
-    # only lines whose entry mentions a given gene, and highlight that gene
-    python fetch_cellosaurus.py --gold gold_standard_v2.csv --gene ERBB2
-
-    # save everything for offline reading
-    python fetch_cellosaurus.py --gold gold_standard_v2.csv --out cellosaurus_records.txt
+The output supports manual evidence review; it does not assign benchmark
+labels. Use the command-line help for single-line and batch options.
 """
 
 from __future__ import annotations
@@ -57,9 +20,9 @@ except ImportError:
 import pandas as pd
 
 API = "https://api.cellosaurus.org"
-PAUSE = 0.5  # be polite to a free public service
+PAUSE = 0.5  # Limit request frequency.
 
-# Cellosaurus flat-file line codes worth showing. Full list in their docs.
+# Cellosaurus fields included in the review output.
 INTERESTING = {
     "ID": "name",
     "AC": "accession (CVCL)",
@@ -85,7 +48,7 @@ def query(cell_line: str, timeout: int = 30) -> str | None:
         r = requests.get(f"{API}/search/cell-line", params=params, timeout=timeout)
         if r.status_code == 200 and r.text.strip():
             return r.text
-        # fall back to a looser search when the exact-name query misses
+        # Retry without the exact-name filter.
         params["q"] = cell_line
         r = requests.get(f"{API}/search/cell-line", params=params, timeout=timeout)
         if r.status_code == 200 and r.text.strip():
@@ -97,7 +60,7 @@ def query(cell_line: str, timeout: int = 30) -> str | None:
 
 
 def summarise(record: str, gene: str | None = None) -> str:
-    """Keep the lines a human actually needs, optionally spotlighting a gene."""
+    """Return the review fields and optionally highlight a gene."""
     out, hits = [], []
     for line in record.splitlines():
         if len(line) < 2:

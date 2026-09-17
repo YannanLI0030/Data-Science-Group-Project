@@ -1,17 +1,8 @@
 #!/usr/bin/env python3
-"""Freeze the V5 ablation design and build a blinded holdout review pool.
+"""Freeze the V5 configurations and build a blinded review pool.
 
-The input is the unlabelled dynamic-ablation Top-10 audit.  The script freezes
-configuration definitions before any V5 labels exist, selects a pre-declared
-12-gene subset from the coverage-stratified panel, and writes two deliberately
-separate files:
-
-* a reviewer-facing CSV without configuration names, ranks, or scores; and
-* an internal audit CSV containing the retrieval provenance.
-
-The resulting pool is not a gold standard.  It becomes a holdout benchmark
-only after every retrieved candidate has been independently reviewed and the
-labels have been frozen.
+Reviewer and provenance files are kept separate so labels can be assigned
+without scores, ranks, or configuration names.
 """
 
 from __future__ import annotations
@@ -75,10 +66,8 @@ SECONDARY_UNLABELLED_CONFIGS = (
     "A6_v3_full",
 )
 
-# Chosen before V5 candidate labels are inspected.  Selection intentionally
-# favours protein-coding, human-interpretable genes whose frozen configurations
-# have a chance to differ.  DepMap-RNA-only genes remain in the missing-data
-# stress test, but are not suitable for a literature-intensive performance set.
+# Selected before label review. DepMap-RNA-only genes remain in the sparsity
+# panel because most configurations collapse and external review is difficult.
 SELECTED_GENES = (
     (
         "MFN2",

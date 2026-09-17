@@ -1,16 +1,8 @@
 #!/usr/bin/env python3
-"""Run a label-free structural ablation of the exclusion penalty.
+"""Compare P00/P15/P30/P45 on fixed target-exclusion query sets.
 
-This supplementary experiment is deliberately separate from the frozen V5
-holdout.  It imports the current dynamic production scorer, fetches each
-pre-specified target/exclusion query once, and re-scores the identical candidate
-rows under P00/P15/P30/P45.  The outputs quantify implementation correctness,
-clipping, ties, and ranking sensitivity.  No Gold file is read and no accuracy
-metric is calculated.
-
-The production scorer currently exposes the penalty cap as a module constant.
-This runner changes that constant only in memory, sequentially, and restores it
-with ``try/finally`` after every call.  It never edits the production script.
+The runner changes the production penalty cap in memory, restores it after each
+call, and reports structural ranking effects. It does not read Gold labels.
 """
 
 from __future__ import annotations
@@ -222,7 +214,7 @@ def score_with_cap(
 
 
 def add_tie_ranks(ranked: list[dict[str, Any]]) -> None:
-    """Add score-tie ranks without replacing the production ordinal rank."""
+    """Add tie-aware ranks while retaining the production ordinal rank."""
     position = 0
     while position < len(ranked):
         score = ranked[position]["finalScore"]

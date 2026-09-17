@@ -1,13 +1,8 @@
 #!/usr/bin/env python3
-"""Build a reproducible, coverage-stratified 100-gene ablation panel.
+"""Sample a 100-gene ablation panel by evidence-coverage stratum.
 
-This script intentionally does not replace the teammate's original purely
-random exporter.  The old panel is useful for missing-data stress tests; this
-panel makes the protein, confidence, and adaptive-trust ablations identifiable
-by sampling genes from pre-declared data-coverage strata.
-
-Selection uses coverage metadata only.  It never inspects model rankings or
-gold labels, which prevents performance-driven gene cherry-picking.
+Sampling uses coverage metadata only. The original random panel is retained
+separately for missing-data stress testing.
 """
 
 from __future__ import annotations
@@ -36,9 +31,8 @@ DEFAULT_EXCLUDED_GENES = (
     "KLK4", "GAPDH", "ASGR1", "MUC1", "CD3E",
 )
 
-# Total = 100.  The first three strata identify adaptive trust; the fourth
-# identifies missing-correlation behaviour; the final two measure robustness
-# when protein evidence is unavailable.
+# The 100-gene quotas cover correlation regimes, missing correlation, and
+# missing Protein evidence.
 DEFAULT_QUOTAS = OrderedDict(
     (
         ("protein_corr_low", 10),
@@ -92,8 +86,7 @@ def parse_args() -> argparse.Namespace:
         help="Output directory for list, long-table Parquet, catalog, and manifest.",
     )
     parser.add_argument("--seed", type=int, default=42)
-    # Match the frozen A4 adaptive-trust breakpoints used by the controlled
-    # ablation runner: <=0.25 low, 0.25-0.50 mid, >=0.50 high.
+    # Frozen A4 breakpoints: <=0.25 low, 0.25-0.50 mid, >=0.50 high.
     parser.add_argument("--low-corr-max", type=float, default=0.25)
     parser.add_argument("--high-corr-min", type=float, default=0.50)
     parser.add_argument("--min-correlation-pairs", type=int, default=10)
@@ -244,7 +237,7 @@ def load_correlation(path: Path) -> pd.DataFrame:
         }
     )
     out = out[(out["gene_key"] != "") & out["correlation"].notna()]
-    # If duplicates exist, retain the estimate with the largest stated sample size.
+    # For duplicate genes, retain the estimate with the largest sample size.
     out = out.sort_values(
         ["gene_key", "correlation_n_cell_lines"], na_position="last"
     ).drop_duplicates("gene_key", keep="last")

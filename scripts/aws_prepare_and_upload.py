@@ -1,38 +1,8 @@
 #!/usr/bin/env python3
-"""
-aws_prepare_and_upload.py
-=========================
-CellLineSelector - Prepare local data and upload to S3.
+"""Validate, stage, record, and optionally upload the 14 source files.
 
-Local folder names keep their spaces (so data_loader.py needs no changes).
-S3 keys use underscores (so the CLI and boto3 need no quoting gymnastics).
-The mapping between the two lives in FOLDER_MAP below.
-
-What it does, in order:
-    1. Verify all 14 expected files exist locally (report anything missing).
-    2. Gzip each file into a staging directory (skips files already staged).
-    3. Compute sha256 / size / line count for every file -> manifest.json
-    4. Upload staging directory + manifest to s3://<bucket>/raw/<version>/
-    5. Verify by listing what actually landed in S3.
-
-Usage
------
-    pip install boto3
-
-    # See what is actually on disk, change nothing:
-    python aws_prepare_and_upload.py --data-dir ./data --inspect
-
-    # Verify, gzip, build manifest, but do not upload:
-    python aws_prepare_and_upload.py --data-dir ./data --bucket YOUR_BUCKET --dry-run
-
-    # Full run:
-    python aws_prepare_and_upload.py --data-dir ./data --bucket YOUR_BUCKET
-
-    # Re-running is safe: staging and upload both skip work already done.
-
-Credentials come from `aws configure` (~/.aws/credentials) or the standard
-AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY environment variables.
-NEVER hard-code them in this file.
+Local directory names are mapped to S3-safe keys through ``FOLDER_MAP``.
+Credentials are read from the standard AWS credential chain.
 """
 
 from __future__ import annotations
@@ -46,12 +16,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 
-# --------------------------------------------------------------------------
-# Local folder name  ->  S3 folder name.
-# Left side must match your disk exactly, spaces included.
-# Right side is what appears in the S3 key.
-# --------------------------------------------------------------------------
-
+# Local directory names and their S3 key prefixes.
 FOLDER_MAP: dict[str, str] = {
     "gene expression":     "gene_expression",
     "gene properties":     "gene_properties",
@@ -59,10 +24,10 @@ FOLDER_MAP: dict[str, str] = {
     "non gene expression": "non_gene_expression",
 }
 
-# Folders that exist locally but must NOT go into raw/ (derived data).
+# Derived directories excluded from raw uploads.
 IGNORE_FOLDERS = {"merged", "parquet", "staging_gz"}
 
-# Expected filenames, keyed by LOCAL folder name.
+# Expected files, keyed by local directory name.
 EXPECTED_FILES: dict[str, list[str]] = {
     "gene expression": [
         "1_4_hpa_rna_celline.tsv",
@@ -88,8 +53,7 @@ EXPECTED_FILES: dict[str, list[str]] = {
     ],
 }
 
-# Provenance notes that go into the manifest. Fill in the real download URLs
-# and dates before the report - this is the data governance record.
+# Dataset descriptions stored in the manifest.
 SOURCE_NOTES: dict[str, str] = {
     "gene_expression": "HPA RNA cell line, DepMap OmicsExpression TPM log2(x+1), GEO series matrix, CCLE Gygi harmonised MS proteomics",
     "gene_properties": "DepMap OmicsFusion filtered, DepMap OmicsSomaticMutations profile-level",
@@ -97,13 +61,11 @@ SOURCE_NOTES: dict[str, str] = {
     "non_gene_expression": "CCLE metabolomics 2019-05-02, CCLE miRNA 2018-11-03, DepMap OmicsGlobalSignatures",
 }
 
-GZIP_LEVEL = 6           # 6 is the sweet spot; 9 is much slower for ~2% gain
-CHUNK = 8 * 1024 * 1024  # 8 MB read chunks
+GZIP_LEVEL = 6           # Balanced compression and run time.
+CHUNK = 8 * 1024 * 1024  # 8 MB read chunks.
 
 
-# --------------------------------------------------------------------------
-# Inspect mode: report what is actually on disk, change nothing
-# --------------------------------------------------------------------------
+# Inspect the local layout without changing it.
 
 def inspect(data_dir: Path) -> int:
     if not data_dir.is_dir():
@@ -160,9 +122,7 @@ def inspect(data_dir: Path) -> int:
     return 0
 
 
-# --------------------------------------------------------------------------
-# Step 1: verify
-# --------------------------------------------------------------------------
+# Validate the expected layout.
 
 def verify_layout(data_dir: Path) -> tuple[list[tuple[Path, PurePosixPath]], list[str]]:
     """Return ([(source_path, s3_relative_path)], missing_descriptions)."""
@@ -182,16 +142,14 @@ def verify_layout(data_dir: Path) -> tuple[list[tuple[Path, PurePosixPath]], lis
     return found, missing
 
 
-# --------------------------------------------------------------------------
-# Step 2: gzip into staging
-# --------------------------------------------------------------------------
+# Create gzip copies in the staging directory.
 
 def gzip_file(src: Path, dst: Path) -> None:
     dst.parent.mkdir(parents=True, exist_ok=True)
     tmp = dst.with_suffix(dst.suffix + ".partial")
     with open(src, "rb") as fin, gzip.open(tmp, "wb", compresslevel=GZIP_LEVEL) as fout:
         shutil.copyfileobj(fin, fout, length=CHUNK)
-    tmp.replace(dst)  # atomic: a killed run never leaves a valid-looking stub
+    tmp.replace(dst)  # Replace the destination only after compression succeeds.
 
 
 def stage_all(found, staging: Path) -> list[Path]:
@@ -217,9 +175,7 @@ def stage_all(found, staging: Path) -> list[Path]:
     return staged
 
 
-# --------------------------------------------------------------------------
-# Step 3: manifest
-# --------------------------------------------------------------------------
+# Build the data manifest.
 
 def sha256_and_lines(path: Path, count_lines: bool) -> tuple[str, int | None]:
     """One pass over the file for both the checksum and the line count."""
@@ -278,9 +234,7 @@ def build_manifest(found, staged, version: str, bucket: str) -> dict:
     }
 
 
-# --------------------------------------------------------------------------
-# Steps 4 and 5: upload and verify
-# --------------------------------------------------------------------------
+# Upload the staged files and verify the remote listing.
 
 def upload_all(staged: list[Path], staging: Path, manifest_path: Path,
                bucket: str, version: str) -> None:
@@ -289,8 +243,7 @@ def upload_all(staged: list[Path], staging: Path, manifest_path: Path,
     from botocore.exceptions import ClientError
 
     s3 = boto3.client("s3")
-    # Multipart above 64 MB with 8 parallel threads. Without this, a 1 GB
-    # single-part PUT has to restart from zero if the connection drops.
+    # Use multipart uploads for large files so interrupted transfers can resume.
     cfg = TransferConfig(
         multipart_threshold=64 * 1024 * 1024,
         multipart_chunksize=64 * 1024 * 1024,
@@ -342,8 +295,6 @@ def verify_remote(bucket: str, version: str, expected: int) -> None:
     if len(objects) != expected:
         print(f"\nWARNING: expected {expected} objects, found {len(objects)}.")
 
-
-# --------------------------------------------------------------------------
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,

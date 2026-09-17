@@ -46,19 +46,11 @@ RNA trust.
 
 ## Running the analysis
 
-```bash
-cd "/Users/liyannan/Desktop/Data-Science-Group-Project"
-
-/Users/liyannan/miniconda3/envs/cellline-v3/bin/python \
-  scripts/dynamic_ablation_runner.py \
-  --panels-dir "benchmarks/panels" \
-  --panel both \
-  --sample-info "/Users/liyannan/Desktop/cellline_selector_v3/data_s3/nomenclature/9_DepMap_sample_info.csv" \
-  --corr "/Users/liyannan/Desktop/Data Science MSc Graduation Project/gene_rna_protein_correlations.csv" \
-  --production-script "/Users/liyannan/Desktop/cellline_selector_v3/dynamic_cellline_selector_gene_protein.py" \
-  --out-dir "results/dynamic_ablation_unlabelled" \
-  --top-k 10
-```
+From the repository root, run
+`python scripts/dynamic_ablation_runner.py --help`. The runner requires the
+panel directory, DepMap sample information, RNA--Protein correlations, and the
+production scoring script. These locations are supplied for the local
+environment rather than stored as personal paths in the repository.
 
 Run `--self-test` after changing the code. Use `--force` only when deliberately
 regenerating an existing result set.

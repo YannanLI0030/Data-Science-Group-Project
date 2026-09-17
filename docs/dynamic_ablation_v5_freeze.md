@@ -134,23 +134,11 @@ be described as development rather than holdout evidence.
 
 ## Reproduction and verification
 
-From the repository root:
-
-```bash
-cd "/Users/liyannan/Desktop/Data-Science-Group-Project"
-
-/Users/liyannan/miniconda3/envs/cellline-v3/bin/python \
-  scripts/build_candidate_pool_v5_holdout.py \
-  --sample-info "/Users/liyannan/Desktop/cellline_selector_v3/data_s3/nomenclature/9_DepMap_sample_info.csv"
-```
+From the repository root, run
+`python scripts/build_candidate_pool_v5_holdout.py --help` and supply the local
+DepMap sample-information file.
 
 The builder will not replace existing outputs unless `--force` is supplied.
 Once it detects manual review content, replacement is refused even with
-`--force`. To check the frozen hashes without regenerating any file, run:
-
-```bash
-/Users/liyannan/miniconda3/envs/cellline-v3/bin/python \
-  scripts/build_candidate_pool_v5_holdout.py \
-  --sample-info "/Users/liyannan/Desktop/cellline_selector_v3/data_s3/nomenclature/9_DepMap_sample_info.csv" \
-  --verify-only
-```
+`--force`. Use `--verify-only` with the same sample-information input to check
+the frozen hashes without regenerating any file.

@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
-"""Build the high-information manual-review queue for weight selection.
+"""Build a review queue from candidates unique to A0 or the challenger.
 
-The queue contains unverified candidates that occur in exactly one of the
-Top-K sets from the conservative A0 baseline and the exploratory challenger.
-These disagreements are the smallest useful judgement set for deciding which
-weighting scheme is better. Ranking output never determines the biological
-label: all manual-review fields remain unknown/unverified.
+All labels remain unknown until external review.
 """
 
 from __future__ import annotations

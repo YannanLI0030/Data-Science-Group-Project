@@ -76,21 +76,9 @@ Run the self-test first:
 python scripts/weight_search_v4_logo.py --self-test
 ```
 
-Write a reproduction run to a new directory so that the archived files remain
-unchanged:
-
-```bash
-python scripts/weight_search_v4_logo.py \
-  --data-dir "/path/to/merged" \
-  --gold benchmarks/gold_standard_v4_development.csv \
-  --corr "/path/to/gene_rna_protein_correlations.csv" \
-  --summary-out results/weight_search_v4_reproduction/summary.csv \
-  --detail-out results/weight_search_v4_reproduction/by_gene.csv \
-  --logo-out results/weight_search_v4_reproduction/logo.csv \
-  --config-out results/weight_search_v4_reproduction/candidate_config.json \
-  --bootstrap 5000 \
-  --seed 42
-```
+Run `python scripts/weight_search_v4_logo.py --help` for the full input and
+output options. Reproduction runs should use a new output directory so that
+the archived files remain unchanged.
 
 The integrated data and correlation table are external inputs and are not
 duplicated in this repository. The manifest records their hashes for the

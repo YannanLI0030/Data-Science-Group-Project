@@ -1,16 +1,9 @@
 #!/usr/bin/env python3
-"""Export the verified non-classic v4 development benchmark.
+"""Export the verified, non-classic V4 development benchmark.
 
-The editable source of truth remains ``candidate_pool_v4_review.csv``.  This
-script selects only rows assigned to ``weight_tuning`` and then delegates the
-formal gold-schema validation to ``export_gold_standard_v3``.  Classic case
-study genes are excluded defensively even if a row is accidentally assigned
-the wrong role.
-
-The current reviewed v4 benchmark is frozen at 50 rows across 10 genes:
-48 positive and 2 negative labels.  These expectations are checked by default
-so a partially saved or accidentally edited review file cannot silently become
-the benchmark used by ablation and weight-search experiments.
+Only ``weight_tuning`` rows are eligible, and classic case-study genes are
+excluded. The frozen benchmark contains 50 rows across 10 genes: 48 positives
+and 2 negatives.
 """
 
 from __future__ import annotations
@@ -32,7 +25,7 @@ REQUIRED_V4_COLUMNS = v3.REQUIRED_POOL_COLUMNS | {"benchmark_role"}
 
 
 def read_pool(path: Path, input_encoding: str = "auto") -> tuple[pd.DataFrame, str]:
-    """Read the review CSV without changing it and report the chosen encoding."""
+    """Read the review CSV and report the detected encoding."""
     raw = path.read_bytes()
     encodings = (
         [input_encoding]

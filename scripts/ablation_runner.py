@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""CellLineSelector controlled ablation runner.
+"""Run controlled scoring ablations and write summary and per-gene metrics.
 
-Evidence retrieval is shared across configurations. Evaluation uses DepMap IDs,
-penalises missing gold positives, handles exact-score ties, and writes both a
-summary and a per-gene audit table.
+Evaluation uses DepMap IDs, counts missing positives, and handles exact-score
+ties.
 """
 
 from __future__ import annotations
@@ -53,9 +52,9 @@ DEFAULT_CFG = {
     "adaptive_trust": False,
     "v3_structure": False,
     "rna_only_rank": False,
-    # full: protein affects biology and confidence
-    # direct_off: direct term off, protein-derived confidence retained
-    # none: protein and all protein-derived confidence features removed
+    # full: Protein contributes to biology and Confidence.
+    # direct_off: only the direct biological term is disabled.
+    # none: Protein is removed from biology and Confidence.
     "protein_mode": "full",
 }
 

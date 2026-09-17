@@ -51,16 +51,10 @@ column schema can be reused.
 
 ## Regenerating the panel locally
 
-AWS is not required. From the repository root, run:
-
-```bash
-/Users/liyannan/miniconda3/envs/cellline-v3/bin/python \
-  scripts/export_coverage_stratified_ablation_panel.py \
-  --data-dir "/Users/liyannan/Desktop/cellline_selector_v3/data_s3" \
-  --corr "/Users/liyannan/Desktop/Data Science MSc Graduation Project/gene_rna_protein_correlations.csv" \
-  --exclude-file "benchmarks/panels/ablation_100genes_unfiltered_random_list.csv" \
-  --seed 42
-```
+AWS is not required. From the repository root, run
+`python scripts/export_coverage_stratified_ablation_panel.py --help` and supply
+the local raw-data directory and RNA--Protein correlation file. The frozen
+random-panel list and seed are recorded in the panel manifest.
 
 Existing panel files are protected from accidental replacement. Use `--force`
 only when intentionally regenerating the same version. Add

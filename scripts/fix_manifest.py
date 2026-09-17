@@ -1,15 +1,9 @@
 #!/usr/bin/env python3
-"""
-fix_manifest.py — repair the stray brace and restructure provenance fields.
-
-Usage:
-    python fix_manifest.py staging_gz/manifest.json
-"""
+"""Repair the staging manifest and standardise its provenance fields."""
 import json, re, sys, shutil
 from pathlib import Path
 
-# Canonical upstream source per file id. Portal-level URLs only: deep links
-# rot, and none of these were downloaded directly anyway.
+# Canonical upstream sources. Portal URLs are more stable than deep links.
 UPSTREAM = {
     "1_4_hpa_rna_celline.tsv": (
         "Human Protein Atlas, RNA cell line data",
@@ -75,7 +69,7 @@ ACQUIRED_DATE = "2026-05-28"
 
 
 def repair_text(text: str) -> tuple[str, int]:
-    """Remove a stray '{' that splits one entry into two."""
+    """Remove the stray brace that splits one entry into two."""
     pattern = re.compile(r'("source_note":\s*"[^"]*",)\s*\n\s*\{\s*\n(\s*"download_url")')
     fixed, n = pattern.subn(r'\1\n\2', text)
     return fixed, n

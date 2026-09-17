@@ -1,16 +1,9 @@
 #!/usr/bin/env python3
-"""Export verified expression-review rows into the formal v3 gold standard.
+"""Export verified expression-review rows to the V3 Gold schema.
 
-The candidate pool remains the editable review source. Only rows satisfying all
-of the following enter the formal benchmark:
-
-* verified == yes
-* judgement is positive or negative
-* benchmark_task is expression_suitability or both
-* identifiers, evidence type, source URL, summary, and notes are present
-
-The output keeps the v2-compatible columns used by ablation_runner.py and adds
-structured provenance columns for auditability.
+Eligible rows require a positive or negative judgement, an expression-related
+task, and complete identifiers and provenance. The output remains compatible
+with ``ablation_runner.py``.
 """
 
 from __future__ import annotations
