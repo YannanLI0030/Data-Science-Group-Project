@@ -1,5 +1,0 @@
-numpy>=1.26,<3
-pandas>=2.2,<3
-pyarrow>=16,<25
-requests>=2.31,<3
-pytest>=7.4,<10
