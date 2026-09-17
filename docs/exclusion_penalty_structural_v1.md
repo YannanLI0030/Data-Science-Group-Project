@@ -196,9 +196,10 @@ manifest are written to `results/exclusion_penalty_structural_v1/`. The same
 directory contains `exclusion_penalty_structural_v1.xlsx` as a formatted review
 copy; the CSV files and manifest remain the machine-readable record.
 
-By default, the runner looks for a sibling `cellline_selector_v3` directory.
-Use `CELLLINE_SELECTOR_V3_ROOT` or the corresponding command-line options when
-the production scorer and local data are stored elsewhere.
+By default, the runner uses the integrated production scorer at the repository
+root. If that file is absent, it looks for a sibling `cellline_selector_v3`
+directory. Use `CELLLINE_SELECTOR_V3_ROOT` or the corresponding command-line
+options when the scorer and local data are stored elsewhere.
 
 The manifest hashes the exact runner used at commit `4acd4ca`. The current
 runner only changes comments and external-path discovery; the scoring and audit

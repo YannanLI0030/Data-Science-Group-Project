@@ -2,8 +2,8 @@
 00_diagnose.py —— 先跑这个, 再跑 notebook
 ==========================================
 用法:
-    cd D:\\User1\\UoB_Coursework\\FinalProject
-    python src\\00_diagnose.py data
+    cd <repository_root>
+    python src/00_diagnose.py data_s3
 
 作用: 把接入 HPA/GEO 之前必须确认的几件事一次性打印出来, 免得在 notebook 里
 一步一步撞 KeyError。它 **只读文件、不写任何东西**。

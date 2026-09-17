@@ -1,26 +1,34 @@
 # CellLineSelector
 
-MSc Data Science group project: an auditable multi-omics recommendation system
-for selecting human cell lines by target gene, optional exclusion gene and
-optional disease/tissue context.
+CellLineSelector is a local multi-omics recommendation system for selecting
+human cell lines by target gene, target Protein, optional exclusion gene and
+disease or tissue context. It combines a deterministic ranker with an optional
+post-ranking explanation Agent.
 
-## Current scoring deliverable
+## Final application
 
-The production scoring entry point is `src/merged_cellline_selector.py`. It
-reads `master_table.csv` and `cellline_annotations.csv`, ranks candidates and
-writes:
+`dynamic_cellline_selector_gene_protein.py` is the canonical ranking backend.
+It loads the project datasets on demand, harmonises identifiers, applies the
+disease filter and writes the ranked CSV. `api_server.py` exposes the same
+backend to `web/index.html`; the UI does not contain a second scorer.
 
-- a complete ranked CSV for audit and evaluation;
-- a structured JSON payload for the UI/RAG integration;
-- score components, confidence components, evidence flags, mutation/fusion
-  annotations, data gaps and alternative cell lines.
+The Agent runs only after the ranking has been saved. It receives structured
+evidence cards and cannot change candidate eligibility, scores, recommendation
+levels or rank order. Citation and numerical checks remove unsupported claims
+before display. The offline scripted explanation is the default and needs no
+API key.
 
-The retained production configuration, A0, assigns 0.55 to RNA, 0.30 to
-Protein and 0.15 to Confidence. Confidence combines completeness (0.40),
-source support (0.35) and RNA--Protein consistency (0.25). The configuration
-file and internal name still contain `provisional` for compatibility with
-earlier outputs. The frozen V5 comparison did not support replacing A0 with
-A1a, but it also did not establish A0 as a universally optimal weight set.
+Three query modes are supported:
+
+- `GENE_MULTIOMICS`: target gene only;
+- `PROTEIN_ONLY`: target Protein only;
+- `COMBINED`: target gene and Protein.
+
+For gene and combined queries, A0 assigns 0.55 to RNA, 0.30 to Protein and
+0.15 to Confidence. Missing biological modalities are removed from the
+biological denominator. Protein-only queries use 0.85 Protein and 0.15
+Confidence. Confidence combines completeness (0.40), source support (0.35)
+and RNA--Protein consistency (0.25). The exclusion penalty is capped at 0.30.
 
 ## Setup
 
@@ -30,76 +38,80 @@ Python 3.10 or newer is recommended.
 python -m pip install -r requirements.txt
 ```
 
-The committed tables and reports can be inspected without downloading the raw
-data. Re-running the full experiments also requires the local integrated data,
-the RNA--Protein correlation table and, for the Penalty experiment, the latest
-dynamic production scorer and caches. AWS is not required.
+The 3.6 GB raw dataset is not stored in Git. Place the supplied files under
+`data_s3/` using their original four subdirectories. The expected filenames
+and checksums are recorded in `data_manifest/manifest.json`.
 
-The merged data is intentionally not committed. Either pass its directory on
-each run or set an environment variable:
+Hosted explanation models are optional. Copy `.env.example` to `.env` only if
+you want to configure an OpenAI or Anthropic key. Never commit `.env`. Keys
+entered in the UI remain in page memory and are sent only to the local API for
+the current request.
+
+## Run the application
+
+Start the local UI:
 
 ```bash
-export CELLLINESELECTOR_DATA_DIR="/absolute/path/to/merged"
+python start.py
 ```
 
-## Run a recommendation
-
-Pan-cancer, non-interactive example:
+The browser opens at `http://127.0.0.1:8000/`. To start the server without
+opening a browser:
 
 ```bash
-python src/merged_cellline_selector.py \
-  --target_gene EGFR \
-  --no_prompt
+python api_server.py --no-browser
 ```
 
-Disease-filtered example with an exclusion gene:
+Run the command-line workflow:
 
 ```bash
-python src/merged_cellline_selector.py \
+python start.py --cli \
   --target_gene EGFR \
   --exclusion_gene ABCB1 \
-  --disease lung \
-  --data_dir "/absolute/path/to/merged" \
-  --no_prompt
+  --disease "cervical cancer" \
+  --non-interactive
 ```
 
-To test a future selected weight set without editing Python code, copy and edit
-`config/scoring_a0_provisional.json`, then add:
+Use `--target_protein` instead of `--target_gene` for Protein-only mode, or
+supply both for a combined query. Add `--no-agent` when only the deterministic
+ranking is required.
+
+## Tests
+
+The application tests do not require the full raw dataset:
 
 ```bash
---scoring_config config/my_selected_weights.json
+python -m unittest discover -s tests -v
 ```
 
-Relative output directories are resolved from the current working directory.
-The default `results/` output contains a full ranking CSV and a structured JSON
-file whose names include the target and query context.
-
-## Verify scoring and run ablations
+They cover the Agent boundary, citation and numerical grounding, Protein-only
+scoring, and the UI/API query contract. The main ablation checks can be run
+separately:
 
 ```bash
 python scripts/ablation_runner.py --self-test
+python scripts/dynamic_ablation_runner.py --self-test
+python scripts/exclusion_penalty_ablation_runner.py --self-test
 ```
-
-This test verifies, among other invariants, that production A0 and ablation A0
-produce the same scores and ordering.
 
 ## Evaluation record
 
-The experiments answer different questions and should not be merged into one
-performance claim:
+The evaluation stages answer different questions and should not be collapsed
+into one “best model” claim:
 
 | Stage | Purpose | Main boundary |
 |---|---|---|
 | V4 development | Generate component and weight hypotheses from 50 labels across 10 genes | Model-informed pool; only 2 verified negatives |
-| Dynamic ablation | Check whether 14 interventions alter rankings across two 100-gene panels | No relevance labels; structural sensitivity only |
+| Dynamic ablation | Check 14 interventions across two 100-gene panels | No relevance labels; structural sensitivity only |
 | Frozen V5 | Compare 10 configurations on 12 reviewed genes | 99 positives and 90 unknowns; no verified negatives |
 | Penalty V1 | Test P00/P15/P30/P45 mechanics on 5 fixed queries | No pair-specific Gold; no optimal-cap claim |
 
-V5 retained A0 because the V4 advantage of A1a did not reproduce. Removing the
-full Confidence block or source support caused clearer NDCG@5 reductions, while
-other variants showed endpoint- or gene-specific trade-offs. The Penalty run
-passed all 155 implementation checks and showed that P30 changes rankings, but
-it did not show that 0.30 is biologically optimal.
+V5 did not reproduce the V4 advantage of removing direct Protein, so A0 was
+retained. Removing the full Confidence block or source support caused clearer
+NDCG@5 reductions, while other variants showed endpoint- or gene-specific
+trade-offs. The Penalty experiment passed all 155 implementation checks and
+showed that P30 changes rankings, but it did not establish 0.30 as biologically
+optimal.
 
 Detailed records are in:
 
@@ -110,23 +122,37 @@ Detailed records are in:
 - `docs/weight_search_v4_development.md`;
 - `docs/experiment_provenance.md`.
 
+## Repository map
+
+```text
+api_server.py                              local UI/API
+dynamic_cellline_selector_gene_protein.py canonical dynamic ranker
+start.py                                  UI and CLI entry point
+src/data_loader.py                        local raw-data loader
+src/data_merger.py                        identifier harmonisation
+src/agentic/                              post-ranking explanation layer
+web/index.html                            browser interface
+tests/                                    application boundary tests
+scripts/                                  ablation and benchmark tooling
+benchmarks/                               reviewed pools and Gold files
+results/                                  frozen experiment outputs
+docs/                                     methods, limits and provenance
+```
+
+`src/merged_cellline_selector.py` is retained for the earlier merged-table
+experiments. It is not the final UI/API ranking backend.
+
 ## Scope and limitations
 
-- The current merged master table contains a selected gene panel, not all human
-  genes.
-- Protein coverage is sparse; missing protein changes completeness and
-  confidence and triggers row-wise biological-weight redistribution.
-- Mutation and fusion are auditable annotations, not universally positive or
-  negative ranking signals.
-- The current alternative-line similarity is a target RNA/protein component
-  fallback, not full-transcriptome or full-multi-omics similarity.
-- V5 evaluates early ranking within a frozen candidate union; it is not an
-  open-world estimate across all genes and cell lines.
-- V5 contains no verified negatives, so it cannot support a negative-sink
-  conclusion.
-- The archived V4 weight search is development-stage model selection, not a
-  completed optimisation of production weights.
+- Protein and GEO coverage remain sparse and uneven across genes.
+- V5 evaluates early ranking within a frozen candidate union, not open-world
+  recall across every human gene and cell line.
+- V5 contains no verified negatives and cannot support a negative-sink claim.
+- The V4 weight search is development-stage model selection, not completed
+  optimisation of production weights.
+- Penalty V1 verifies implementation and ranking behaviour, not biological
+  suitability or the optimal value of the cap.
+- Experimental use still requires assay-specific and laboratory validation.
 
-See `docs/scoring_module_handoff.md` for the scoring formula and output
-contract. Later evaluation decisions are recorded in the V5 and Penalty
-documents listed above.
+See `RELEASE_NOTES.md` for the final application checks and
+`docs/MERGE_NOTES.md` for component ownership and runtime boundaries.

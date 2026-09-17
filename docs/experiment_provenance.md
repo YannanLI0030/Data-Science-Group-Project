@@ -17,6 +17,15 @@ used for the original run.
 | Exclusion-penalty structural run | `4acd4ca` | Comments and external-path discovery |
 | V4 development weight search | `0a66a2c` | Comments only |
 
+The final team application uses the later portable production script from the
+2026-09-11 release. Relative paths, non-interactive CLI handling and the
+downstream Agent were added after the Penalty run; the `score_candidates()`
+implementation used by the structural comparison was unchanged. The original
+production scorer remains identified by its hash in the Penalty manifest.
+The subsequent final archive translated API, UI and data-merger messages into
+English. Those text changes alter file hashes but do not change the scoring
+logic or test structure.
+
 For example, the exact dynamic runner can be inspected with:
 
 ```bash

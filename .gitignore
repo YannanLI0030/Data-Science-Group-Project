@@ -247,3 +247,10 @@ credentials
 # 基准集和实验结果需要进仓库(覆盖全局 *.csv 排除)
 !benchmarks/*.csv
 !results/*.csv
+
+# Local application data and generated runtime files
+data_s3/
+gene_cache/*
+!gene_cache/.gitkeep
+outputs/
+runs/
