@@ -55,7 +55,7 @@ For an exclusion gene, the production path averages the available standardised
 DepMap, HPA, and GEO RNA values and applies Min--Max scaling within the
 disease-filtered candidate set. The score is
 
-\[
+$$
 \operatorname{Final}_\alpha =
 \operatorname{clip}\left(
 0.85\,\operatorname{Biology}
@@ -63,7 +63,7 @@ disease-filtered candidate set. The score is
 -\alpha\,\operatorname{ExclusionScaled},
 0,1
 \right).
-\]
+$$
 
 `ExclusionScaled` is relative to the current query. A value of 0.8 in one
 disease context is not an absolute threshold and cannot be compared directly
