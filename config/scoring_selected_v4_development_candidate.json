@@ -1,0 +1,33 @@
+{
+  "name": "selected_v4_development_logo_one_se_candidate",
+  "status": "candidate_not_yet_frozen",
+  "selection_dataset": "gold_standard_v4_development.csv",
+  "selection_method": "predeclared_grid_plus_LOGO_one_standard_error",
+  "primary_metric": "NDCG@5",
+  "rna_weight": 0.85,
+  "protein_weight": 0.0,
+  "confidence_weight": 0.15,
+  "protein_mode": "direct_off",
+  "confidence_completeness": 0.4,
+  "confidence_source_support": 0.35,
+  "confidence_consistency": 0.25,
+  "max_exclusion_penalty": 0.3,
+  "adaptive_trust": false,
+  "n_development_genes": 10,
+  "n_gold_positive": 48,
+  "n_gold_negative": 2,
+  "classic_case_policy": "independent_post_freeze_evaluation_only_no_weight_retuning",
+  "unconstrained_best_config": "W_rna0.70_protein0.00_confidence0.30",
+  "one_se_threshold": 0.4253635364135134,
+  "best_NDCG@5_standard_error": 0.11318334085062348,
+  "one_se_eligible_config_count": 32,
+  "grid_config_count": 32,
+  "logo_one_se_selected_counts": {
+    "W_rna0.85_protein0.00_confidence0.15": 10
+  },
+  "logo_unconstrained_best_counts": {
+    "W_rna0.70_protein0.00_confidence0.30": 9,
+    "W_rna0.70_protein0.05_confidence0.25": 1
+  },
+  "caution": "Selected on 10 development genes with only 2 negative labels; do not describe the selected weights as a statistically unique optimum. The one-standard-error band contains every grid configuration, so the conservative selection is determined by proximity to the predeclared A1a anchor rather than clear separation in NDCG@5."
+}
