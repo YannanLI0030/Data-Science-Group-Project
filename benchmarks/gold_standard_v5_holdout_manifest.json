@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-09-08T16:38:54.324Z",
+  "status": "labels_frozen_before_internal_audit_unblinding",
+  "experiment_role": "targeted independent-label component holdout",
+  "source_working_review": {
+    "path": "/Users/liyannan/Documents/Codex/2026-08-17/zhe/outputs/v5_holdout_review/candidate_pool_v5_holdout_review_working.csv",
+    "rows": 189,
+    "sha256": "21ae6585747ef84870b6237a92e1ec93069ca27de543296c43f5252a0556728f"
+  },
+  "frozen_blank_baseline": {
+    "repository": "/Users/liyannan/Desktop/Data-Science-Group-Project",
+    "commit": "6ebd934",
+    "repository_path": "benchmarks/candidate_pool_v5_holdout_review.csv",
+    "sha256": "2f7bfaf602d548ce746863b9ad27fba6c1677a199d64dd8433ad21cd37abe8a9",
+    "expected_sha256": "2f7bfaf602d548ce746863b9ad27fba6c1677a199d64dd8433ad21cd37abe8a9",
+    "protected_columns_verified_unchanged": [
+      "review_id",
+      "benchmark_role",
+      "review_priority",
+      "priority_reason",
+      "gene",
+      "DepMap_ID",
+      "cell_line",
+      "lineage",
+      "disease",
+      "subtype",
+      "query_mode",
+      "query_scope"
+    ]
+  },
+  "checks": {
+    "review_rows": 189,
+    "review_columns": 19,
+    "unique_review_ids": 189,
+    "unique_gene_depmap_pairs": 189,
+    "genes": 12,
+    "relation_counts": {
+      "positive": 99,
+      "negative": 0,
+      "unknown": 90
+    },
+    "missing_required_review_fields": 0,
+    "invalid_depmap_ids": 0,
+    "judgement_verified_mismatches": 0,
+    "internal_audit_opened_before_label_freeze": false
+  },
+  "outputs": {
+    "completed_review": {
+      "path": "/Users/liyannan/Documents/Codex/2026-08-17/zhe/outputs/v5_holdout_review/candidate_pool_v5_holdout_review_completed.csv",
+      "rows": 189,
+      "sha256": "5d65328c45909225f61a131faf22d2ca9e2f991dd559f8a247b8834300b9de62"
+    },
+    "gold_standard": {
+      "path": "/Users/liyannan/Documents/Codex/2026-08-17/zhe/outputs/v5_holdout_review/gold_standard_v5_holdout.csv",
+      "rows": 99,
+      "genes": 12,
+      "relation_counts": {
+        "positive": 99,
+        "negative": 0
+      },
+      "per_gene": {
+        "ARID3A": {
+          "positive": 9,
+          "negative": 0
+        },
+        "CALCB": {
+          "positive": 4,
+          "negative": 0
+        },
+        "CALML3": {
+          "positive": 8,
+          "negative": 0
+        },
+        "CHKA": {
+          "positive": 3,
+          "negative": 0
+        },
+        "ERBB3": {
+          "positive": 10,
+          "negative": 0
+        },
+        "GALNT7": {
+          "positive": 14,
+          "negative": 0
+        },
+        "KRT76": {
+          "positive": 1,
+          "negative": 0
+        },
+        "MFN2": {
+          "positive": 19,
+          "negative": 0
+        },
+        "OGDH": {
+          "positive": 14,
+          "negative": 0
+        },
+        "POU2F3": {
+          "positive": 5,
+          "negative": 0
+        },
+        "PSME4": {
+          "positive": 8,
+          "negative": 0
+        },
+        "SIGLEC9": {
+          "positive": 4,
+          "negative": 0
+        }
+      },
+      "sha256": "97117fa607bd242e6c280a1a4b983a6b42316c1c3274066c192db695b4bc28d3"
+    }
+  },
+  "interpretation_limits": [
+    "Unknown rows are excluded from gold and are not treated as negatives.",
+    "No independently verified negative labels were found; negative-sink metrics are unavailable for V5.",
+    "Frozen reviewer labels must not be edited after internal rankings or configuration provenance are unblinded."
+  ]
+}
