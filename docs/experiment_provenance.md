@@ -1,23 +1,21 @@
 # Experiment provenance and reproduction boundaries
 
-The committed manifests record the exact inputs, scripts and outputs used for
-each frozen run. Result-table hashes were rechecked before publication and
-still match their manifests.
+The committed manifests record the inputs, scripts and outputs used for
+each frozen run. Hashes for all committed result tables were rechecked before
+publication and still match their recorded manifest values.
 
-Some scripts were later edited to shorten comments or replace personal default
-paths with repository-relative discovery. Those maintenance changes alter a
-file hash even when the numerical method is unchanged. The manifests were not
-rewritten, because doing so would falsely describe a later file as the script
-used for the original run.
+Some scripts were later edited to shorten comments or replace personal
+default paths with repository-relative discovery. These maintenance changes
+altered script hashes without changing the numerical method. Frozen
+run-defining fields and result hashes were not regenerated.
 
-For publication, user-specific absolute paths in manifests and saved notebook
-output were replaced with repository-relative paths. Files from the separate
-runtime and review workspaces use the logical prefixes `external/runtime_snapshot/`,
-`external/data_snapshot/` and `external/review_workspace/`. This cleanup changes
-only path labels. Recorded SHA-256 values, row counts, labels, configurations
-and numerical results remain those of the frozen runs. Hashes that identify a
-manifest itself therefore refer to the original run-time copy, before this
-publication-only path normalisation.
+For publication, only user-specific path labels in selected manifests and
+saved outputs were normalised. Files from separate runtime and review
+workspaces use the logical prefixes `external/runtime_snapshot/`,
+`external/data_snapshot/` and `external/review_workspace/`. Recorded SHA-256
+values, row counts, labels, configurations and numerical results remain those
+of the frozen runs. Where a frozen record stores the manifest's own hash, that
+value refers to the original run-time copy before this path normalisation.
 
 | Experiment | Exact run-time version in Git history | Later change |
 |---|---|---|
