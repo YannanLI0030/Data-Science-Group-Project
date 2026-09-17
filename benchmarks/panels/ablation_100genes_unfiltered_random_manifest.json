@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "panel_name": "ablation_100genes_unfiltered_random",
+  "registered_at": "2026-09-06T12:47:09+08:00",
+  "intended_role": [
+    "unlabelled_missing-data_stress_test",
+    "unlabelled_ranking-stability_analysis"
+  ],
+  "not_valid_for": [
+    "NDCG/Recall/MRR without independently verified gold labels",
+    "final weight selection",
+    "claiming an independent performance test"
+  ],
+  "selection": {
+    "method": "uniform random choice without replacement from DepMap RNA columns",
+    "seed": 42,
+    "reported_generator_repository_branch": "Data-Science-Group-Project:yancheng",
+    "reported_generator_script": "src/Export100genes_forablationexperiments.py",
+    "reported_script_commit_visible_in_screenshot": "fdf57f4",
+    "provenance_caution": "The visible Git commit identifies the branch copy of the script; it is not cryptographically bound to the delivered archive.",
+    "excluded_genes": [
+      "AFP",
+      "ALB",
+      "AR",
+      "ASGR1",
+      "CD3E",
+      "CD86",
+      "DES",
+      "EGFR",
+      "ERBB2",
+      "ESR1",
+      "FGFR2",
+      "GAPDH",
+      "GFAP",
+      "KLK4",
+      "KRAS",
+      "MET",
+      "MITF",
+      "MSLN",
+      "MUC1",
+      "MYC",
+      "PTPRC",
+      "TP53"
+    ]
+  },
+  "delivery": {
+    "channel": "WeChat file message",
+    "archive_name": "随机100个基因.zip",
+    "archive_sha256": "d6a1034b687161e25259a4d696168d3a9253d7171d9b2fce29ab70a4e81e848e"
+  },
+  "reported_generator_code": {
+    "Export100genes_forablationexperiments.py_sha256": "061fd39bfb93533e395bb0d370fde2e397d68dd2f199aa57079f3b3df833ce75",
+    "data_loader.py_sha256": "9e628b25b3fecd323f22ec564d728395b96cccec4f19552df50de52bef2c3e7a",
+    "data_merger.py_sha256": "253404ef6e12bd4012dfe0e9f0ae3f2e7b362471a99606f5bac100d9901abbef"
+  },
+  "audit": {
+    "rows": 249414,
+    "genes": 100,
+    "depmap_ids": 1722,
+    "sources": 8,
+    "genes_with_protein": 19,
+    "genes_without_protein": 81,
+    "genes_with_rna_protein_correlation": 18,
+    "genes_without_rna_protein_correlation": 82,
+    "genes_with_hpa_rna": 32,
+    "genes_with_geo_rna": 23,
+    "genes_with_only_one_rna_source": 68,
+    "genes_with_three_rna_sources_and_protein": 15,
+    "duplicate_rows_for_gene_source_depmap_key": 52549,
+    "duplicate_gene_source_depmap_groups": 10370,
+    "conflicting_value_groups": 9532,
+    "aggregation_required_before_scoring": true
+  },
+  "outputs": {
+    "panel_list": {
+      "path": "benchmarks/panels/ablation_100genes_unfiltered_random_list.csv",
+      "bytes": 968,
+      "sha256": "df29c3c2d204cadcfdf338a0bbf18dd72226e62b72c6df67e9b3372f3f791eda"
+    },
+    "long_table": {
+      "path": "benchmarks/panels/ablation_100genes_unfiltered_random.parquet",
+      "bytes": 2339331,
+      "sha256": "e3e1b7d12c24de8df974ff28151ea1e2ad75645c64c6db3762f1fff6b42e8b08"
+    }
+  }
+}

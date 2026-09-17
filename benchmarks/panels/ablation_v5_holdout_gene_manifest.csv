@@ -1,0 +1,13 @@
+﻿holdout_order,panel_order,gene,selection_stratum,rna_protein_correlation,rna_source_count,protein_n_cell_lines,top10_union_candidates,v5_role,selection_reason
+1,5,MFN2,protein_corr_low,0.1352640797529214,3,375,22,targeted_holdout_candidate,Low RNA-protein correlation; broadly observed protein and interpretable mitochondrial function.
+2,8,CALML3,protein_corr_low,0.1671787941698875,3,303,15,targeted_holdout_candidate,Low RNA-protein correlation; interpretable epithelial calcium-binding marker.
+3,19,OGDH,protein_corr_mid,0.3266806618553484,3,375,23,targeted_holdout_candidate,Mid RNA-protein correlation; interpretable metabolic enzyme with broad measurements.
+4,14,PSME4,protein_corr_mid,0.3568533006890947,3,375,14,targeted_holdout_candidate,Mid RNA-protein correlation; interpretable proteostasis-related protein with broad measurements.
+5,23,ERBB3,protein_corr_high,0.7759957528261909,3,321,16,targeted_holdout_candidate,High RNA-protein correlation; interpretable receptor and cancer-model marker.
+6,26,CHKA,protein_corr_high,0.5588382819199366,3,214,13,targeted_holdout_candidate,High RNA-protein correlation; interpretable phospholipid-metabolism enzyme.
+7,30,ARID3A,protein_corr_high,0.8031452343565714,3,366,15,targeted_holdout_candidate,High RNA-protein correlation; interpretable lineage-associated transcription factor.
+8,35,GALNT7,protein_no_reliable_corr,,3,375,24,targeted_holdout_candidate,Broad protein coverage but no reliable correlation; informative correlation-missing case.
+9,38,SIGLEC9,protein_no_reliable_corr,,3,18,12,targeted_holdout_candidate,Protein present without reliable correlation; interpretable immune-surface marker.
+10,32,CALCB,protein_no_reliable_corr,,3,18,12,targeted_holdout_candidate,Protein present without reliable correlation; interpretable neuroendocrine-associated marker.
+11,71,POU2F3,multisource_rna_no_protein,,3,0,12,targeted_holdout_candidate,Three RNA sources and no proteomics; interpretable lineage transcription factor.
+12,57,KRT76,multisource_rna_no_protein,,3,0,11,targeted_holdout_candidate,Three RNA sources and no proteomics; interpretable epithelial keratin.

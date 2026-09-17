@@ -1,0 +1,840 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-09-09T00:11:21.042Z",
+  "status": "one_time_v5_holdout_evaluation_completed",
+  "experiment_role": "targeted independent-label component holdout",
+  "not_a_weight_search": true,
+  "frozen_primary_configs": [
+    "B0_rna_mean",
+    "A0_team_baseline",
+    "A1a_no_direct_protein",
+    "A1b_no_protein_evidence",
+    "A1c_no_protein_confidence",
+    "A2_no_confidence",
+    "A2a_no_conf_completeness",
+    "A2b_no_conf_source_support",
+    "A2c_no_conf_consistency",
+    "A4_adaptive_trust"
+  ],
+  "secondary_configs_excluded": [
+    "A3_equal_bio",
+    "A3b_reversed_bio",
+    "A5_v3_structure",
+    "A6_v3_full"
+  ],
+  "baseline_config": "A0_team_baseline",
+  "primary_metric": "macro mean NDCG@5_verified_pool across the 12 frozen genes",
+  "secondary_metrics": [
+    "P@3_verified_lower_bound",
+    "Recall@3_verified_pool",
+    "NDCG@3_verified_pool",
+    "P@5_verified_lower_bound",
+    "Recall@5_verified_pool",
+    "P@10_verified_lower_bound",
+    "Recall@10_verified_pool",
+    "NDCG@10_verified_pool",
+    "MRR@10_expected_tie",
+    "MRR@10_midrank_legacy"
+  ],
+  "metric_scope": {
+    "candidate_scope": "Each configuration's frozen Top-10 with exact-score ties, evaluated against verified positives in the frozen ten-configuration candidate union.",
+    "query_scope": "GENE_MULTIOMICS queries only, with no disease filter. The 12 genes were prospectively selected by coverage stratum and structural discriminability.",
+    "unknown_policy": "Unknown candidates are unlabelled, not negatives. They occupy observed rank positions and receive zero observed gain; therefore P@k is explicitly a lower bound.",
+    "precision": "Expected verified-positive hits in the first k slots under random ordering within exact-score ties, divided by k; reported as P@k_verified_lower_bound.",
+    "recall": "Expected verified-positive hits in the first k slots divided by every verified positive for that gene in the frozen 189-row ten-configuration candidate union; reported as Recall@k_verified_pool.",
+    "ndcg": "Binary-gain NDCG using expected DCG under random ordering within exact-score ties and an IDCG containing all verified positives for the gene in the frozen pool; reported as NDCG@k_verified_pool.",
+    "mrr": "Exact expected reciprocal rank of the first verified positive under random ordering within its score-tie group, truncated at rank 10. MRR@10_midrank_legacy is retained only as an audit diagnostic.",
+    "negative_sink": "Unavailable because V5 contains no independently verified negative labels."
+  },
+  "aggregation": {
+    "primary_summary": "Unweighted macro mean, plus median and interquartile range, across the 12 frozen V5 genes.",
+    "paired_comparison": "Predeclared controlled gene-level deltas; summary also reports each configuration versus A0_team_baseline.",
+    "bootstrap": {
+      "iterations": 5000,
+      "base_seed": 20260909,
+      "interval": "percentile 95% CI over genes",
+      "warning": "Intervals are descriptive and are not multiplicity-adjusted significance tests."
+    }
+  },
+  "input_integrity": {
+    "all_sha256_checks_passed": true,
+    "gold": {
+      "path": "benchmarks/gold_standard_v5_holdout.csv",
+      "rows": 99,
+      "genes": 12,
+      "sha256": "97117fa607bd242e6c280a1a4b983a6b42316c1c3274066c192db695b4bc28d3"
+    },
+    "completed_review": {
+      "path": "benchmarks/candidate_pool_v5_holdout_review_completed.csv",
+      "sha256": "5d65328c45909225f61a131faf22d2ca9e2f991dd559f8a247b8834300b9de62"
+    },
+    "internal_audit": {
+      "path": "results/v5_holdout_internal/candidate_pool_v5_holdout_audit.csv",
+      "rows": 189,
+      "sha256": "4ddc004888fef6f9cdfd4f86f3122357ad425cc33d5a45d20238c651b22c4692"
+    },
+    "frozen_design": {
+      "path": "config/ablation_v5_frozen_design.json",
+      "sha256": "6d3d407982e249fd972fccf6c5c890680bb2e11469abee4d70ddaacab63cedee"
+    },
+    "label_freeze_manifest": {
+      "path": "benchmarks/gold_standard_v5_holdout_manifest.json",
+      "sha256": "a554f1ef4f0265b2c6deb5bf6506ad97dc3da408669d21dfb03d637f5d7ab0e5"
+    },
+    "candidate_pool_manifest": {
+      "path": "benchmarks/candidate_pool_v5_holdout_manifest.json",
+      "sha256": "edf842df1f90f92da465a0f102e66110d6a5d71c77c86c53ee478ae0565a6f82"
+    },
+    "evaluation_script": {
+      "path": "scripts/v5/evaluate_v5_holdout.mjs",
+      "sha256": "2c058b8b58b8c095e9c9a07afdc168e300c1746d4a8c12aa0b7d2d0c5f84b749"
+    }
+  },
+  "checks": {
+    "metric_self_tests_passed": true,
+    "gold_pairs_all_present_in_audit": true,
+    "duplicate_gold_pairs": 0,
+    "duplicate_audit_pairs": 0,
+    "rank_score_null_mismatches": 0,
+    "config_gene_rows": 120,
+    "each_config_gene_has_at_least_10_candidates": true,
+    "stored_top10_ranks_contiguous_and_scores_nonincreasing": true,
+    "candidate_pool_rows": 189,
+    "verified_positive_rows": 99,
+    "unknown_rows": 90,
+    "global_verified_label_coverage": 0.52380952,
+    "queries_with_10_candidates": 118,
+    "queries_with_11_candidates": 2,
+    "queries_with_any_exact_score_tie": 4,
+    "queries_with_cutoff_exact_score_tie": 2,
+    "negatives": 0
+  },
+  "controlled_contrasts": [
+    {
+      "id": "C00_A0_vs_RNA_mean",
+      "question": "Multi-omic A0 versus RNA-only mean reference",
+      "reference": "B0_rna_mean",
+      "treatment": "A0_team_baseline"
+    },
+    {
+      "id": "C01_remove_direct_protein",
+      "question": "Remove direct Protein while retaining Protein-derived Confidence",
+      "reference": "A0_team_baseline",
+      "treatment": "A1a_no_direct_protein"
+    },
+    {
+      "id": "C02_remove_all_protein_evidence",
+      "question": "Remove direct Protein and all Protein-derived Confidence",
+      "reference": "A0_team_baseline",
+      "treatment": "A1b_no_protein_evidence"
+    },
+    {
+      "id": "C03_remove_protein_confidence_only",
+      "question": "Retain direct Protein but remove Protein-derived Confidence",
+      "reference": "A0_team_baseline",
+      "treatment": "A1c_no_protein_confidence"
+    },
+    {
+      "id": "C04_remove_protein_conf_after_direct",
+      "question": "Remove Protein-derived Confidence after direct Protein is already removed",
+      "reference": "A1a_no_direct_protein",
+      "treatment": "A1b_no_protein_evidence"
+    },
+    {
+      "id": "C05_remove_direct_without_protein_conf",
+      "question": "Remove direct Protein when Protein-derived Confidence is already absent",
+      "reference": "A1c_no_protein_confidence",
+      "treatment": "A1b_no_protein_evidence"
+    },
+    {
+      "id": "C06_remove_full_confidence",
+      "question": "Remove the complete Confidence block",
+      "reference": "A0_team_baseline",
+      "treatment": "A2_no_confidence"
+    },
+    {
+      "id": "C07_remove_completeness",
+      "question": "Remove Confidence completeness component",
+      "reference": "A0_team_baseline",
+      "treatment": "A2a_no_conf_completeness"
+    },
+    {
+      "id": "C08_remove_source_support",
+      "question": "Remove Confidence source-support component",
+      "reference": "A0_team_baseline",
+      "treatment": "A2b_no_conf_source_support"
+    },
+    {
+      "id": "C09_remove_consistency",
+      "question": "Remove Confidence RNA-Protein consistency component",
+      "reference": "A0_team_baseline",
+      "treatment": "A2c_no_conf_consistency"
+    },
+    {
+      "id": "C10_enable_adaptive_trust",
+      "question": "Enable correlation-based adaptive RNA trust",
+      "reference": "A0_team_baseline",
+      "treatment": "A4_adaptive_trust"
+    }
+  ],
+  "outputs": {
+    "v5_holdout_summary.csv": {
+      "path": "results/v5_holdout_evaluation/v5_holdout_summary.csv",
+      "rows": 10,
+      "columns": 48,
+      "sha256": "0588bef2414fd6d95b2bf6971a3c126f747fcbf892291885e6272bf1f43441c7"
+    },
+    "v5_holdout_by_gene_config.csv": {
+      "path": "results/v5_holdout_evaluation/v5_holdout_by_gene_config.csv",
+      "rows": 120,
+      "columns": 29,
+      "sha256": "354a2c858618c296a51504b5a2f29b31715910636ddb057914cbcc4ac7f666e0"
+    },
+    "v5_holdout_controlled_contrasts.csv": {
+      "path": "results/v5_holdout_evaluation/v5_holdout_controlled_contrasts.csv",
+      "rows": 33,
+      "columns": 18,
+      "sha256": "2f337ec23c051c5479d13275509524daf4c8dc07bccab9fd8c9f706a369f4d73"
+    },
+    "v5_holdout_tie_audit.csv": {
+      "path": "results/v5_holdout_evaluation/v5_holdout_tie_audit.csv",
+      "rows": 120,
+      "columns": 10,
+      "sha256": "adfecb607b974def66044f87dc3f0b682bd14665c211b6f15621b65948665d0b"
+    }
+  },
+  "interpretation_limits": [
+    "The 12 genes were targeted for coverage strata and structural discriminability; they are not a random sample of all genes.",
+    "The candidate universe is the frozen union of Top-10-with-ties from the ten primary configurations, so results measure comparative early-ranking performance within that union rather than open-world recall over all cell lines.",
+    "V5 contains 99 positives and no verified negatives. It cannot evaluate exclusion behavior or negative sinking.",
+    "Unknown labels make precision a lower bound and may change observed NDCG if later evidence is added.",
+    "Most positive evidence is expression detection evidence, often independent proteomics; a positive label does not prove experimental superiority.",
+    "Any configuration change motivated by these results converts V5 from holdout evidence into development evidence and requires a new untouched holdout for confirmation."
+  ],
+  "retrieval_audit": {
+    "ARID3A": {
+      "B0_rna_mean": {
+        "n_candidates_top10_with_ties": 11,
+        "cutoff_score": 0.8873,
+        "cutoff_exact_score_tie": 2
+      },
+      "A0_team_baseline": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8367,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1a_no_direct_protein": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8212,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1b_no_protein_evidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8657,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1c_no_protein_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8657,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2_no_confidence": {
+        "n_candidates_top10_with_ties": 11,
+        "cutoff_score": 0.8873,
+        "cutoff_exact_score_tie": 2
+      },
+      "A2a_no_conf_completeness": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8354,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2b_no_conf_source_support": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8373,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2c_no_conf_consistency": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8386,
+        "cutoff_exact_score_tie": 1
+      },
+      "A4_adaptive_trust": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8367,
+        "cutoff_exact_score_tie": 1
+      }
+    },
+    "CALCB": {
+      "B0_rna_mean": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.6266,
+        "cutoff_exact_score_tie": 1
+      },
+      "A0_team_baseline": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.6117,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1a_no_direct_protein": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.6117,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1b_no_protein_evidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.6593,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1c_no_protein_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.6593,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2_no_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.6266,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2a_no_conf_completeness": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.6117,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2b_no_conf_source_support": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.6117,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2c_no_conf_consistency": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.6095,
+        "cutoff_exact_score_tie": 1
+      },
+      "A4_adaptive_trust": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.6117,
+        "cutoff_exact_score_tie": 1
+      }
+    },
+    "CALML3": {
+      "B0_rna_mean": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7481,
+        "cutoff_exact_score_tie": 1
+      },
+      "A0_team_baseline": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7102,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1a_no_direct_protein": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7156,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1b_no_protein_evidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7571,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1c_no_protein_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7483,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2_no_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7456,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2a_no_conf_completeness": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7069,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2b_no_conf_source_support": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7109,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2c_no_conf_consistency": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7112,
+        "cutoff_exact_score_tie": 1
+      },
+      "A4_adaptive_trust": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7156,
+        "cutoff_exact_score_tie": 1
+      }
+    },
+    "CHKA": {
+      "B0_rna_mean": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8727,
+        "cutoff_exact_score_tie": 1
+      },
+      "A0_team_baseline": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8138,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1a_no_direct_protein": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8258,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1b_no_protein_evidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8756,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1c_no_protein_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8684,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2_no_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8678,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2a_no_conf_completeness": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8168,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2b_no_conf_source_support": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8127,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2c_no_conf_consistency": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8168,
+        "cutoff_exact_score_tie": 1
+      },
+      "A4_adaptive_trust": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8138,
+        "cutoff_exact_score_tie": 1
+      }
+    },
+    "ERBB3": {
+      "B0_rna_mean": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.9467,
+        "cutoff_exact_score_tie": 1
+      },
+      "A0_team_baseline": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8943,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1a_no_direct_protein": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.9082,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1b_no_protein_evidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.9446,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1c_no_protein_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.9314,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2_no_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.9467,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2a_no_conf_completeness": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.9022,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2b_no_conf_source_support": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8878,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2c_no_conf_consistency": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8979,
+        "cutoff_exact_score_tie": 1
+      },
+      "A4_adaptive_trust": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8943,
+        "cutoff_exact_score_tie": 1
+      }
+    },
+    "GALNT7": {
+      "B0_rna_mean": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8887,
+        "cutoff_exact_score_tie": 1
+      },
+      "A0_team_baseline": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8626,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1a_no_direct_protein": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8524,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1b_no_protein_evidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8829,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1c_no_protein_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8835,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2_no_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8902,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2a_no_conf_completeness": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8615,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2b_no_conf_source_support": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8623,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2c_no_conf_consistency": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8643,
+        "cutoff_exact_score_tie": 1
+      },
+      "A4_adaptive_trust": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8843,
+        "cutoff_exact_score_tie": 1
+      }
+    },
+    "KRT76": {
+      "B0_rna_mean": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.2354,
+        "cutoff_exact_score_tie": 1
+      },
+      "A0_team_baseline": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.273,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1a_no_direct_protein": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.273,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1b_no_protein_evidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.3238,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1c_no_protein_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.3238,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2_no_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.2354,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2a_no_conf_completeness": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.2707,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2b_no_conf_source_support": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.2751,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2c_no_conf_consistency": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.2686,
+        "cutoff_exact_score_tie": 1
+      },
+      "A4_adaptive_trust": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.273,
+        "cutoff_exact_score_tie": 1
+      }
+    },
+    "MFN2": {
+      "B0_rna_mean": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7771,
+        "cutoff_exact_score_tie": 1
+      },
+      "A0_team_baseline": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7584,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1a_no_direct_protein": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7611,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1b_no_protein_evidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7908,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1c_no_protein_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.777,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2_no_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7644,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2a_no_conf_completeness": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7661,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2b_no_conf_source_support": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7543,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2c_no_conf_consistency": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7628,
+        "cutoff_exact_score_tie": 1
+      },
+      "A4_adaptive_trust": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7728,
+        "cutoff_exact_score_tie": 1
+      }
+    },
+    "OGDH": {
+      "B0_rna_mean": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8598,
+        "cutoff_exact_score_tie": 1
+      },
+      "A0_team_baseline": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8169,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1a_no_direct_protein": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8524,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1b_no_protein_evidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8666,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1c_no_protein_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8392,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2_no_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8277,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2a_no_conf_completeness": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.816,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2b_no_conf_source_support": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8244,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2c_no_conf_consistency": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8213,
+        "cutoff_exact_score_tie": 1
+      },
+      "A4_adaptive_trust": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8213,
+        "cutoff_exact_score_tie": 1
+      }
+    },
+    "POU2F3": {
+      "B0_rna_mean": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.406,
+        "cutoff_exact_score_tie": 1
+      },
+      "A0_team_baseline": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.4253,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1a_no_direct_protein": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.4253,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1b_no_protein_evidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.4872,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1c_no_protein_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.4872,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2_no_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.406,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2a_no_conf_completeness": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.4341,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2b_no_conf_source_support": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.4201,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2c_no_conf_consistency": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.4297,
+        "cutoff_exact_score_tie": 1
+      },
+      "A4_adaptive_trust": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.4253,
+        "cutoff_exact_score_tie": 1
+      }
+    },
+    "PSME4": {
+      "B0_rna_mean": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8117,
+        "cutoff_exact_score_tie": 1
+      },
+      "A0_team_baseline": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7663,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1a_no_direct_protein": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.778,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1b_no_protein_evidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8179,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1c_no_protein_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8173,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2_no_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.8117,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2a_no_conf_completeness": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7642,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2b_no_conf_source_support": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7663,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2c_no_conf_consistency": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7694,
+        "cutoff_exact_score_tie": 1
+      },
+      "A4_adaptive_trust": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.7663,
+        "cutoff_exact_score_tie": 1
+      }
+    },
+    "SIGLEC9": {
+      "B0_rna_mean": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.5778,
+        "cutoff_exact_score_tie": 1
+      },
+      "A0_team_baseline": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.6188,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1a_no_direct_protein": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.5884,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1b_no_protein_evidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.6411,
+        "cutoff_exact_score_tie": 1
+      },
+      "A1c_no_protein_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.6543,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2_no_confidence": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.5933,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2a_no_conf_completeness": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.609,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2b_no_conf_source_support": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.6109,
+        "cutoff_exact_score_tie": 1
+      },
+      "A2c_no_conf_consistency": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.6199,
+        "cutoff_exact_score_tie": 1
+      },
+      "A4_adaptive_trust": {
+        "n_candidates_top10_with_ties": 10,
+        "cutoff_score": 0.5925,
+        "cutoff_exact_score_tie": 1
+      }
+    }
+  }
+}

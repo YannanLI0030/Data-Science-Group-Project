@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "experiment_id": "exclusion_penalty_structural_v1",
+  "frozen_on": "2026-09-09",
+  "status": "frozen_before_full_four_profile_comparison",
+  "experiment_role": "supplementary implementation and structural sensitivity ablation",
+  "separate_from_v5": true,
+  "uses_gold_standard": false,
+  "supports_accuracy_claims": false,
+  "supports_optimal_penalty_claim": false,
+  "query_mode": "GENE_MULTIOMICS",
+  "candidate_scope": "disease-filtered candidates from the current dynamic production data path",
+  "production_outer_weights": {
+    "rna": 0.55,
+    "protein": 0.30,
+    "confidence": 0.15
+  },
+  "profiles": [
+    {"name": "P00_no_penalty", "max_exclusion_penalty": 0.00, "role": "negative control"},
+    {"name": "P15_weak", "max_exclusion_penalty": 0.15, "role": "weaker sensitivity"},
+    {"name": "P30_team_baseline", "max_exclusion_penalty": 0.30, "role": "current production setting"},
+    {"name": "P45_stress", "max_exclusion_penalty": 0.45, "role": "stress sensitivity only; not a production proposal"}
+  ],
+  "query_table": "benchmarks/penalty/penalty_structural_v1_queries.csv",
+  "query_selection_policy": {
+    "n_queries": 5,
+    "sampling_type": "purposive convenience scenarios; not random, deterministic, or representative sampling",
+    "basis": "Human-selected disease-context scenarios with existing target and exclusion caches, at least ten target candidates, complete observed exclusion-RNA coverage, and non-constant exclusion expression. The exact pair choice contains scenario judgement and was frozen before the full P00/P15/P30/P45 comparison. No Gold labels or profile-comparison outcomes were used to select the set.",
+    "contexts": ["gastric", "breast", "blood", "liver", "lung"],
+    "interpretation": "The pairs are mechanics-only implementation tests. Their exclusion genes are not asserted to be biologically undesirable, and results must not be generalised to all genes or disease contexts."
+  },
+  "fixed_scoring_semantics": {
+    "exclusion_expression": "available-case mean of DepMap, HPA, and GEO RNA standardised values for the exclusion gene",
+    "exclusion_scaling": "Min-Max within the disease-filtered target candidate set",
+    "missing_exclusion": "penalty equals zero but remains explicitly flagged as missing evidence",
+    "final_score": "clip(0.85 * biological_score + 0.15 * confidence_score - max_exclusion_penalty * scaled_exclusion, 0, 1)",
+    "top_k_policy": "Top-10 plus every exact four-decimal final-score tie at the cutoff"
+  },
+  "required_checks": [
+    "candidate IDs and all non-penalty score components remain fixed across profiles",
+    "P00 penalties are exactly zero",
+    "penalty is between zero and the profile cap",
+    "penalty is non-decreasing as the cap increases",
+    "final score is non-increasing as the cap increases",
+    "missing exclusion evidence receives zero penalty and is not relabelled as low expression",
+    "P30 exactly reproduces an unmodified production scorer call",
+    "production script and frozen V5 design hashes do not change",
+    "zero-score clipping and exact-score tie groups are reported"
+  ],
+  "synthetic_boundary_tests": [
+    "known exclusion vector 0, 5, 10, missing",
+    "all exclusion values missing",
+    "lower clipping where reported penalty exceeds realised score loss",
+    "constant positive, zero, and negative exclusion values",
+    "same-base ordering under different exclusion values",
+    "GENE_MULTIOMICS, PROTEIN_ONLY, and COMBINED modes",
+    "repeat-run determinism"
+  ],
+  "claim_boundary": "The experiment can establish implementation correctness, direction, clipping, ties, and ranking sensitivity in five purposively selected convenience scenarios; missing-data code-path behaviour is tested synthetically. It cannot establish that 0.30 is biologically optimal, cannot be generalised as a representative gene sample, and does not compute NDCG, Recall, MRR, or other accuracy metrics."
+}

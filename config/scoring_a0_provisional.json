@@ -1,0 +1,10 @@
+{
+  "name": "A0_team_baseline_provisional",
+  "rna_weight": 0.55,
+  "protein_weight": 0.30,
+  "confidence_weight": 0.15,
+  "confidence_completeness": 0.40,
+  "confidence_source_support": 0.35,
+  "confidence_consistency": 0.25,
+  "max_exclusion_penalty": 0.30
+}

@@ -1,0 +1,37 @@
+{
+  "experiment": "v4_development_weight_search_logo",
+  "status": "development_incomplete_not_for_production_selection",
+  "publication_date": "2026-09-17",
+  "selection_dataset": "benchmarks/gold_standard_v4_development.csv",
+  "primary_metric": "NDCG@5",
+  "bootstrap_iterations": 5000,
+  "random_seed": 42,
+  "grid_step": 0.05,
+  "grid_configurations": 32,
+  "development_genes": 10,
+  "verified_positive_labels": 48,
+  "verified_negative_labels": 2,
+  "configuration_gene_rows": 320,
+  "logo_folds": 10,
+  "one_se_eligible_configurations": 32,
+  "unconstrained_best": "W_rna0.70_protein0.00_confidence0.30",
+  "one_se_archival_candidate": "W_rna0.85_protein0.00_confidence0.15",
+  "production_decision": "A0 retained after frozen V5 evaluation",
+  "claim_boundary": "The experiment is development-stage model-selection evidence. It does not identify a statistically unique optimum and must not be presented as an independent holdout result.",
+  "tracked_input_sha256": {
+    "benchmarks/gold_standard_v4_development.csv": "dabf61f4402ad3c38839cf0b8cee2435a8a3d1e86f35776ad27e3cd70918cd08",
+    "scripts/ablation_runner.py": "2626ed36245ec60399962a92778b33f6d8cb219a309977c664b51b015c7fcc88"
+  },
+  "external_input_sha256": {
+    "gene_rna_protein_correlations.csv": "36ff1b594f66a6a1a4e3b06aa1d9f173cf6fc5de38f7ff2d070669c89ff5de74",
+    "master_table.csv": "85628f7ae927ded4b0abe3aba95591738c799e158c690d56b9acb32b8c1c7a2a",
+    "cellline_annotations.csv": "664ab4676fb362a1a30b7a8fd5e13f851861ea93246ffadb4d647018c9fee943"
+  },
+  "archived_file_sha256": {
+    "scripts/weight_search_v4_logo.py": "ea9ff58861f127d248d38b8a5c1b05551ae02eacfccd38d05d12b1e53bf98192",
+    "config/scoring_selected_v4_development_candidate.json": "b41fb38bc3893038019b5bd02d3938f1e20b6e1560298f544f818d90a7920f6f",
+    "results/weight_search_v4_development_summary.csv": "122a02ebfb041e0e219f170233ecd524c8129f806cef0a7ed779cb87a5e80ef4",
+    "results/weight_search_v4_development_by_gene.csv": "010ae7281c51181eb40f9369bcdd120630e1bc744e9748d116386c6cdb2ef900",
+    "results/weight_search_v4_development_logo.csv": "ff70c059c66d609a212754becacf4eac3ca596493756570845f7625caa144054"
+  }
+}
