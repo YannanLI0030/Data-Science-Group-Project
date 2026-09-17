@@ -15,7 +15,7 @@ following settings remained fixed:
 - maximum exclusion penalty: 0.30;
 - adaptive trust: disabled.
 
-The predeclared 0.05 grid contained 32 configurations. RNA ranged from
+The fixed 0.05 grid contained 32 configurations. RNA ranged from
 0.50--0.90, direct Protein from 0.00--0.30, and Confidence from 0.10--0.30;
 the three weights always summed to one. A direct-Protein weight of zero used
 `direct_off`: Protein was removed from the biological score but could still
@@ -32,7 +32,8 @@ Mean NDCG@5 was the primary metric. The summaries use 5,000 paired bootstrap
 resamples with seed 42. In each leave-one-gene-out (LOGO) fold, the
 one-standard-error rule first identified configurations within one standard
 error of the best training NDCG@5. It then chose the configuration closest to
-the predeclared A1a anchor: RNA 0.85, direct Protein 0.00, and Confidence 0.15.
+the A1a anchor specified in the search script before model selection: RNA
+0.85, direct Protein 0.00, and Confidence 0.15.
 
 ## Result
 
