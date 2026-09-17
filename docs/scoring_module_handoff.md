@@ -92,7 +92,7 @@ python scripts/ablation_runner.py --self-test
 The self-test covers production-A0/ablation-A0 parity, adaptive-trust branches,
 complete protein removal, missing gold positives and exact-score ties.
 
-Real-data ablation command:
+Historical V2 benchmark command, retained as an interface example:
 
 ```bash
 python scripts/ablation_runner.py \

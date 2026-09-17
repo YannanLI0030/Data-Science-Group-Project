@@ -19,9 +19,10 @@ The deterministic ranking returned:
 2. MS751 - final score 0.8793
 3. CASKI - final score 0.8198
 
-The Agent then emitted nine grounded explanatory claims and changed no ranking
-field. A second run with `--no-agent` produced a byte-identical ranking CSV
-(SHA-256 `ED3735D11AFBF823D0707F9F8730DE8D448E957B3E7A24FE6A6092A6DB647E3E`).
+The Agent then emitted nine explanatory claims that passed the configured
+grounding checks and changed no ranking field. A second run with `--no-agent`
+produced a byte-identical ranking CSV (SHA-256
+`ED3735D11AFBF823D0707F9F8730DE8D448E957B3E7A24FE6A6092A6DB647E3E`).
 
 ## Included safeguards
 
@@ -39,7 +40,7 @@ The supplementary loader reports four miRNA columns that have no exact
 `CCLE_Name` match in File 9. They are skipped and reported explicitly; this is
 the behaviour of the supplied original loader, not an Agent error.
 
-## Complete UI release (2026-09-10)
+## UI release (2026-09-10)
 
 - Added a responsive three-step UI under `web/index.html`.
 - Replaced the teammate snapshot ranker API with the canonical dynamic

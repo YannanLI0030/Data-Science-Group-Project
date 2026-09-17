@@ -14,9 +14,10 @@ backend to `web/index.html`; the UI does not contain a second scorer.
 
 The Agent runs only after the ranking has been saved. It receives structured
 evidence cards and cannot change candidate eligibility, scores, recommendation
-levels or rank order. Citation and numerical checks remove unsupported claims
-before display. The offline scripted explanation is the default and needs no
-API key.
+levels or rank order. Claims without valid evidence IDs, and numerical claims
+not supported by their cited evidence, are dropped before display. The
+optional full mode also checks candidate-entity consistency. The offline
+scripted explanation is the default and needs no API key.
 
 Three query modes are supported:
 
