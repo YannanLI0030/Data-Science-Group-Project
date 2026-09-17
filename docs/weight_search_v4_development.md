@@ -1,75 +1,72 @@
-# V4 development-stage weight search
+# V4 development weight search
 
-## Status and purpose
+## Scope
 
-This package records the constrained weight-search experiment performed on the
-V4 development benchmark. It is retained as an auditable experiment and as
-evidence of the model-selection work carried out during development. It is not
-the team's later label-free sensitivity analysis, and it did not establish a
-final or universally optimal set of weights.
+This package preserves the constrained weight search run on the V4 development
+benchmark. It records the model-selection work carried out during development;
+it is separate from the later label-free sensitivity analysis and does not
+define the final production weights.
 
-The experiment varied only the outer RNA, direct-Protein, and Confidence
-weights. Confidence subweights (completeness 0.40, source support 0.35, and
-RNA--Protein consistency 0.25), the exclusion-penalty cap (0.30), and adaptive
-trust remained fixed. The declared 0.05 grid contained 32 configurations:
+Only the outer RNA, direct-Protein, and Confidence weights were varied. The
+following settings remained fixed:
 
-- RNA weight: 0.50--0.90;
-- direct-Protein weight: 0.00--0.30;
-- Confidence weight: 0.10--0.30;
-- the three outer weights always summed to one.
+- Confidence composition: completeness 0.40, source support 0.35, and
+  RNA--Protein consistency 0.25;
+- maximum exclusion penalty: 0.30;
+- adaptive trust: disabled.
 
-A zero direct-Protein weight used the `direct_off` interpretation: Protein did
-not enter the biological score directly but could still contribute to
-Protein-derived Confidence features.
+The predeclared 0.05 grid contained 32 configurations. RNA ranged from
+0.50--0.90, direct Protein from 0.00--0.30, and Confidence from 0.10--0.30;
+the three weights always summed to one. A direct-Protein weight of zero used
+`direct_off`: Protein was removed from the biological score but could still
+contribute to Protein-derived Confidence.
 
-## Data and selection procedure
+## Benchmark and selection rule
 
-The search used `benchmarks/gold_standard_v4_development.csv`: 50 verified
-labels across ten genes, comprising 48 positives and two negatives. Because
-most labels came from model-generated candidate pools and the negative sample
-was very small, this is a development benchmark rather than an untouched test
-set.
+`benchmarks/gold_standard_v4_development.csv` contains 50 verified labels
+across ten genes: 48 positive and two negative. Most labels came from
+model-generated candidate pools, and the negative sample is small. The data
+support development comparisons but not an untouched test claim.
 
-Mean NDCG@5 was the primary metric. Each configuration was evaluated for all
-ten genes; descriptive paired intervals used 5,000 bootstrap resamples with
-seed 42. Leave-one-gene-out (LOGO) folds applied a one-standard-error rule. The
-rule selected, among configurations within one standard error of the best
-training NDCG@5, the configuration closest to the predeclared A1a anchor
-(RNA 0.85, direct Protein 0.00, Confidence 0.15).
+Mean NDCG@5 was the primary metric. The summaries use 5,000 paired bootstrap
+resamples with seed 42. In each leave-one-gene-out (LOGO) fold, the
+one-standard-error rule first identified configurations within one standard
+error of the best training NDCG@5. It then chose the configuration closest to
+the predeclared A1a anchor: RNA 0.85, direct Protein 0.00, and Confidence 0.15.
 
-## Main result and evidence boundary
+## Result
 
-The unconstrained highest mean NDCG@5 was obtained by RNA 0.70, direct Protein
-0.00, and Confidence 0.30 (NDCG@5 0.5385), but its Recall@10 was 0.7656. The
-one-standard-error procedure returned the A1a anchor (NDCG@5 0.5027 and
-Recall@10 0.8481). The production A0 reference (RNA 0.55, Protein 0.30,
-Confidence 0.15) achieved NDCG@5 0.4595 and Recall@10 0.8772.
+The unconstrained highest mean NDCG@5 came from RNA 0.70, direct Protein 0.00,
+and Confidence 0.30. Its NDCG@5 was 0.5385 and its Recall@10 was 0.7656. The
+one-standard-error rule returned the A1a anchor, which reached NDCG@5 0.5027
+and Recall@10 0.8481. For comparison, the production A0 setting (RNA 0.55,
+Protein 0.30, Confidence 0.15) reached NDCG@5 0.4595 and Recall@10 0.8772.
 
-All 32 configurations lay inside the one-standard-error band. The returned
-candidate was therefore determined by the conservative anchor rule, not by
-clear empirical separation between weight settings. The candidate JSON is
-explicitly marked `candidate_not_yet_frozen` and is not a production
-configuration file.
+All 32 configurations were inside the one-standard-error band. The conservative
+anchor rule, rather than a clear separation in NDCG@5, selected A1a. Its JSON
+status is
+`candidate_not_yet_frozen`; the file is an experiment record, not a
+production-ready configuration.
 
-The later frozen V5 evaluation did not reproduce a benefit from removing
-direct Protein and retained A0 as the production configuration. See
-`docs/v5_holdout_evaluation.md`. Consequently, this V4 package should be
-described as incomplete development-stage weight-search evidence rather than
-as final weight optimisation.
+The later frozen V5 comparison did not reproduce an advantage from removing
+direct Protein, so A0 remained the production configuration. The V5 record is
+in `docs/v5_holdout_evaluation.md`. The V4 search should be reported as
+incomplete development-stage model selection, not as final weight
+optimisation.
 
 ## Files
 
-- `scripts/weight_search_v4_logo.py`: declared grid, bootstrap summaries,
+- `scripts/weight_search_v4_logo.py`: grid generation, bootstrap summaries,
   one-standard-error selection, and LOGO evaluation;
-- `results/weight_search_v4_development_summary.csv`: 32 configuration-level
-  summaries;
-- `results/weight_search_v4_development_by_gene.csv`: 320 configuration--gene
-  records;
+- `results/weight_search_v4_development_summary.csv`: summaries for 32
+  configurations;
+- `results/weight_search_v4_development_by_gene.csv`: 320
+  configuration--gene records;
 - `results/weight_search_v4_development_logo.csv`: ten held-out-gene folds;
 - `config/scoring_selected_v4_development_candidate.json`: archival candidate
-  metadata, not a production-ready configuration;
-- `results/weight_search_v4_development_manifest.json`: file hashes, inputs,
-  parameters, and integrity counts.
+  metadata;
+- `results/weight_search_v4_development_manifest.json`: inputs, parameters,
+  hashes, and integrity counts.
 
 ## Reproduction
 
@@ -79,8 +76,8 @@ Run the self-test first:
 python scripts/weight_search_v4_logo.py --self-test
 ```
 
-To avoid replacing the archived outputs, write a reproduction run to a new
-directory:
+Write a reproduction run to a new directory so that the archived files remain
+unchanged:
 
 ```bash
 python scripts/weight_search_v4_logo.py \
@@ -95,6 +92,6 @@ python scripts/weight_search_v4_logo.py \
   --seed 42
 ```
 
-The integrated data and correlation table are external project inputs and are
-not duplicated in this repository. Their hashes for the archived run are
-recorded in the manifest.
+The integrated data and correlation table are external inputs and are not
+duplicated in this repository. The manifest records their hashes for the
+archived run.

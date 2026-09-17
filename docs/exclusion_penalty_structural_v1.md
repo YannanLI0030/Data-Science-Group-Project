@@ -1,48 +1,39 @@
-# Exclusion penalty structural ablation V1
+# Exclusion-penalty structural ablation V1
 
-## 1. Experimental question and claim boundary
+## Purpose
 
-This supplementary experiment tests whether the exclusion penalty is
-implemented consistently and how strongly it changes rankings under fixed
-candidate sets. It does not use a Gold standard and does not estimate NDCG,
-Recall, MRR, or biological accuracy. It therefore cannot establish that the
-production cap of 0.30 is optimal.
+This supplementary experiment checks the exclusion-penalty implementation and
+measures how different caps change a fixed ranking. There is no pair-specific
+Gold standard, so the analysis does not estimate NDCG, Recall, MRR, or
+biological accuracy. In particular, it cannot identify 0.30 as an optimal cap.
 
-The experiment is separate from the frozen V5 target-gene holdout and was
-designed after V5 was completed. None of the V5 labels, ranks, or internal audit
-fields are inputs to this run. The runner records only the V5 design-file hash
-as an integrity guard; V5 contents do not affect query selection or scoring.
+The experiment was designed after the V5 target-gene holdout had been
+completed. V5 labels, rankings, and internal audit fields were not used to
+choose the queries or calculate their scores. The runner reads only the V5
+design-file hash as an integrity check.
 
-## 2. Frozen design
+## Frozen design
 
-The machine-readable design is
-`config/exclusion_penalty_structural_v1_frozen_design.json`. The query table is
+The design and query definitions are stored in
+`config/exclusion_penalty_structural_v1_frozen_design.json` and
 `benchmarks/penalty/penalty_structural_v1_queries.csv`.
 
-All four profiles retain the same production target-scoring terms:
-
-- RNA weight: 0.55;
-- Protein weight: 0.30;
-- Confidence weight: 0.15;
-- Confidence composition: completeness 0.40, source support 0.35, and
-  RNA-Protein consistency 0.25.
-
-Only the maximum exclusion penalty changes:
+Every profile uses the production target-scoring weights: RNA 0.55, Protein
+0.30, and Confidence 0.15. Confidence retains completeness 0.40, source support
+0.35, and RNA--Protein consistency 0.25. Only the maximum penalty changes.
 
 | Profile | Maximum penalty | Role |
 |---|---:|---|
 | `P00_no_penalty` | 0.00 | Negative control |
-| `P15_weak` | 0.15 | Weaker sensitivity |
-| `P30_team_baseline` | 0.30 | Current production setting |
-| `P45_stress` | 0.45 | Stress sensitivity only |
+| `P15_weak` | 0.15 | Weaker penalty |
+| `P30_team_baseline` | 0.30 | Production setting |
+| `P45_stress` | 0.45 | Stress condition |
 
-Five disease-context scenarios were purposively chosen from genes already
-present in the local cache and frozen before the full P00/P15/P30/P45 output.
-Selection used cache availability, candidate count, exclusion RNA coverage, and
-distinct disease contexts. It did not use Gold labels or profile-comparison
-outcomes. This is a convenience scenario set, not a random, deterministic, or
-representative sample of genes; the exact pair choice contains human scenario
-judgement.
+Five disease-context queries were selected from genes already present in the
+local cache. They were frozen before the complete P00/P15/P30/P45 output was
+generated. Selection considered cache availability, candidate count, exclusion
+RNA coverage, and variation in disease context; it did not use labels or
+profile-comparison results.
 
 | Query | Target | Exclusion | Disease | Candidates | Exclusion RNA observed |
 |---|---|---|---|---:|---:|
@@ -52,18 +43,17 @@ judgement.
 | Q04 | ASGR1 | AFP | Liver | 25 | 25 |
 | Q05 | MSLN | MUC1 | Lung | 236 | 236 |
 
-The pairs are mechanics-only scenarios rather than externally verified
-experimental requirements. They do not assert that MET, ESR1, CD86, AFP, or
-MUC1 is undesirable in every corresponding target-gene experiment. Reusing
-familiar genes is acceptable here because the analysis measures score
-mechanics, not held-out accuracy.
+This is a purposive mechanics panel, not a random or representative sample.
+The pairs are not claims that MET, ESR1, CD86, AFP, or MUC1 is undesirable in
+every experiment involving the corresponding target. Familiar genes can be
+reused here because the endpoint is score behaviour rather than held-out
+accuracy.
 
-## 3. Production semantics retained by the runner
+## Scoring behaviour
 
-For the exclusion gene, the current production path calculates the available
-mean of the DepMap, HPA, and GEO standardised RNA values. It then applies
-Min-Max scaling within the disease-filtered target candidate set. The final
-score is:
+For an exclusion gene, the production path averages the available standardised
+DepMap, HPA, and GEO RNA values and applies Min--Max scaling within the
+disease-filtered candidate set. The score is
 
 \[
 \operatorname{Final}_\alpha =
@@ -75,60 +65,56 @@ score is:
 \right).
 \]
 
-The scaled exclusion value is query-relative. A value of 0.8 in one disease
-query is not an absolute expression threshold and is not directly comparable
-with 0.8 in another query.
+`ExclusionScaled` is relative to the current query. A value of 0.8 in one
+disease context is not an absolute threshold and cannot be compared directly
+with 0.8 from another context.
 
-Missing exclusion RNA receives zero penalty in the production implementation.
-The runner preserves that behaviour but records the observation as missing; it
-does not reinterpret missing evidence as confirmed low expression.
+When exclusion RNA is missing, the production implementation applies zero
+penalty. The runner keeps that rule but records the value as missing rather
+than treating it as confirmed low expression.
 
-Each query is fetched once. P00, P15, P30, and P45 then score copied versions of
-the same candidate rows. The runner changes the module-level cap only in memory,
-sequentially, and restores it after every call. The production source file and
-all cache files remain unchanged.
+Each query is fetched once. The four profiles then score copies of the same
+candidate rows. The cap is changed sequentially in memory and restored after
+every scorer call; no production source or cache file is edited.
 
-## 4. Required implementation checks
+## Implementation audit
 
-The run completed 155 substantive check records, all with `PASS` status. They
-include:
+The run produced 155 substantive checks, all marked `PASS`. They cover:
 
-- identical candidate IDs across the four profiles;
-- identical RNA, Protein, Biology, and Confidence components across profiles;
-- zero Penalty for every P00 candidate;
-- Penalty equal to the rounded profile cap multiplied by scaled exclusion;
+- identical candidate IDs and unchanged RNA, Protein, Biology, and Confidence
+  components across the four profiles;
+- zero Penalty for every P00 row;
+- Penalty equal to the rounded cap multiplied by scaled exclusion;
 - P30 equal to twice P15 and P45 equal to three times P15 within the required
   four-decimal rounding tolerance;
-- candidate-level Penalty non-decreasing as the cap increases;
-- candidate-level final score non-increasing as the cap increases;
+- non-decreasing candidate Penalty and non-increasing candidate final score as
+  the cap rises;
 - score loss equal to the reported Penalty unless clipping at zero limits the
-  realised loss;
-- P30 exact parity with an unmodified production scorer call for all five
-  queries;
-- repeated-run determinism;
-- unchanged hashes for the production script, team data modules, sample info,
-  frozen designs, query table, and ten gene caches.
+  realised change;
+- exact P30 parity with the unmodified production scorer for all 5 queries;
+- deterministic repeated runs;
+- unchanged hashes for the production scorer, team data modules, sample
+  information, frozen designs, query table, and ten gene caches.
 
-All five real queries have complete observed exclusion-RNA coverage. They do not
-empirically test how missing exclusion evidence affects real rankings. Synthetic
-checks cover all-missing and partially missing exclusion values, lower-bound
-clipping, constant positive/zero/negative exclusion values, and the
-`GENE_MULTIOMICS`, `PROTEIN_ONLY`, and `COMBINED` subtraction paths. The
-three query-mode checks verify both the reported Penalty field and the actual
-subtraction from the final score. A separate synthetic cutoff case verifies
-that exact final-score ties spanning ordinal positions 10 and 11 are both
-retained. Checks that would be not applicable on a real query, such as a
-missing-value assertion when no real candidate is missing exclusion RNA, are
-not counted as automatic passes. The
-constant-positive case documents an existing Min-Max edge behaviour:
-when every observed exclusion value is the same positive value, the production
-scaler assigns the full cap to every observed row. This experiment exposes but
-does not change that behaviour.
+All 5 real queries have exclusion RNA for every candidate, so the real-data
+runs do not exercise missing exclusion evidence. Synthetic checks cover all-missing
+and partly missing values, lower-bound clipping, constant positive, zero, and
+negative values, and the `GENE_MULTIOMICS`, `PROTEIN_ONLY`, and `COMBINED`
+subtraction paths. The query-mode checks inspect both the reported Penalty and
+the subtraction from the final score. A separate cutoff case verifies that
+exact final-score ties across positions 10 and 11 are both retained.
 
-## 5. Overall structural results
+Assertions that do not apply to a real query, such as checking for missing
+values when none are missing, are not counted as automatic passes. One
+synthetic case also records an existing Min--Max edge condition: if all
+observed exclusion values are the same positive number, the production scaler
+assigns the full cap to every observed row. The experiment documents this
+behaviour but does not change it.
 
-Values below are macro means across the five frozen queries. Top-10 sets include
-all exact four-decimal final-score ties at the cutoff.
+## Structural results
+
+The table reports macro means over the 5 frozen queries. Top-10 sets retain
+every exact four-decimal final-score tie at the cutoff.
 
 | Profile | Mean Top-10 Jaccard vs P00 | Queries with Top-10 change | Queries with Top-1 change | Mean Spearman vs P00 | Mean absolute rank change | Zero-score rows | Mean Top-10 scaled exclusion |
 |---|---:|---:|---:|---:|---:|---:|---:|
@@ -137,73 +123,63 @@ all exact four-decimal final-score ties at the cutoff.
 | P30 | 0.7160 | 4/5 | 3/5 | 0.8778 | 15.20 | 76 | 0.3061 |
 | P45 | 0.5880 | 5/5 | 3/5 | 0.8020 | 19.17 | 140 | 0.2457 |
 
-Increasing the cap progressively reduces exclusion expression among the Top-10,
-so the implementation acts in the intended direction. At the same time,
-ranking disruption and clipping increase. P15 changes four Top-10 sets but
-preserves all five Top-1 selections. P30 changes four Top-10 sets and three
-Top-1 selections. P45 changes every Top-10 set and produces the largest rank
+Stronger caps reduce scaled exclusion among the highest-ranked candidates, but
+they also create more rank movement and clipping. P15 changes four Top-10 sets
+without changing any of the 5 Top-1 results. P30 changes four Top-10 sets and
+three Top-1 results. P45 changes all 5 Top-10 sets and produces the largest
 disruption.
 
-The high-exclusion share in Top-10, defined structurally as scaled exclusion at
-least 0.8 among candidates with observed exclusion evidence, falls from a
-five-query mean of 0.14 under P00 to 0.06 under P30 and 0.02 under P45. All
-five current queries have complete observed coverage, so the denominator is the
-full Top-10 here. The 0.8 threshold is a query-relative structural diagnostic,
-not a biological high-expression cutoff. This confirms stronger suppression,
-not better biological recommendations.
+Using scaled exclusion of at least 0.8 as a structural definition, the mean
+high-exclusion share in the Top-10 falls from 0.14 under P00 to 0.06 under P30
+and 0.02 under P45. All 5 queries have complete observed coverage, so the
+denominator is the full Top-10. The 0.8 cutoff is query-relative and is not a
+biological high-expression threshold.
 
-## 6. Query-level P30 effects
+## P30 by query
 
 | Query | Top-10 Jaccard vs P00 | P00 Top-1 | P30 Top-1 | Mean absolute rank change | Maximum rank change | P30 zero-score rows |
 |---|---:|---|---|---:|---:|---:|
-| FGFR2-MET, gastric | 0.6667 | SNU16 | SNU16 | 3.40 | 16.0 | 10 |
-| ERBB2-ESR1, breast | 0.8182 | EFM192A | SUM190PT | 6.38 | 23.0 | 1 |
-| CD3E-CD86, blood | 0.6667 | MOLT3 | MOLT3 | 44.08 | 128.0 | 39 |
-| ASGR1-AFP, liver | 1.0000 | JHH5 | HUH1 | 1.48 | 4.0 | 0 |
-| MSLN-MUC1, lung | 0.4286 | NCIH322M | NCIH2052 | 20.66 | 114.5 | 26 |
+| FGFR2--MET, gastric | 0.6667 | SNU16 | SNU16 | 3.40 | 16.0 | 10 |
+| ERBB2--ESR1, breast | 0.8182 | EFM192A | SUM190PT | 6.38 | 23.0 | 1 |
+| CD3E--CD86, blood | 0.6667 | MOLT3 | MOLT3 | 44.08 | 128.0 | 39 |
+| ASGR1--AFP, liver | 1.0000 | JHH5 | HUH1 | 1.48 | 4.0 | 0 |
+| MSLN--MUC1, lung | 0.4286 | NCIH322M | NCIH2052 | 20.66 | 114.5 | 26 |
 
-The strength of the response is heterogeneous. The CD3E-CD86 and MSLN-MUC1
-queries show the largest rank movements and most zero-score clipping. The
-ASGR1-AFP Top-10 membership remains unchanged at P30 even though its internal
-order and Top-1 change. A single global cap can therefore be mild in one query
-and disruptive in another because exclusion expression is scaled within each
-candidate set.
+The effect varies substantially by query. CD3E--CD86 and MSLN--MUC1 have the
+largest rank movements and the most clipped rows. ASGR1--AFP keeps the same
+Top-10 membership at P30, although its internal order and Top-1 change. Since
+exclusion expression is scaled within each candidate set, a single cap can be
+mild for one query and disruptive for another.
 
-Zero-score rows also create large tie groups. The largest P30 final-score tie is
-39 candidates, and the largest P45 final-score tie is 71 candidates. The
-production sorter uses `(finalScore, confidenceScore)` as its full comparator;
-under that comparator the corresponding largest groups are 17 and 33. The
-distinction matters because equal final scores may still be ordered by
-confidence. The Top-10 cutoff itself has no ties in these five real runs, but
-the runner keeps a tie-aware policy so future query sets do not silently
-truncate equal final-score candidates.
+Clipping also creates large tie groups. The largest final-score group contains
+39 candidates under P30 and 71 under P45. The production sorter uses
+`(finalScore, confidenceScore)` as its full comparator; under that comparator,
+the largest groups contain 17 and 33 candidates. Confidence can still order
+candidates with equal final scores. None of the 5 real queries has
+a tie at the Top-10 cutoff, but the runner keeps tie-aware selection for future
+query sets.
 
-## 7. Interpretation
+## Interpretation
 
-The structural experiment supports four conclusions:
+The audit supports the following restricted conclusions. The Penalty is
+subtracted correctly and reproducibly in the tested real and synthetic paths.
+Increasing the cap lowers candidate scores according to scaled exclusion and
+reduces high-exclusion representation near the top of the ranking. Individual
+ranks need not fall monotonically because every candidate moves relative to the
+others and clipping creates ties. P30 has a material, query-dependent effect;
+P45 is useful as a stress condition but is not supported as a production
+candidate.
 
-1. The current Penalty subtraction is executed correctly and reproducibly for
-   the tested real queries and synthetic boundary paths.
-2. Stronger caps lower every candidate's score monotonically according to its
-   scaled exclusion value, and the aggregate Top-10 representation of
-   high-exclusion candidates falls. An individual candidate's rank is not
-   guaranteed to move downward because all candidates move relative to one
-   another and clipping can create ties.
-3. P30 is an active intervention, not a negligible term. Its impact varies
-   markedly by query and can create substantial zero-score saturation.
-4. P45 is useful as a stress condition but is not supported as a production
-   candidate.
+The analysis does not show that any reordered candidate is better for a real
+experiment. Five purposively chosen queries cannot represent all targets or
+diseases, and the current data cannot determine whether 0.15, 0.30, or another
+cap gives the best trade-off between retaining target-positive lines and
+suppressing an exclusion marker. That comparison requires pair-specific
+evidence for both target suitability and exclusion expression.
 
-It does not show whether any changed recommendation is more suitable for a real
-experiment, and the five convenience scenarios are not representative of all
-genes or diseases. It also cannot determine whether 0.15, 0.30, or another cap
-provides the best trade-off between retaining target-positive cell lines and
-avoiding the exclusion marker. That question requires a separate pair-specific
-evidence set that verifies both target suitability and exclusion expression.
+## Reproduction
 
-## 8. Reproduction
-
-Run the synthetic checks only:
+Run the synthetic checks:
 
 ```bash
 cd "/Users/liyannan/Desktop/Data-Science-Group-Project"
@@ -222,18 +198,16 @@ cd "/Users/liyannan/Desktop/Data-Science-Group-Project"
   scripts/exclusion_penalty_ablation_runner.py
 ```
 
-The runner refuses to overwrite an existing result set. Use `--force` only when
-intentionally reproducing the same frozen design. The five CSV outputs and JSON
+Existing results are protected from replacement. Use `--force` only to
+reproduce the same frozen design intentionally. The 5 CSV files and JSON
 manifest are written to `results/exclusion_penalty_structural_v1/`. The same
-directory also contains `exclusion_penalty_structural_v1.xlsx`, a formatted
-review copy of the CSV results. The CSV files and JSON manifest remain the
-machine-readable source of truth.
+directory contains `exclusion_penalty_structural_v1.xlsx` as a formatted review
+copy; the CSV files and manifest remain the machine-readable record.
 
-## 9. Optional next stage
+## Possible labelled extension
 
-If time remains, create a new pair-specific candidate pool from the already
-frozen P00/P15/P30/P45 results. Reviewers would need to verify two dimensions:
-target suitability and whether the exclusion marker is high or low. Existing V5
-target-only labels are insufficient for this purpose. If the pair-level labels
-are then used to change the cap, that new benchmark must be described as
-development evidence rather than an untouched holdout.
+A later pair-specific pool could be drawn from the frozen P00/P15/P30/P45
+results. Reviewers would need to assess both target suitability and whether the
+exclusion marker is high or low. Existing V5 target-only labels cannot answer
+that question. If the new labels are used to revise the cap, the pair-level
+benchmark becomes development evidence rather than an untouched holdout.
