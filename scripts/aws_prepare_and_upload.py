@@ -211,8 +211,8 @@ def build_manifest(found, staged, version: str, bucket: str) -> dict:
             "gz_bytes": gz.stat().st_size,
             "gz_sha256": gz_sha,
             "source_note": SOURCE_NOTES.get(s3_folder, ""),
-            "download_url": "TODO: fill in before the report",
-            "download_date": "TODO: fill in before the report",
+            "download_url": None,
+            "download_date": None,
         })
         print(" ok")
 

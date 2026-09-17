@@ -15,10 +15,12 @@ writes:
 - score components, confidence components, evidence flags, mutation/fusion
   annotations, data gaps and alternative cell lines.
 
-The default `A0_team_baseline_provisional` configuration is RNA 0.55, protein
-0.30 and confidence 0.15. Confidence is completeness 0.40, source support 0.35
-and RNA-protein consistency 0.25. These values remain **provisional** until the
-gold standard is expanded and the planned weight search is complete.
+The retained production configuration, A0, assigns 0.55 to RNA, 0.30 to
+Protein and 0.15 to Confidence. Confidence combines completeness (0.40),
+source support (0.35) and RNA--Protein consistency (0.25). The configuration
+file and internal name still contain `provisional` for compatibility with
+earlier outputs. The frozen V5 comparison did not support replacing A0 with
+A1a, but it also did not establish A0 as a universally optimal weight set.
 
 ## Setup
 
@@ -27,6 +29,11 @@ Python 3.10 or newer is recommended.
 ```bash
 python -m pip install -r requirements.txt
 ```
+
+The committed tables and reports can be inspected without downloading the raw
+data. Re-running the full experiments also requires the local integrated data,
+the RNA--Protein correlation table and, for the Penalty experiment, the latest
+dynamic production scorer and caches. AWS is not required.
 
 The merged data is intentionally not committed. Either pass its directory on
 each run or set an environment variable:
@@ -74,8 +81,34 @@ python scripts/ablation_runner.py --self-test
 ```
 
 This test verifies, among other invariants, that production A0 and ablation A0
-produce the same scores and ordering. A real-data ablation run is documented in
-`docs/scoring_module_handoff.md`.
+produce the same scores and ordering.
+
+## Evaluation record
+
+The experiments answer different questions and should not be merged into one
+performance claim:
+
+| Stage | Purpose | Main boundary |
+|---|---|---|
+| V4 development | Generate component and weight hypotheses from 50 labels across 10 genes | Model-informed pool; only 2 verified negatives |
+| Dynamic ablation | Check whether 14 interventions alter rankings across two 100-gene panels | No relevance labels; structural sensitivity only |
+| Frozen V5 | Compare 10 configurations on 12 reviewed genes | 99 positives and 90 unknowns; no verified negatives |
+| Penalty V1 | Test P00/P15/P30/P45 mechanics on 5 fixed queries | No pair-specific Gold; no optimal-cap claim |
+
+V5 retained A0 because the V4 advantage of A1a did not reproduce. Removing the
+full Confidence block or source support caused clearer NDCG@5 reductions, while
+other variants showed endpoint- or gene-specific trade-offs. The Penalty run
+passed all 155 implementation checks and showed that P30 changes rankings, but
+it did not show that 0.30 is biologically optimal.
+
+Detailed records are in:
+
+- `docs/dynamic_ablation_unlabelled.md`;
+- `docs/dynamic_ablation_v5_freeze.md`;
+- `docs/v5_holdout_evaluation.md`;
+- `docs/exclusion_penalty_structural_v1.md`;
+- `docs/weight_search_v4_development.md`;
+- `docs/experiment_provenance.md`.
 
 ## Scope and limitations
 
@@ -87,8 +120,13 @@ produce the same scores and ordering. A real-data ablation run is documented in
   negative ranking signals.
 - The current alternative-line similarity is a target RNA/protein component
   fallback, not full-transcriptome or full-multi-omics similarity.
-- The present gold standard is too small to claim that A1a or any other
-  configuration is the final optimum.
+- V5 evaluates early ranking within a frozen candidate union; it is not an
+  open-world estimate across all genes and cell lines.
+- V5 contains no verified negatives, so it cannot support a negative-sink
+  conclusion.
+- The archived V4 weight search is development-stage model selection, not a
+  completed optimisation of production weights.
 
-See `docs/scoring_module_handoff.md` for the scoring formula, output contract,
-handoff boundary and the remaining priority-two work.
+See `docs/scoring_module_handoff.md` for the scoring formula and output
+contract. Later evaluation decisions are recorded in the V5 and Penalty
+documents listed above.

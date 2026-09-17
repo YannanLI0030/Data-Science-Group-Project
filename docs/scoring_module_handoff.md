@@ -1,7 +1,9 @@
 # Scoring module handoff
 
-Status: interface frozen for team integration; default weight values are
-provisional pending benchmark expansion and weight search.
+Status: historical V4 interface handoff. The interface remains in use, but the
+evaluation status has moved on: the later frozen V5 comparison retained A0 and
+did not identify a universally best configuration. See
+`docs/v5_holdout_evaluation.md` and `docs/weight_search_v4_development.md`.
 
 ## 1. Supported query
 
@@ -21,7 +23,7 @@ The program requires a directory containing `master_table.csv` and
 `cellline_annotations.csv`, supplied by `--data_dir` or
 `CELLLINESELECTOR_DATA_DIR`.
 
-## 2. Provisional A0 formula
+## 2. A0 formula
 
 For candidate cell line `i`:
 
@@ -114,23 +116,17 @@ Ready for teammates now:
 - full CSV plus structured JSON output;
 - explicit evidence, confidence and limitation fields.
 
-Not yet a defensible final model claim:
+Not established by this handoff:
 
-- final numerical weight selection;
-- superiority of A1a, A1b or A4 on the current 6-gene/18-positive benchmark;
+- universal optimality of the numerical weights;
+- superiority of A1a, A1b or A4 beyond the development benchmark;
 - full-omics cell-line similarity;
 - universal interpretation of mutation/fusion directionality.
 
-## 6. Next priority before the report results section
+## 6. Follow-up status
 
-1. Build the union of Top-10 candidates from the main configurations for each
-   benchmark gene.
-2. Label candidates as positive, negative or unknown; do not treat all
-   unlisted candidates as negatives.
-3. Verify/add missing known positives, beginning with MET/MKN45 and then the
-   NUGC4/SNU5 review list.
-4. Add more genes, particularly low RNA-protein-correlation genes needed to
-   test adaptive trust.
-5. Run a constrained weight search with held-out or leave-one-gene-out
-   evaluation, then save the selected values as a new JSON config without
-   changing the production interface.
+The planned candidate-pool expansion, coverage-stratified stress test, blinded
+review and frozen V5 comparison were completed. A constrained V4 weight search
+was also archived, but the later V5 result did not reproduce the A1a advantage,
+so A0 remained the production configuration. The current evidence supports
+that retention decision, not a claim that the weights are globally optimal.

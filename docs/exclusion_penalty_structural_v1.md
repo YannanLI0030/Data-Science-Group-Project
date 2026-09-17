@@ -200,6 +200,11 @@ By default, the runner looks for a sibling `cellline_selector_v3` directory.
 Use `CELLLINE_SELECTOR_V3_ROOT` or the corresponding command-line options when
 the production scorer and local data are stored elsewhere.
 
+The manifest hashes the exact runner used at commit `4acd4ca`. The current
+runner only changes comments and external-path discovery; the scoring and audit
+logic is unchanged. Result-file hashes still match the manifest. See
+`docs/experiment_provenance.md`.
+
 ## Possible labelled extension
 
 A later pair-specific pool could be drawn from the frozen P00/P15/P30/P45

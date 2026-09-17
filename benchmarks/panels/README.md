@@ -35,8 +35,9 @@ The long table includes only DepMap IDs found in the matching local
 with the affected row counts, are recorded in the manifest.
 
 This panel makes component interventions observable under different evidence
-conditions. It still has no relevance labels. A separate 12--20-gene subset
-must be frozen and reviewed before NDCG, Recall, or MRR can be used.
+conditions. It still has no relevance labels. A separate 12-gene subset was
+subsequently frozen and reviewed for V5 before NDCG, Recall, and MRR were
+calculated.
 
 ## File map
 
@@ -45,9 +46,9 @@ must be frozen and reviewed before NDCG, Recall, or MRR can be used.
 - `*_coverage_catalog.csv`: eligible genes and stratum assignments;
 - `*_manifest.json`: thresholds, seeds, hashes, provenance, and audit counts.
 
-V5 judgements belong in a separate `candidate_pool_v5_holdout_review.csv`.
-They should not be appended to `candidate_pool_v4_review.csv`, although the V4
-column schema can be reused.
+The blank V5 reviewer file, completed review and exported Gold are kept
+separate from `candidate_pool_v4_review.csv`. See
+`docs/v5_holdout_evaluation.md` for their roles and interpretation limits.
 
 ## Regenerating the panel locally
 

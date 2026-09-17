@@ -1,5 +1,8 @@
 # Dynamic ablation and the V5 design freeze
 
+Status: frozen design record. Manual review and the one-time V5 evaluation are
+complete; see `docs/v5_holdout_evaluation.md` for the labelled results.
+
 ## Supplementary controlled ablations
 
 The dynamic runner evaluates fourteen configurations: the previous ten plus

@@ -1,5 +1,10 @@
 # Accessing the project data from S3
 
+> **Historical optional workflow.** The final experiments used local data and
+> do not require AWS. This page is retained as a record of the earlier team
+> archive workflow; bucket access and IAM instructions may no longer be current.
+> The committed result tables can be reviewed without requesting credentials.
+
 The 14 raw data files live in S3 so that everyone works from an identical,
 checksummed copy. This page is for team members who need to run the scoring
 code locally.

@@ -83,3 +83,8 @@ the archived files remain unchanged.
 The integrated data and correlation table are external inputs and are not
 duplicated in this repository. The manifest records their hashes for the
 archived run.
+
+The manifest hashes the run-time scripts stored at commit `0a66a2c`. Later
+documentation-only edits changed the current script hashes but not the archived
+CSV outputs, whose hashes still match the manifest. See
+`docs/experiment_provenance.md`.

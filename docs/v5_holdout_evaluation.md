@@ -28,10 +28,11 @@ post-evaluation provenance clarification. The manifest is the reference for
 input and output hashes, bootstrap settings, metric definitions, and permitted
 claims.
 
-The two scripts under `scripts/v5/` are the exact copies used to freeze labels
-and run the evaluation. Their original local paths are retained so that their
-hashes continue to match the provenance record. They are archival evidence,
-not portable command-line tools.
+The manifest hashes the exact scripts used for the one-time run, preserved in
+Git history at commit `5cf8aa8`. The current copies under `scripts/v5/` contain
+the same evaluation logic but use repository-relative paths. Their hashes
+therefore differ intentionally from the run-time hashes. See
+`docs/experiment_provenance.md` before attempting reproduction.
 
 ## How to read V5
 

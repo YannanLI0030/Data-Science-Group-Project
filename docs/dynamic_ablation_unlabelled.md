@@ -11,8 +11,9 @@ corresponding interventions can affect a ranking.
 Neither panel has independently verified relevance labels. The reported
 quantities describe ranking sensitivity and robustness, not recommendation
 accuracy. This run does not calculate NDCG, Recall, or MRR and does not select
-a winning weight profile. V4 remains development evidence. V5 is reviewed only
-after its configurations and 12--20 genes have been frozen.
+a winning weight profile. It was used to freeze the later 12-gene V5 design;
+the completed labelled comparison is documented in
+`docs/v5_holdout_evaluation.md`.
 
 ## Inputs and data handling
 
@@ -63,9 +64,10 @@ regenerating an existing result set.
   variance, and A0 comparisons for each panel/gene/configuration combination;
 - `dynamic_ablation_unlabelled_gene_diagnostics.csv`: the number of collapsed
   configurations for each gene;
-- `dynamic_ablation_unlabelled_top10.csv`: Top-10 candidates with every
-  exact-score tie at the cutoff retained, so some groups contain more than ten
-  rows;
+- `dynamic_ablation_unlabelled_top10.csv`: generated Top-10 candidates with
+  every exact-score tie at the cutoff retained. This 116,545-row intermediate
+  is not committed because of its size; its row count and SHA-256 hash remain
+  in the manifest, and the frozen V5 reviewer and audit files are committed;
 - `dynamic_ablation_unlabelled_manifest.json`: hashes, formulae, aggregation
   rules, parity checks, and interpretation limits.
 
@@ -100,9 +102,9 @@ monotonic transformation. Top-10-with-ties, Jaccard similarity, and rank
 correlation should be read together instead of relying on full-order identity
 alone.
 
-## Next step
+## Follow-up
 
-The run is complete once each intervention has been shown to act in its intended
-stratum and remain benign when its required modality is absent. Configuration
-definitions can then be frozen. Only after that freeze should
-`candidate_pool_v5_holdout_review.csv` be generated and independently labelled.
+The interventions were confirmed to act in their intended strata, after which
+the primary configurations and reviewer pool were frozen. The review and
+one-time V5 evaluation are now complete. These unlabelled results remain
+structural evidence and should not be reinterpreted as accuracy measurements.
