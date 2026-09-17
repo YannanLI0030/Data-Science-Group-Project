@@ -56,18 +56,17 @@ DepMap, HPA, and GEO RNA values and applies Min--Max scaling within the
 disease-filtered candidate set. The score is
 
 $$
-\operatorname{Final}_\alpha =
-\operatorname{clip}\left(
-0.85\,\operatorname{Biology}
-+0.15\,\operatorname{Confidence}
--\alpha\,\operatorname{ExclusionScaled},
-0,1
-\right).
+F_\alpha =
+\min\left(
+1,
+\max\left(0,\,0.85B+0.15C-\alpha E\right)
+\right)
 $$
 
-`ExclusionScaled` is relative to the current query. A value of 0.8 in one
-disease context is not an absolute threshold and cannot be compared directly
-with 0.8 from another context.
+Here, `F` is the final score, `B` is the biological score, `C` is Confidence,
+and `E` is `ExclusionScaled`. The last quantity is relative to the current
+query. A value of 0.8 in one disease context is not an absolute threshold and
+cannot be compared directly with 0.8 from another context.
 
 When exclusion RNA is missing, the production implementation applies zero
 penalty. The runner keeps that rule but records the value as missing rather
