@@ -197,6 +197,10 @@ manifest are written to `results/exclusion_penalty_structural_v1/`. The same
 directory contains `exclusion_penalty_structural_v1.xlsx` as a formatted review
 copy; the CSV files and manifest remain the machine-readable record.
 
+By default, the runner looks for a sibling `cellline_selector_v3` directory.
+Use `CELLLINE_SELECTOR_V3_ROOT` or the corresponding command-line options when
+the production scorer and local data are stored elsewhere.
+
 ## Possible labelled extension
 
 A later pair-specific pool could be drawn from the frozen P00/P15/P30/P45

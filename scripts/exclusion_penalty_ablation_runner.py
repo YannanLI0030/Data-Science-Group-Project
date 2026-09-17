@@ -12,6 +12,7 @@ import hashlib
 import importlib.util
 import json
 import math
+import os
 import subprocess
 import sys
 from contextlib import contextmanager
@@ -27,11 +28,12 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DESIGN = PROJECT_ROOT / "config" / "exclusion_penalty_structural_v1_frozen_design.json"
 DEFAULT_QUERIES = PROJECT_ROOT / "benchmarks" / "penalty" / "penalty_structural_v1_queries.csv"
 DEFAULT_OUT_DIR = PROJECT_ROOT / "results" / "exclusion_penalty_structural_v1"
-DEFAULT_PRODUCTION_SCRIPT = Path(
-    "/Users/liyannan/Desktop/cellline_selector_v3/dynamic_cellline_selector_gene_protein.py"
+DEFAULT_EXTERNAL_ROOT = Path(
+    os.environ.get("CELLLINE_SELECTOR_V3_ROOT", PROJECT_ROOT.parent / "cellline_selector_v3")
 )
-DEFAULT_RAW_DATA_DIR = Path("/Users/liyannan/Desktop/cellline_selector_v3/data_s3")
-DEFAULT_CACHE_DIR = Path("/Users/liyannan/Desktop/cellline_selector_v3/gene_cache")
+DEFAULT_PRODUCTION_SCRIPT = DEFAULT_EXTERNAL_ROOT / "dynamic_cellline_selector_gene_protein.py"
+DEFAULT_RAW_DATA_DIR = DEFAULT_EXTERNAL_ROOT / "data_s3"
+DEFAULT_CACHE_DIR = DEFAULT_EXTERNAL_ROOT / "gene_cache"
 DEFAULT_V5_FREEZE = PROJECT_ROOT / "config" / "ablation_v5_frozen_design.json"
 
 PROFILE_ORDER = (

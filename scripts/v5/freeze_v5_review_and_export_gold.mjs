@@ -1,21 +1,30 @@
 import crypto from "node:crypto";
 import { execFile as execFileCallback } from "node:child_process";
 import fs from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
+import { fileURLToPath } from "node:url";
 import { Workbook } from "@oai/artifact-tool";
 
-const workingPath = "/Users/liyannan/Documents/Codex/2026-08-17/zhe/outputs/v5_holdout_review/candidate_pool_v5_holdout_review_working.csv";
-const baselineRepo = "/Users/liyannan/Desktop/Data-Science-Group-Project";
+const scriptPath = fileURLToPath(import.meta.url);
+const baselineRepo = path.resolve(path.dirname(scriptPath), "../..");
+const workingPath = process.env.V5_REVIEW_FILE ?? path.join(
+  baselineRepo,
+  "benchmarks/candidate_pool_v5_holdout_review_completed.csv",
+);
 const baselineCommit = "6ebd934";
 const baselineRepoPath = "benchmarks/candidate_pool_v5_holdout_review.csv";
-const poolManifestPath = "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/candidate_pool_v5_holdout_manifest.json";
-const outputDir = "/Users/liyannan/Documents/Codex/2026-08-17/zhe/outputs/v5_holdout_review";
+const poolManifestPath = path.join(
+  baselineRepo,
+  "benchmarks/candidate_pool_v5_holdout_manifest.json",
+);
+const outputDir = process.env.V5_OUTPUT_DIR ?? path.join(baselineRepo, "benchmarks");
 const completedPath = path.join(outputDir, "candidate_pool_v5_holdout_review_completed.csv");
 const goldPath = path.join(outputDir, "gold_standard_v5_holdout.csv");
 const freezeManifestPath = path.join(outputDir, "gold_standard_v5_holdout_manifest.json");
-const completedPreviewPath = "/Users/liyannan/Documents/Codex/2026-08-17/zhe/work/v5_review_completed_rows181_189.png";
-const goldPreviewPath = "/Users/liyannan/Documents/Codex/2026-08-17/zhe/work/gold_standard_v5_holdout_preview.png";
+const completedPreviewPath = path.join(os.tmpdir(), "v5_review_completed_rows181_189.png");
+const goldPreviewPath = path.join(os.tmpdir(), "gold_standard_v5_holdout_preview.png");
 
 const reviewerHeaders = [
   "review_id", "benchmark_role", "review_priority", "priority_reason", "gene",
@@ -31,7 +40,7 @@ const goldHeaders = [
   "source_hint", "verified", "notes",
 ];
 const execFile = promisify(execFileCallback);
-const gitExecutable = "/Users/liyannan/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback/git";
+const gitExecutable = process.env.GIT_EXECUTABLE ?? "git";
 
 function sha256Bytes(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex");
