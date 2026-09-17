@@ -306,19 +306,19 @@
   },
   "source_snapshot": {
     "dynamic_manifest": {
-      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/results/dynamic_ablation_unlabelled/dynamic_ablation_unlabelled_manifest.json",
+      "path": "results/dynamic_ablation_unlabelled/dynamic_ablation_unlabelled_manifest.json",
       "sha256": "4abf99bfaa8d56c6efed67bc7a7de3d4df61e3788af8aaba7e77949f75ca1589"
     },
     "dynamic_top10": {
-      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/results/dynamic_ablation_unlabelled/dynamic_ablation_unlabelled_top10.csv",
+      "path": "results/dynamic_ablation_unlabelled/dynamic_ablation_unlabelled_top10.csv",
       "sha256": "9431e5833545850f0a73bfed97c23e0c8d9b5c1a8ba149ae8f18e60ff09f60ff"
     },
     "coverage_stratified_panel": {
-      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/panels/ablation_100genes_coverage_stratified_list.csv",
+      "path": "benchmarks/panels/ablation_100genes_coverage_stratified_list.csv",
       "sha256": "a1bdc100661e0c3c506912b7338c1ac3b09d1d3e3aefc168e3870cf100266b25"
     },
     "sample_info": {
-      "path": "/Users/liyannan/Desktop/cellline_selector_v3/data_s3/nomenclature/9_DepMap_sample_info.csv",
+      "path": "external/runtime_snapshot/data_s3/nomenclature/9_DepMap_sample_info.csv",
       "sha256": "382c0c26cf57a2fb82449f797c58cb0dfc2313949908d8f83560ebcf3e5bcbaa"
     }
   },

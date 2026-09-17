@@ -216,7 +216,7 @@
     }
   ],
   "generator": {
-    "script": "/Users/liyannan/Desktop/Data-Science-Group-Project/scripts/dynamic_ablation_runner.py",
+    "script": "scripts/dynamic_ablation_runner.py",
     "script_sha256": "e8062423f3525dd556875c1ca5c8158806ab1f164a0278e7ebe4855091cf2c7e",
     "git": {
       "commit": "f817ea13e5ecd26010e7910738c819b47c7c4c28",
@@ -228,37 +228,37 @@
   },
   "inputs": {
     "sample_info": {
-      "path": "/Users/liyannan/Desktop/cellline_selector_v3/data_s3/nomenclature/9_DepMap_sample_info.csv",
+      "path": "external/runtime_snapshot/data_s3/nomenclature/9_DepMap_sample_info.csv",
       "sha256": "382c0c26cf57a2fb82449f797c58cb0dfc2313949908d8f83560ebcf3e5bcbaa"
     },
     "correlation": {
-      "path": "/Users/liyannan/Desktop/Data Science MSc Graduation Project/gene_rna_protein_correlations.csv",
+      "path": "external/data_snapshot/gene_rna_protein_correlations.csv",
       "sha256": "36ff1b594f66a6a1a4e3b06aa1d9f173cf6fc5de38f7ff2d070669c89ff5de74"
     },
     "production_script": {
-      "path": "/Users/liyannan/Desktop/cellline_selector_v3/dynamic_cellline_selector_gene_protein.py",
+      "path": "external/runtime_snapshot/dynamic_cellline_selector_gene_protein.py",
       "sha256": "bde400bf53943f00458065cdd162f8afed5563886f11626b82b59995bfa4960d"
     },
     "panels": [
       {
         "panel": "unfiltered_random",
         "list": {
-          "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/panels/ablation_100genes_unfiltered_random_list.csv",
+          "path": "benchmarks/panels/ablation_100genes_unfiltered_random_list.csv",
           "sha256": "df29c3c2d204cadcfdf338a0bbf18dd72226e62b72c6df67e9b3372f3f791eda"
         },
         "long_table": {
-          "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/panels/ablation_100genes_unfiltered_random.parquet",
+          "path": "benchmarks/panels/ablation_100genes_unfiltered_random.parquet",
           "sha256": "e3e1b7d12c24de8df974ff28151ea1e2ad75645c64c6db3762f1fff6b42e8b08"
         }
       },
       {
         "panel": "coverage_stratified",
         "list": {
-          "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/panels/ablation_100genes_coverage_stratified_list.csv",
+          "path": "benchmarks/panels/ablation_100genes_coverage_stratified_list.csv",
           "sha256": "a1bdc100661e0c3c506912b7338c1ac3b09d1d3e3aefc168e3870cf100266b25"
         },
         "long_table": {
-          "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/panels/ablation_100genes_coverage_stratified.parquet",
+          "path": "benchmarks/panels/ablation_100genes_coverage_stratified.parquet",
           "sha256": "067eff041f68e30ff96af143963a110e72c5fa74e456a6259981625fabea391f"
         }
       }
@@ -304,22 +304,22 @@
   },
   "outputs": {
     "summary": {
-      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/results/dynamic_ablation_unlabelled/dynamic_ablation_unlabelled_summary.csv",
+      "path": "results/dynamic_ablation_unlabelled/dynamic_ablation_unlabelled_summary.csv",
       "rows": 126,
       "sha256": "af9e7facb7de6a11311f01c96375178a01957f7980c45d18db7a878c5b06b362"
     },
     "by_gene_config": {
-      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/results/dynamic_ablation_unlabelled/dynamic_ablation_unlabelled_by_gene_config.csv",
+      "path": "results/dynamic_ablation_unlabelled/dynamic_ablation_unlabelled_by_gene_config.csv",
       "rows": 2800,
       "sha256": "e231054d5892fbb0842864a2c02c2d9b529af08965867b6e1f0851b3bab45b49"
     },
     "gene_diagnostics": {
-      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/results/dynamic_ablation_unlabelled/dynamic_ablation_unlabelled_gene_diagnostics.csv",
+      "path": "results/dynamic_ablation_unlabelled/dynamic_ablation_unlabelled_gene_diagnostics.csv",
       "rows": 200,
       "sha256": "1a522f5660c851f6250609d32db2a53928a5c67b7ded38b02a5cc98e67c2952f"
     },
     "topk": {
-      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/results/dynamic_ablation_unlabelled/dynamic_ablation_unlabelled_top10.csv",
+      "path": "results/dynamic_ablation_unlabelled/dynamic_ablation_unlabelled_top10.csv",
       "rows": 116545,
       "sha256": "9431e5833545850f0a73bfed97c23e0c8d9b5c1a8ba149ae8f18e60ff09f60ff"
     }

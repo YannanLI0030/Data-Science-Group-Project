@@ -154,7 +154,7 @@
     ],
     "excluded_gene_files": [
       {
-        "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/panels/ablation_100genes_unfiltered_random_list.csv",
+        "path": "benchmarks/panels/ablation_100genes_unfiltered_random_list.csv",
         "sha256": "df29c3c2d204cadcfdf338a0bbf18dd72226e62b72c6df67e9b3372f3f791eda"
       }
     ],
@@ -171,13 +171,13 @@
     "selected_gene_count": 100
   },
   "generator": {
-    "script": "/Users/liyannan/Desktop/Data-Science-Group-Project/scripts/export_coverage_stratified_ablation_panel.py",
+    "script": "scripts/export_coverage_stratified_ablation_panel.py",
     "script_sha256": "69b97748b240645bb033f3ac6a9ca96486355d3ab3ab6bfcb29f073269b06efd",
     "project_git": {
       "commit": "f817ea13e5ecd26010e7910738c819b47c7c4c28",
       "dirty": true
     },
-    "src_dir": "/Users/liyannan/Desktop/Data-Science-Group-Project/src",
+    "src_dir": "src",
     "source_code": {
       "data_loader.py": "ca4af08b04854f87cac9aa32ba07549594573b29382c3ba1664f4bb8d6b77ba5",
       "data_merger.py": "253404ef6e12bd4012dfe0e9f0ae3f2e7b362471a99606f5bac100d9901abbef"
@@ -187,7 +187,7 @@
     "numpy": "2.4.6"
   },
   "inputs": {
-    "data_dir": "/Users/liyannan/Desktop/cellline_selector_v3/data_s3",
+    "data_dir": "external/runtime_snapshot/data_s3",
     "raw_files": [
       {
         "relative_path": "gene expression/1_4_hpa_rna_celline.tsv",
@@ -257,7 +257,7 @@
       }
     ],
     "correlation_file": {
-      "path": "/Users/liyannan/Desktop/Data Science MSc Graduation Project/gene_rna_protein_correlations.csv",
+      "path": "external/data_snapshot/gene_rna_protein_correlations.csv",
       "bytes": 366004,
       "sha256": "36ff1b594f66a6a1a4e3b06aa1d9f173cf6fc5de38f7ff2d070669c89ff5de74"
     }
@@ -280,17 +280,17 @@
   },
   "outputs": {
     "panel_list": {
-      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/panels/ablation_100genes_coverage_stratified_list.csv",
+      "path": "benchmarks/panels/ablation_100genes_coverage_stratified_list.csv",
       "bytes": 13274,
       "sha256": "a1bdc100661e0c3c506912b7338c1ac3b09d1d3e3aefc168e3870cf100266b25"
     },
     "coverage_catalog": {
-      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/panels/ablation_100genes_coverage_stratified_coverage_catalog.csv",
+      "path": "benchmarks/panels/ablation_100genes_coverage_stratified_coverage_catalog.csv",
       "bytes": 4457516,
       "sha256": "d3b6cb46c415617bbcba10083e077c34c0de3db0f1cc530e39b7c2cb90d49821"
     },
     "long_table": {
-      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/panels/ablation_100genes_coverage_stratified.parquet",
+      "path": "benchmarks/panels/ablation_100genes_coverage_stratified.parquet",
       "bytes": 4281591,
       "sha256": "067eff041f68e30ff96af143963a110e72c5fa74e456a6259981625fabea391f"
     }

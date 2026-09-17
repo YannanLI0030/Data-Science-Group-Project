@@ -4,12 +4,12 @@
   "status": "labels_frozen_before_internal_audit_unblinding",
   "experiment_role": "targeted independent-label component holdout",
   "source_working_review": {
-    "path": "/Users/liyannan/Documents/Codex/2026-08-17/zhe/outputs/v5_holdout_review/candidate_pool_v5_holdout_review_working.csv",
+    "path": "external/review_workspace/candidate_pool_v5_holdout_review_working.csv",
     "rows": 189,
     "sha256": "21ae6585747ef84870b6237a92e1ec93069ca27de543296c43f5252a0556728f"
   },
   "frozen_blank_baseline": {
-    "repository": "/Users/liyannan/Desktop/Data-Science-Group-Project",
+    "repository": ".",
     "commit": "6ebd934",
     "repository_path": "benchmarks/candidate_pool_v5_holdout_review.csv",
     "sha256": "2f7bfaf602d548ce746863b9ad27fba6c1677a199d64dd8433ad21cd37abe8a9",
@@ -47,12 +47,12 @@
   },
   "outputs": {
     "completed_review": {
-      "path": "/Users/liyannan/Documents/Codex/2026-08-17/zhe/outputs/v5_holdout_review/candidate_pool_v5_holdout_review_completed.csv",
+      "path": "benchmarks/candidate_pool_v5_holdout_review_completed.csv",
       "rows": 189,
       "sha256": "5d65328c45909225f61a131faf22d2ca9e2f991dd559f8a247b8834300b9de62"
     },
     "gold_standard": {
-      "path": "/Users/liyannan/Documents/Codex/2026-08-17/zhe/outputs/v5_holdout_review/gold_standard_v5_holdout.csv",
+      "path": "benchmarks/gold_standard_v5_holdout.csv",
       "rows": 99,
       "genes": 12,
       "relation_counts": {

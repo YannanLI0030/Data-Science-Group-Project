@@ -10,6 +10,15 @@ file hash even when the numerical method is unchanged. The manifests were not
 rewritten, because doing so would falsely describe a later file as the script
 used for the original run.
 
+For publication, user-specific absolute paths in manifests and saved notebook
+output were replaced with repository-relative paths. Files from the separate
+runtime and review workspaces use the logical prefixes `external/runtime_snapshot/`,
+`external/data_snapshot/` and `external/review_workspace/`. This cleanup changes
+only path labels. Recorded SHA-256 values, row counts, labels, configurations
+and numerical results remain those of the frozen runs. Hashes that identify a
+manifest itself therefore refer to the original run-time copy, before this
+publication-only path normalisation.
+
 | Experiment | Exact run-time version in Git history | Later change |
 |---|---|---|
 | Dynamic 100-gene ablation and V5 pool build | `6ebd934` | Comments only |

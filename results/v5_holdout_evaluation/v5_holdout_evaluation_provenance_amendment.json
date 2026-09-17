@@ -2,7 +2,7 @@
   "schema_version": 1,
   "status": "post_evaluation_provenance_clarification",
   "amends_manifest": {
-    "path": "/Users/liyannan/Documents/Codex/2026-08-17/zhe/outputs/v5_holdout_evaluation/v5_holdout_evaluation_manifest.json",
+    "path": "results/v5_holdout_evaluation/v5_holdout_evaluation_manifest.json",
     "sha256_before_amendment": "59b73c812b22ea449ccac03884518b776c35b0c28c0392b021904924f7532f3d"
   },
   "clarification": [

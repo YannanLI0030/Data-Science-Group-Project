@@ -59,34 +59,34 @@
   "input_integrity": {
     "all_sha256_checks_passed": true,
     "gold": {
-      "path": "/Users/liyannan/Documents/Codex/2026-08-17/zhe/outputs/v5_holdout_review/gold_standard_v5_holdout.csv",
+      "path": "benchmarks/gold_standard_v5_holdout.csv",
       "rows": 99,
       "genes": 12,
       "sha256": "97117fa607bd242e6c280a1a4b983a6b42316c1c3274066c192db695b4bc28d3"
     },
     "completed_review": {
-      "path": "/Users/liyannan/Documents/Codex/2026-08-17/zhe/outputs/v5_holdout_review/candidate_pool_v5_holdout_review_completed.csv",
+      "path": "benchmarks/candidate_pool_v5_holdout_review_completed.csv",
       "sha256": "5d65328c45909225f61a131faf22d2ca9e2f991dd559f8a247b8834300b9de62"
     },
     "internal_audit": {
-      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/results/v5_holdout_internal/candidate_pool_v5_holdout_audit.csv",
+      "path": "results/v5_holdout_internal/candidate_pool_v5_holdout_audit.csv",
       "rows": 189,
       "sha256": "4ddc004888fef6f9cdfd4f86f3122357ad425cc33d5a45d20238c651b22c4692"
     },
     "frozen_design": {
-      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/config/ablation_v5_frozen_design.json",
+      "path": "config/ablation_v5_frozen_design.json",
       "sha256": "6d3d407982e249fd972fccf6c5c890680bb2e11469abee4d70ddaacab63cedee"
     },
     "label_freeze_manifest": {
-      "path": "/Users/liyannan/Documents/Codex/2026-08-17/zhe/outputs/v5_holdout_review/gold_standard_v5_holdout_manifest.json",
+      "path": "benchmarks/gold_standard_v5_holdout_manifest.json",
       "sha256": "a554f1ef4f0265b2c6deb5bf6506ad97dc3da408669d21dfb03d637f5d7ab0e5"
     },
     "candidate_pool_manifest": {
-      "path": "/Users/liyannan/Desktop/Data-Science-Group-Project/benchmarks/candidate_pool_v5_holdout_manifest.json",
+      "path": "benchmarks/candidate_pool_v5_holdout_manifest.json",
       "sha256": "edf842df1f90f92da465a0f102e66110d6a5d71c77c86c53ee478ae0565a6f82"
     },
     "evaluation_script": {
-      "path": "/Users/liyannan/Documents/Codex/2026-08-17/zhe/work/evaluate_v5_holdout.mjs",
+      "path": "scripts/v5/evaluate_v5_holdout.mjs",
       "sha256": "2c058b8b58b8c095e9c9a07afdc168e300c1746d4a8c12aa0b7d2d0c5f84b749"
     }
   },
@@ -179,25 +179,25 @@
   ],
   "outputs": {
     "v5_holdout_summary.csv": {
-      "path": "/Users/liyannan/Documents/Codex/2026-08-17/zhe/outputs/v5_holdout_evaluation/v5_holdout_summary.csv",
+      "path": "results/v5_holdout_evaluation/v5_holdout_summary.csv",
       "rows": 10,
       "columns": 48,
       "sha256": "0588bef2414fd6d95b2bf6971a3c126f747fcbf892291885e6272bf1f43441c7"
     },
     "v5_holdout_by_gene_config.csv": {
-      "path": "/Users/liyannan/Documents/Codex/2026-08-17/zhe/outputs/v5_holdout_evaluation/v5_holdout_by_gene_config.csv",
+      "path": "results/v5_holdout_evaluation/v5_holdout_by_gene_config.csv",
       "rows": 120,
       "columns": 29,
       "sha256": "354a2c858618c296a51504b5a2f29b31715910636ddb057914cbcc4ac7f666e0"
     },
     "v5_holdout_controlled_contrasts.csv": {
-      "path": "/Users/liyannan/Documents/Codex/2026-08-17/zhe/outputs/v5_holdout_evaluation/v5_holdout_controlled_contrasts.csv",
+      "path": "results/v5_holdout_evaluation/v5_holdout_controlled_contrasts.csv",
       "rows": 33,
       "columns": 18,
       "sha256": "2f337ec23c051c5479d13275509524daf4c8dc07bccab9fd8c9f706a369f4d73"
     },
     "v5_holdout_tie_audit.csv": {
-      "path": "/Users/liyannan/Documents/Codex/2026-08-17/zhe/outputs/v5_holdout_evaluation/v5_holdout_tie_audit.csv",
+      "path": "results/v5_holdout_evaluation/v5_holdout_tie_audit.csv",
       "rows": 120,
       "columns": 10,
       "sha256": "adfecb607b974def66044f87dc3f0b682bd14665c211b6f15621b65948665d0b"
